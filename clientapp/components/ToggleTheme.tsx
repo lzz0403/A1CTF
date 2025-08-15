@@ -205,7 +205,7 @@ const ThemeSwitcher = (
                             }}
                         >
                             <div className='flex justify-between w-full items-center'>
-                                <span className='font-bold'>关闭背景动画</span>
+                                <span className='font-bold'>{t("disable_background_animation")}</span>
                                 <Snail />
                             </div>
                         </Button>
@@ -216,7 +216,7 @@ const ThemeSwitcher = (
                             }}
                         >
                             <div className='flex justify-between w-full items-center'>
-                                <span className='font-bold'>开启背景动画</span>
+                                <span className='font-bold'>{t("enable_background_animation")}</span>
                                 <Rabbit />
                             </div>
                         </Button>

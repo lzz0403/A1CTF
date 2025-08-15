@@ -1,10 +1,10 @@
 {
-    "please_input_email": "请输入邮箱地址",
-    "edit_email_title": "修改邮箱地址",
-    "please_input_new_email": "请输入新邮箱地址，激活链接将发送至新邮箱",
-    "new_email_address": "新邮箱地址",
-    "activate_link_sended": "激活链接已发送至您的新邮箱",
-    "click_link": "请点击邮件中的激活链接完成修改",
-    "sending": "发送中...",
-    "send_link": "发送激活链接"
+    "please_input_email": "Please input the email address",
+    "edit_email_title": "Edit the email address",
+    "please_input_new_email": "Please input the new email address, we will send activate link to your new email.",
+    "new_email_address": "New email address",
+    "activate_link_sended": "Activate link have sended to your new email",
+    "click_link": "Click the activate link to complete the modification.",
+    "sending": "Sending...",
+    "send_link": "Send activate link"
 }

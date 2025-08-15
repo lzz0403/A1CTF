@@ -13,6 +13,8 @@
   "login_out_success": "登出成功！",
   "title": "A1CTF | A1natas",
   "system_color": "使用系统颜色",
+  "enable_background_animation": "开启背景动画",
+  "disable_background_animation": "关闭背景动画",
   "close": "关闭",
   "back_to_home": "返回主页",
   "page_not_found": "页面未找到"
