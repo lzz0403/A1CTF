@@ -297,21 +297,30 @@ func PayloadValidator(model interface{}) gin.HandlerFunc {
 		payload := reflect.New(reflect.TypeOf(model)).Interface()
 
 		if err := c.ShouldBindJSON(payload); err != nil {
-			errors := err.(validator.ValidationErrors)
-			errorMessages := make([]string, 0)
+			if errors, ok := err.(validator.ValidationErrors); ok {
+				errorMessages := make([]string, 0, len(errors))
+				for _, error := range errors {
+					errorMessages = append(errorMessages, error.Error())
+				}
 
-			for _, error := range errors {
-				errorMessages = append(errorMessages, error.Error())
+				errorMessage := fmt.Sprintf("[%s]", strings.Join(errorMessages, ", "))
+				c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
+					Code: 400,
+					Message: i18ntool.Translate(c, &i18n.LocalizeConfig{
+						MessageID: "InvalidRequestPayloadWithErrorMessage",
+						TemplateData: map[string]string{
+							"ErrorMessage": errorMessage,
+						},
+					}),
+				})
+			} else {
+				c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
+					Code: 400,
+					Message: i18ntool.Translate(c, &i18n.LocalizeConfig{
+						MessageID: "InvalidRequestPayload",
+					}),
+				})
 			}
-
-			errorMessage := fmt.Sprintf("[%s]", strings.Join(errorMessages, ", "))
-
-			c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
-				Code: 400,
-				Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "InvalidRequestPayloadWithErrorMessage", TemplateData: map[string]string{
-					"ErrorMessage": errorMessage,
-				}}),
-			})
 			c.Abort()
 			return
 		}
