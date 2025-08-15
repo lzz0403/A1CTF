@@ -53,7 +53,7 @@ func GameStatusMiddleware(props GameStatusMiddlewareProps) gin.HandlerFunc {
 		user, exists := c.Get("user")
 
 		// 再换一种方式获取登陆状态，给获取比赛信息接口用
-		if (c.FullPath() == "/api/game/:game_id" && c.Request.Method == "GET") || (c.FullPath() == "/api/game/:game_id/desc" && c.Request.Method == "GET") {
+		if (c.FullPath() == "/api/game/:game_id" && c.Request.Method == "GET") || (c.FullPath() == "/api/game/:game_id/desc" && c.Request.Method == "GET") || (c.FullPath() == "/api/game/:game_id/scoreboard" && c.Request.Method == "GET") {
 			claims, errFromJwt := jwtauth.GetJwtMiddleWare().GetClaimsFromJWT(c)
 			if errFromJwt == nil {
 				user_id, userIDExists := claims["UserID"]

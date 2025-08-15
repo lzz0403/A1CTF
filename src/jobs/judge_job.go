@@ -80,8 +80,6 @@ func processQueueingJudge(judge *models.Judge) error {
 				var noticeCate models.NoticeCategory
 
 				// 现在由算分逻辑计算三血分数，不使用 score-adjustment
-				// var rewardScore float64
-				// var rewardReason string
 
 				if newSolve.Rank == 1 {
 					noticeCate = models.NoticeFirstBlood
@@ -90,27 +88,6 @@ func processQueueingJudge(judge *models.Judge) error {
 				} else {
 					noticeCate = models.NoticeThirdBlood
 				}
-
-				// rewardReason = fmt.Sprintf("%s for %s", rewardReason, judge.Challenge.Name)
-
-				// adjustment := models.ScoreAdjustment{
-				// 	TeamID:         judge.TeamID,
-				// 	GameID:         judge.GameID,
-				// 	AdjustmentType: models.AdjustmentTypeReward,
-				// 	ScoreChange:    rewardScore,
-				// 	Reason:         rewardReason,
-				// 	CreatedBy:      uuid.MustParse(judge.SubmiterID),
-				// 	CreatedAt:      time.Now().UTC(),
-				// 	UpdatedAt:      time.Now().UTC(),
-				// }
-
-				// if err := dbtool.DB().Create(&adjustment).Error; err != nil {
-				// 	tasks.LogJudgeOperation(nil, nil, models.ActionJudge, judge.JudgeID, map[string]interface{}{
-				// 		"team_id":      judge.TeamID,
-				// 		"game_id":      judge.GameID,
-				// 		"score_change": adjustment.ScoreChange,
-				// 	}, err)
-				// }
 
 				go func() {
 					noticetool.InsertNotice(judge.GameID, noticeCate, []string{solveDetail.Team.TeamName, solveDetail.Challenge.Name})

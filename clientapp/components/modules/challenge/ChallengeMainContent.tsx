@@ -181,6 +181,9 @@ export default function ChallengeMainContent(
         } else if (curChallenge?.container_status == ContainerStatus.ContainerQueueing) {
             setContainerLaunching(true)
             setRefreshContainerTrigger(true)
+        } else if (curChallenge?.container_status == ContainerStatus.ContainerStarting) {
+            setContainerLaunching(true)
+            setRefreshContainerTrigger(true)
         } else {
             setContainerRunningTrigger(false)
         }

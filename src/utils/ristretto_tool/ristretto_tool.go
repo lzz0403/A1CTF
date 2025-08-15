@@ -260,6 +260,16 @@ func CachedGameInfo(gameID int64) (*models.Game, error) {
 	return &game, nil
 }
 
+func filterValidSolves(solves []models.Solve) []models.Solve {
+	var filtered []models.Solve
+	for _, solve := range solves {
+		if solve.Team.TeamStatus == models.ParticipateApproved {
+			filtered = append(filtered, solve)
+		}
+	}
+	return filtered
+}
+
 func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData, error) {
 	var cachedData webmodels.CachedGameScoreBoardData
 
@@ -292,10 +302,13 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 		Preload("Solver").
 		Preload("Challenge").
 		Preload("Game").
+		Preload("Team").
 		Order("solve_time ASC").
 		Find(&solves).Error; err != nil {
 		return nil, errors.New("failed to load solves")
 	}
+
+	solves = filterValidSolves(solves)
 
 	// 计算每道题的首杀时间
 	firstSolveTime := make(map[int64]time.Time) // challengeID -> 首杀时间
