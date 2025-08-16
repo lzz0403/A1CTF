@@ -303,11 +303,9 @@ export function AdminSystemLogs() {
 
                 const getDetailedLog = () => {
                     const newLog = Object.assign({}, log)
-                    const decodedString = decodeURIComponent(
-                        atob(newLog.details as any).split('').map(
-                            (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-                        ).join('')
-                    )
+                    const binaryString = atob(newLog.details as any)
+                    const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0))
+                    const decodedString = new TextDecoder('utf-8').decode(bytes)
                     newLog.details = JSON.parse(decodedString)
                     return JSON.stringify(newLog, null, 4)
                 }
@@ -350,11 +348,9 @@ export function AdminSystemLogs() {
                                 )}
                                 <DropdownMenuItem
                                     onClick={() => {
-                                        const decodedString = decodeURIComponent(
-                                            atob(log.details as any).split('').map(
-                                                (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-                                            ).join('')
-                                        );
+                                        const detailsText = atob(log.details as unknown as string);
+                                        const bytes = Uint8Array.from(detailsText, c => c.charCodeAt(0))
+                                        const decodedString = new TextDecoder('utf-8').decode(bytes);
                                         const detail = JSON.stringify(JSON.parse(decodedString), null, 4);
                                         copy(detail || '') ? toast.success('详细信息已复制到剪切板') : toast.error('复制失败');
 
