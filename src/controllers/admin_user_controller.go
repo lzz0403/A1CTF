@@ -126,7 +126,20 @@ func AdminUpdateUser(c *gin.Context) {
 	user.Slogan = payload.Slogan
 	user.Email = payload.Email
 	user.Avatar = payload.Avatar
-	user.Role = payload.Role
+
+	// 如果用户的角色被修改了，则需要重置这个用户的令牌
+	if user.Role != payload.Role {
+		// 无权修改管理员的角色
+		if user.Role == models.UserRoleAdmin {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    403,
+				"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "UpdateAdminRoleNotAllowed"}),
+			})
+			return
+		}
+		user.JWTVersion = general.RandomPassword(16)
+		user.Role = payload.Role
+	}
 
 	if err := dbtool.DB().Save(&user).Error; err != nil {
 		// 记录失败日志
@@ -251,6 +264,15 @@ func AdminDeleteUser(c *gin.Context) {
 			})
 		}
 		tx.Rollback()
+		return
+	}
+
+	// 不能删除管理员账户
+	if user.Role == models.UserRoleAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"code":    403,
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "DeleteAdminNotAllowed"}),
+		})
 		return
 	}
 

@@ -1,3 +1,25 @@
+# JWT Auth 错误信息
+
+[JWTErrForbidden]
+description = "您没有此操作的权限"
+other = "您没有此操作的权限"
+
+[JWTErrInvalidSigningAlgorithm]
+description = "签名算法无效"
+other = "签名算法无效"
+
+[JWTErrMissingExpField]
+description = "缺少过期时间"
+other = "缺少过期时间"
+
+[JWTErrExpiredToken]
+description = "Token已过期"
+other = "Token已过期"
+
+[JWTErrWrongFormatOfExp]
+description = "过期时间必须是float64格式"
+other = "过期时间必须是float64格式"
+
 # Admin Challenge Controller 错误信息
 
 [InvalidChallengeID]
@@ -495,3 +517,11 @@ other = "删除用户失败"
 [UserDeleted]
 description = "用户已删除"
 other = "用户已删除"
+
+[UpdateAdminRoleNotAllowed]
+description = "您无权更改管理员角色"
+other = "您无权更改管理员角色"
+
+[DeleteAdminNotAllowed]
+description = "您无权删除管理员用户"
+other = "您无权删除管理员用户"

@@ -1,3 +1,25 @@
+# JWT Auth Error Messages
+
+[JWTErrForbidden]
+description = "You don't have this permission"
+other = "You don't have this permission"
+
+[JWTErrInvalidSigningAlgorithm]
+description = "Invalid signing algorithm"
+other = "Invalid signing algorithm"
+
+[JWTErrMissingExpField]
+description = "Missing expire field"
+other = "Missing expire field"
+
+[JWTErrExpiredToken]
+description = "Token is expired"
+other = "Token is expired"
+
+[JWTErrWrongFormatOfExp]
+description = "Expire field must be float64 format"
+other = "Expire field must be float64 format"
+
 # Admin Challenge Controller Error Messages
 
 [InvalidChallengeID]

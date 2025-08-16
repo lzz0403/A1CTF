@@ -7,6 +7,7 @@ import (
 	"a1ctf/src/tasks"
 	dbtool "a1ctf/src/utils/db_tool"
 	"a1ctf/src/utils/general"
+	i18ntool "a1ctf/src/utils/i18n_tool"
 	"a1ctf/src/utils/ristretto_tool"
 	"crypto/rand"
 	"crypto/rsa"
@@ -18,6 +19,7 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 var (
@@ -376,6 +378,27 @@ func unauthorized() func(c *gin.Context, code int, message string) {
 	}
 }
 
+func httpStatusMessageFunc() func(e error, c *gin.Context) string {
+	return func(e error, c *gin.Context) string {
+		messageID := "JWT"
+		switch e {
+		case jwt.ErrForbidden:
+			messageID += "ErrForbidden"
+		case jwt.ErrInvalidSigningAlgorithm:
+			messageID += "ErrInvalidSigningAlgorithm"
+		case jwt.ErrMissingExpField:
+			messageID += "ErrMissingExpField"
+		case jwt.ErrExpiredToken:
+			messageID += "ErrExpiredToken"
+		case jwt.ErrWrongFormatOfExp:
+			messageID += "ErrWrongFormatOfExp"
+		default:
+			return e.Error()
+		}
+		return i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: messageID})
+	}
+}
+
 type LoginPayload struct {
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
@@ -448,18 +471,18 @@ func initParams() *jwt.GinJWTMiddleware {
 		IdentityKey:      identityKey,
 		PayloadFunc:      payloadFunc(),
 
-		SendCookie: true,
-		CookieName: "a1token",
-
-		IdentityHandler: identityHandler(),
-		Authenticator:   Login(),
-		Authorizator:    authorizator(),
-		Unauthorized:    unauthorized(),
-		TokenLookup:     "cookie:a1token",
-		// TokenLookup: "query:token",
-		// TokenLookup: "cookie:token",
+		SendCookie:    true,
+		CookieName:    "a1token",
 		TokenHeadName: "Bearer",
-		TimeFunc:      time.Now,
+
+		IdentityHandler:       identityHandler(),
+		Authenticator:         Login(),
+		Authorizator:          authorizator(),
+		Unauthorized:          unauthorized(),
+		HTTPStatusMessageFunc: httpStatusMessageFunc(),
+
+		TokenLookup: "cookie:a1token",
+		TimeFunc:    time.Now,
 	}
 }
 
