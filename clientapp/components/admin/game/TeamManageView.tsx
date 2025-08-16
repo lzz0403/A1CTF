@@ -55,6 +55,7 @@ import {
 } from "components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar"
 import { copyWithResult } from "utils/ToastUtil"
+import copy from "copy-to-clipboard"
 
 export type TeamModel = {
     team_id: number,
@@ -403,7 +404,9 @@ export function TeamManageView(
                             <DropdownMenuContent align="end" >
                                 <DropdownMenuLabel>操作</DropdownMenuLabel>
                                 <DropdownMenuItem
-                                    onClick={() => navigator.clipboard.writeText(team.team_id.toString())}
+                                    onClick={() => {
+                                        copy(team.team_id.toString() || '') ? toast.success('队伍ID已复制到剪切板') : toast.error('复制失败');
+                                    }}
                                 >
                                     <ClipboardList className="h-4 w-4 mr-2" />
                                     复制队伍ID

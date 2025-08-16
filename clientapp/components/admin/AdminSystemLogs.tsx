@@ -293,8 +293,7 @@ export function AdminSystemLogs() {
                     <>
                         <DropdownMenuItem
                             onClick={() => {
-                                navigator.clipboard.writeText(log.resource_id || '');
-                                toast.success('容器ID已复制到剪切板');
+                                copy(log.resource_id || '') ? toast.success('容器ID已复制到剪切板') : toast.error('复制失败');
                             }}
                         >
                             复制容器ID
@@ -307,7 +306,6 @@ export function AdminSystemLogs() {
                     const binaryString = atob(newLog.details as any)
                     const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0))
                     const decodedString = new TextDecoder('utf-8').decode(bytes)
-
                     newLog.details = JSON.parse(decodedString)
                     return JSON.stringify(newLog, null, 4)
                 }
@@ -316,7 +314,7 @@ export function AdminSystemLogs() {
                     <div className="flex gap-2 items-center">
                         <EditorDialog
                             value={getDetailedLog()}
-                            onChange={() => {}}
+                            onChange={() => { }}
                             language="json"
                             title={`查看详细信息`}
                             options={{
@@ -325,7 +323,7 @@ export function AdminSystemLogs() {
                             }}
                         >
                             <Button variant="ghost" size="icon" className='cursor-pointer'
-                                title="查看详细信息"    
+                                title="查看详细信息"
                             >
                                 <ScanEye />
                             </Button>
@@ -342,8 +340,7 @@ export function AdminSystemLogs() {
                                 {log.user_id && (
                                     <DropdownMenuItem
                                         onClick={() => {
-                                            navigator.clipboard.writeText(log.user_id || '');
-                                            toast.success('用户ID已复制到剪切板');
+                                            copy(log.user_id || '') ? toast.success('用户ID已复制到剪切板') : toast.error('复制失败');
                                         }}
                                     >
                                         复制用户ID
@@ -354,8 +351,9 @@ export function AdminSystemLogs() {
                                         const detailsText = atob(log.details as unknown as string);
                                         const bytes = Uint8Array.from(detailsText, c => c.charCodeAt(0))
                                         const decodedString = new TextDecoder('utf-8').decode(bytes);
-                                        copy(decodedString);
-                                        toast.success('详细信息已复制到剪切板');
+                                        const detail = JSON.stringify(JSON.parse(decodedString), null, 4);
+                                        copy(detail || '') ? toast.success('详细信息已复制到剪切板') : toast.error('复制失败');
+
                                     }}
                                 >
                                     复制详细信息
@@ -363,8 +361,7 @@ export function AdminSystemLogs() {
                                 {log.error_message && (
                                     <DropdownMenuItem
                                         onClick={() => {
-                                            navigator.clipboard.writeText(log.error_message || '');
-                                            toast.success('错误信息已复制到剪切板');
+                                            copy(log.error_message || '') ? toast.success('错误信息已复制到剪切板') : toast.error('复制失败');
                                         }}
                                     >
                                         复制错误信息
@@ -373,8 +370,7 @@ export function AdminSystemLogs() {
                                 {log.resource_type == "CONTAINER" && containerOperations}
                                 <DropdownMenuItem
                                     onClick={() => {
-                                        navigator.clipboard.writeText(getDetailedLog());
-                                        toast.success('原始数据已复制到剪切板');
+                                        copy(getDetailedLog()) ? toast.success('原始数据已复制到剪切板') : toast.error('复制失败');
                                     }}
                                 >
                                     复制Raw
