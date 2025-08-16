@@ -415,99 +415,99 @@ export default function ScoreBoardPage(
 
                 if (dayjs(lastestTime) > end && dayjs(gameInfo.end_time).diff(current) < 0) end = dayjs(lastestTime)
 
-                if (curTimeLine != lastTimeLine.current || true) {
-                    lastTimeLine.current = curTimeLine
+                
+                lastTimeLine.current = curTimeLine
 
-                    serialOptions.current = [
-                        {
-                            type: 'line',
-                            step: 'end',
-                            data: [],
-                            markLine:
-                                dayjs(gameInfo.end_time).diff(dayjs(), 's') < 0
-                                    ? undefined
-                                    : {
-                                        symbol: 'none',
-                                        data: [
-                                            {
-                                                xAxis: +end.toDate(),
-                                                // lineStyle: {
-                                                //     color: colorScheme === 'dark' ? "#FFFFFF" : "#000000",
-                                                //     wight: 2,
-                                                // },
-                                                label: {
-                                                    textBorderWidth: 0,
-                                                    fontWeight: 500,
-                                                    color: theme === 'dark' ? '#94a3b8' : '#64748b',
-                                                    formatter: (time: any) => dayjs(time.value).format('YYYY-MM-DD HH:mm'),
-                                                },
+                serialOptions.current = [
+                    {
+                        type: 'line',
+                        step: 'end',
+                        data: [],
+                        markLine:
+                            dayjs(gameInfo.end_time).diff(dayjs(), 's') < 0
+                                ? undefined
+                                : {
+                                    symbol: 'none',
+                                    data: [
+                                        {
+                                            xAxis: +end.toDate(),
+                                            // lineStyle: {
+                                            //     color: colorScheme === 'dark' ? "#FFFFFF" : "#000000",
+                                            //     wight: 2,
+                                            // },
+                                            label: {
+                                                textBorderWidth: 0,
+                                                fontWeight: 500,
+                                                color: theme === 'dark' ? '#94a3b8' : '#64748b',
+                                                formatter: (time: any) => dayjs(time.value).format('YYYY-MM-DD HH:mm'),
                                             },
-                                        ],
-                                    },
-                        },
-                        ...(res.data.data?.top10_timelines?.map((team, index) => {
-
-                            const lastRecordTime = team.scores?.[team.scores?.length - 1]?.record_time;
-                            const lastScore = team.scores?.[team.scores?.length - 1]?.score || 0;
-
-                            const shouldAddEnd = lastRecordTime && dayjs(lastRecordTime).isBefore(end);
-
-                            let data = [
-                                [+dayjs(gameInfo.start_time).toDate(), 0],
-                                ...(team.scores?.map((item) => [
-                                    +(item.record_time ? dayjs(item.record_time).toDate() : 0),
-                                    item.score || 0
-                                ]) || []),
-                            ];
-
-                            if (shouldAddEnd) {
-                                data.push([+end.toDate(), lastScore]);
-                            }
-
-                            return {
-                                name: team.team_name,
-                                type: 'line',
-                                showSymbol: false,
-                                step: 'end',
-                                data: data,
-                                lineStyle: {
-                                    width: 4
-                                },
-                                endLabel: {
-                                    show: true,
-                                    formatter: `${team.team_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
-                                    color: theme === 'dark' ? '#f1f5f9' : '#0f172a',
-                                    fontWeight: 'bold',
-                                    fontSize: 12, // 稍微减小字体避免重叠
-                                    distance: 15 + (index % 3) * 8, // 动态调整距离，错开标签位置
-                                    verticalAlign: index % 2 === 0 ? 'middle' : (index % 4 < 2 ? 'top' : 'bottom'), // 垂直错开
-                                    backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(248, 250, 252, 0.95)', // 更好的背景对比度
-                                    borderColor: theme === 'dark' ? '#334155' : '#cbd5e1',
-                                    borderWidth: 1,
-                                    borderRadius: 6,
-                                    padding: [4, 8], // 增加内边距提高可读性
-                                    shadowBlur: theme === 'dark' ? 8 : 4, // 添加阴影增强层次感
-                                    shadowColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
-                                    shadowOffsetX: 0,
-                                    shadowOffsetY: 2,
-                                    rich: {
-                                        // 富文本样式，用于更好的标签显示
-                                        teamName: {
-                                            fontWeight: 'bold',
-                                            fontSize: 12,
-                                            color: theme === 'dark' ? '#f1f5f9' : '#0f172a'
                                         },
-                                        score: {
-                                            color: theme === 'dark' ? '#94a3b8' : '#64748b',
-                                            fontSize: 11
-                                        }
-                                    }
+                                    ],
                                 },
-                                smooth: true,
-                            }
-                        }) || [])
-                    ] as echarts.SeriesOption[]
-                }
+                    },
+                    ...(res.data.data?.top10_timelines?.map((team, index) => {
+
+                        const lastRecordTime = team.scores?.[team.scores?.length - 1]?.record_time;
+                        const lastScore = team.scores?.[team.scores?.length - 1]?.score || 0;
+
+                        const shouldAddEnd = lastRecordTime && dayjs(lastRecordTime).isBefore(end);
+
+                        let data = [
+                            [+dayjs(gameInfo.start_time).toDate(), 0],
+                            ...(team.scores?.map((item) => [
+                                +(item.record_time ? dayjs(item.record_time).toDate() : 0),
+                                item.score || 0
+                            ]) || []),
+                        ];
+
+                        if (shouldAddEnd) {
+                            data.push([+end.toDate(), lastScore]);
+                        }
+
+                        return {
+                            name: team.team_name,
+                            type: 'line',
+                            showSymbol: false,
+                            step: 'end',
+                            data: data,
+                            lineStyle: {
+                                width: 4
+                            },
+                            endLabel: {
+                                show: true,
+                                formatter: `${team.team_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
+                                color: theme === 'dark' ? '#f1f5f9' : '#0f172a',
+                                fontWeight: 'bold',
+                                fontSize: 12, // 稍微减小字体避免重叠
+                                distance: 15 + (index % 3) * 8, // 动态调整距离，错开标签位置
+                                verticalAlign: index % 2 === 0 ? 'middle' : (index % 4 < 2 ? 'top' : 'bottom'), // 垂直错开
+                                backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(248, 250, 252, 0.95)', // 更好的背景对比度
+                                borderColor: theme === 'dark' ? '#334155' : '#cbd5e1',
+                                borderWidth: 1,
+                                borderRadius: 6,
+                                padding: [4, 8], // 增加内边距提高可读性
+                                shadowBlur: theme === 'dark' ? 8 : 4, // 添加阴影增强层次感
+                                shadowColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.1)',
+                                shadowOffsetX: 0,
+                                shadowOffsetY: 2,
+                                rich: {
+                                    // 富文本样式，用于更好的标签显示
+                                    teamName: {
+                                        fontWeight: 'bold',
+                                        fontSize: 12,
+                                        color: theme === 'dark' ? '#f1f5f9' : '#0f172a'
+                                    },
+                                    score: {
+                                        color: theme === 'dark' ? '#94a3b8' : '#64748b',
+                                        fontSize: 11
+                                    }
+                                }
+                            },
+                            smooth: true,
+                        }
+                    }) || [])
+                ] as echarts.SeriesOption[]
+                
                 // 结束加载状态
                 setTimeout(() => setPageLoading(false), 200)
             }).catch((_error) => {
