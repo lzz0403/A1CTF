@@ -112,6 +112,14 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	// 判断是否为首个注册用户，若是则赋予管理员角色
+	var userCount int64
+	_ = dbtool.DB().Model(&models.User{}).Count(&userCount).Error
+	role := models.UserRoleUser
+	if userCount == 0 {
+		role = models.UserRoleAdmin
+	}
+
 	newSalt := general.GenerateSalt()
 	saltedPassword := general.SaltPassword(payload.Password, newSalt)
 
@@ -125,7 +133,7 @@ func Register(c *gin.Context) {
 		Username:      payload.Username,
 		Password:      saltedPassword,
 		Salt:          newSalt,
-		Role:          models.UserRoleUser,
+		Role:          role,
 		CurToken:      nil,
 		Phone:         nil,
 		StudentNumber: nil,
