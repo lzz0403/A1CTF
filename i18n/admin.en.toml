@@ -517,3 +517,11 @@ other = "Failed to delete user"
 [UserDeleted]
 description = "User deleted"
 other = "User deleted"
+
+[UpdateAdminRoleNotAllowed]
+description = "Not allow to update admin's role"
+other = "Not allow to update admin's role"
+
+[DeleteAdminNotAllowed]
+description = "Not allow to delete admin user"
+other = "Not allow to delete admin user"
