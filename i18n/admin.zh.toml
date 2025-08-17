@@ -418,6 +418,10 @@ other = "队伍已批准"
 description = "禁赛队伍失败"
 other = "禁赛队伍失败"
 
+[CannotBanAdminTeam]
+description = "管理员队伍无法被禁赛"
+other = "管理员队伍无法被禁赛"
+
 [TeamBanned]
 description = "队伍已锁定"
 other = "队伍已锁定"
@@ -441,6 +445,10 @@ other = "删除队伍加入申请失败"
 [FailedToDeleteTeam]
 description = "删除队伍失败"
 other = "删除队伍失败"
+
+[CannotDeleteAdminTeam]
+description = "管理员队伍无法被删除"
+other = "管理员队伍无法被删除"
 
 [TransactionFailed]
 description = "事务失败"

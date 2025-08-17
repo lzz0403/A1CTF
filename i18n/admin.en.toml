@@ -422,6 +422,10 @@ other = "Team approved"
 description = "Failed to ban team"
 other = "Failed to ban team"
 
+[CannotBanAdminTeam]
+description = "Cannot ban admin team"
+other = "Cannot ban admin team"
+
 [TeamBanned]
 description = "Team banned"
 other = "Team banned"
@@ -445,6 +449,10 @@ other = "Failed to delete team join requests"
 [FailedToDeleteTeam]
 description = "Failed to delete team"
 other = "Failed to delete team"
+
+[CannotDeleteAdminTeam]
+description = "Cannot delete admin team"
+other = "Cannot delete admin team"
 
 [TransactionFailed]
 description = "Transaction failed"
