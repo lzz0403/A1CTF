@@ -1,12 +1,15 @@
 import { useGlobalVariableContext } from "contexts/GlobalVariableContext"
 import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 import { toast } from "react-toastify/unstyled"
+import { UserRole } from "utils/A1API"
 
 export default function () {
 
-    const { clientConfig, checkLoginStatus } = useGlobalVariableContext()
+    const { curProfile, clientConfig, checkLoginStatus } = useGlobalVariableContext()
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     const titleMap = {
         "/login": { title: "登录" },
@@ -21,6 +24,13 @@ export default function () {
         "/forget-password": { title: "忘记密码" },
         "/reset-password": { title: "重置密码" },
         "/email-verify": { title: "邮箱验证" },
+
+        // 管理后台
+        "/admin/games": { title: "比赛管理" },
+        "/admin/challenges": { title: "题目管理" },
+        "/admin/users": { title: "用户管理" },
+        "/admin/logs": { title: "系统日志" },
+        "/admin/system/[a-zA-Z0-9\\-_]+": { title: "系统设置" },
     }
 
     const unLoginAllowedPage = [
@@ -37,9 +47,12 @@ export default function () {
         "/reset-password"
     ]
 
+    const adminPagePrefix = "/admin"
+    const adminPageRoles = [UserRole.ADMIN, UserRole.MONITOR]
+
     useEffect(() => {
+        const curURL = window.location.pathname
         if (!checkLoginStatus()) {
-            const curURL = window.location.pathname
             let matched = false;
 
             unLoginAllowedPage.forEach((key) => {
@@ -52,8 +65,11 @@ export default function () {
 
             if (!matched) {
                 navigate("/login")
-                toast.error("请先登录")
+                toast.error(t("login_first"))
             }
+        } else if (curURL.startsWith(adminPagePrefix) && !adminPageRoles.includes(curProfile.role)) {
+            // 普通用户禁止访问管理后台
+            navigate("/404")
         }
     }, [window.location.pathname])
 
