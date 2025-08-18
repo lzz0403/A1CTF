@@ -17,5 +17,6 @@
     "disable_background_animation": "Disable Animation",
     "close": "Close",
     "back_to_home": "Back to home",
-    "page_not_found": "Page not found"
+    "page_not_found": "Page not found",
+    "login_first": "Please login first"
 }
