@@ -1,3 +1,25 @@
+# JWT Auth Error Messages
+
+[JWTErrForbidden]
+description = "You don't have this permission"
+other = "You don't have this permission"
+
+[JWTErrInvalidSigningAlgorithm]
+description = "Invalid signing algorithm"
+other = "Invalid signing algorithm"
+
+[JWTErrMissingExpField]
+description = "Missing expire field"
+other = "Missing expire field"
+
+[JWTErrExpiredToken]
+description = "Token is expired"
+other = "Token is expired"
+
+[JWTErrWrongFormatOfExp]
+description = "Expire field must be float64 format"
+other = "Expire field must be float64 format"
+
 # Admin Challenge Controller Error Messages
 
 [InvalidChallengeID]
@@ -495,3 +517,11 @@ other = "Failed to delete user"
 [UserDeleted]
 description = "User deleted"
 other = "User deleted"
+
+[UpdateAdminRoleNotAllowed]
+description = "Not allow to update admin's role"
+other = "Not allow to update admin's role"
+
+[DeleteAdminNotAllowed]
+description = "Not allow to delete admin user"
+other = "Not allow to delete admin user"
