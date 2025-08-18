@@ -1,7 +1,7 @@
 import { useGlobalVariableContext } from "contexts/GlobalVariableContext"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import { toast } from "react-toastify/unstyled"
 import { UserRole } from "utils/A1API"
 
@@ -9,6 +9,7 @@ export default function () {
 
     const { curProfile, clientConfig, checkLoginStatus } = useGlobalVariableContext()
     const navigate = useNavigate()
+    const location = useLocation()
     const { t } = useTranslation()
 
     const titleMap = {
@@ -52,12 +53,11 @@ export default function () {
 
     useEffect(() => {
         if (!checkLoginStatus()) {
-            const curURL = window.location.pathname
             let matched = false
 
             unLoginAllowedPage.forEach((key) => {
                 const regex = new RegExp(`^${key}$`)
-                if (regex.test(curURL)) {
+                if (regex.test(location.pathname)) {
                     matched = true
                     return
                 }
@@ -68,27 +68,26 @@ export default function () {
                 toast.error(t("login_first"))
             }
         }
-    }, [window.location.pathname])
+    }, [location.pathname])
 
     useEffect(() => {
         // 普通用户禁止访问管理后台
-        if (window.location.pathname.startsWith(adminPagePrefix)) {
+        if (location.pathname.startsWith(adminPagePrefix)) {
             if (!curProfile.role) return
 
             if (!adminPageRoles.includes(curProfile.role)) {
                 navigate("/404")
             }
         }
-    }, [curProfile.role, window.location.pathname])
+    }, [curProfile.role, location.pathname])
 
     useEffect(() => {
         const suffix = clientConfig.systemName
-        const curURL = window.location.pathname
         let matched = false
 
         Object.keys(titleMap).forEach((key) => {
             const regex = new RegExp(`^${key}$`)
-            if (regex.test(curURL)) {
+            if (regex.test(location.pathname)) {
                 document.title = titleMap[key as (keyof typeof titleMap)].title + " - " + suffix
                 matched = true
                 return
@@ -98,7 +97,7 @@ export default function () {
         if (!matched) {
             document.title = suffix
         }
-    }, [clientConfig, window.location.pathname])
+    }, [clientConfig, location.pathname])
 
     return <></>
 }
