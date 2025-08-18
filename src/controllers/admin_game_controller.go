@@ -126,13 +126,15 @@ func AdminCreateGame(c *gin.Context) {
 	}
 
 	// 创建管理员默认队伍
-	newTeam := models.Team{
+	adminTeamName := "A1CTF-Admins"
+	adminTeamSlogan := "All admins in this team"
+	adminTeam := models.Team{
 		TeamID:          0,
 		GameID:          game.GameID,
-		TeamName:        "A1CTF",
+		TeamName:        adminTeamName,
 		TeamDescription: nil,
 		TeamAvatar:      nil,
-		TeamSlogan:      nil,
+		TeamSlogan:      &adminTeamSlogan,
 		TeamMembers:     []string{},
 		TeamScore:       0,
 		TeamHash:        general.RandomHash(16),
@@ -142,7 +144,7 @@ func AdminCreateGame(c *gin.Context) {
 		TeamType:        models.TeamTypeAdmin,
 	}
 
-	if err := dbtool.DB().Create(&newTeam).Error; err != nil {
+	if err := dbtool.DB().Create(&adminTeam).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    500,
 			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "FailedToCreateAdminTeam"}),
