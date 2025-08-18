@@ -51,9 +51,9 @@ export default function () {
     const adminPageRoles = [UserRole.ADMIN, UserRole.MONITOR]
 
     useEffect(() => {
-        const curURL = window.location.pathname
         if (!checkLoginStatus()) {
-            let matched = false;
+            const curURL = window.location.pathname
+            let matched = false
 
             unLoginAllowedPage.forEach((key) => {
                 const regex = new RegExp(`^${key}$`)
@@ -67,16 +67,24 @@ export default function () {
                 navigate("/login")
                 toast.error(t("login_first"))
             }
-        } else if (curURL.startsWith(adminPagePrefix) && !adminPageRoles.includes(curProfile.role)) {
-            // 普通用户禁止访问管理后台
-            navigate("/404")
         }
     }, [window.location.pathname])
 
     useEffect(() => {
+        // 普通用户禁止访问管理后台
+        if (window.location.pathname.startsWith(adminPagePrefix)) {
+            if (!curProfile.role) return
+
+            if (!adminPageRoles.includes(curProfile.role)) {
+                navigate("/404")
+            }
+        }
+    }, [curProfile.role, window.location.pathname])
+
+    useEffect(() => {
         const suffix = clientConfig.systemName
         const curURL = window.location.pathname
-        let matched = false;
+        let matched = false
 
         Object.keys(titleMap).forEach((key) => {
             const regex = new RegExp(`^${key}$`)
