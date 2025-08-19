@@ -30,9 +30,13 @@ func LoadLanguageFiles() {
 }
 
 func Translate(c *gin.Context, config *i18n.LocalizeConfig) string {
-	language, err := c.Cookie("i18next")
-	if err != nil {
-		language = "en"
+	language := c.GetHeader("Accept-Language")
+	if language == "" {
+		if _language, err := c.Cookie("i18next"); err == nil {
+			language = _language
+		} else {
+			language = "en"
+		}
 	}
 
 	loc, ok := locMap[language]

@@ -1133,12 +1133,12 @@ export interface AdminSubmitItem {
   challenge_name: string;
   /** 判题状态 */
   judge_status:
-    | "JudgeAC"
-    | "JudgeWA"
-    | "JudgeError"
-    | "JudgeTimeout"
-    | "JudgeQueueing"
-    | "JudgeRunning";
+  | "JudgeAC"
+  | "JudgeWA"
+  | "JudgeError"
+  | "JudgeTimeout"
+  | "JudgeQueueing"
+  | "JudgeRunning";
   /**
    * 判题时间
    * @format date-time
@@ -1184,9 +1184,9 @@ export interface AdminCheatItem {
   cheat_id: string;
   /** 作弊类型 */
   cheat_type:
-    | "SubmitSomeonesFlag"
-    | "SubmitWithoutDownloadAttachments"
-    | "SubmitWithoutStartContainer";
+  | "SubmitSomeonesFlag"
+  | "SubmitWithoutDownloadAttachments"
+  | "SubmitWithoutStartContainer";
   /** 作弊者用户名 */
   username: string;
   /** 作弊者队伍名 */
@@ -1643,7 +1643,7 @@ export class HttpClient<SecurityDataType = unknown> {
       headers: {
         ...((method &&
           this.instance.defaults.headers[
-            method.toLowerCase() as keyof HeadersDefaults
+          method.toLowerCase() as keyof HeadersDefaults
           ]) ||
           {}),
         ...(params1.headers || {}),
@@ -1721,6 +1721,7 @@ export class HttpClient<SecurityDataType = unknown> {
       headers: {
         ...(requestParams.headers || {}),
         ...(type ? { "Content-Type": type } : {}),
+        "Accept-Language": localStorage.getItem("i18next") || "en",
       },
       params: query,
       responseType: responseFormat,
@@ -2183,12 +2184,12 @@ export class Api<
           data: {
             judge_id: string;
             judge_status:
-              | "JudgeQueueing"
-              | "JudgeRunning"
-              | "JudgeError"
-              | "JudgeWA"
-              | "JudgeAC"
-              | "JudgeTimeout";
+            | "JudgeQueueing"
+            | "JudgeRunning"
+            | "JudgeError"
+            | "JudgeWA"
+            | "JudgeAC"
+            | "JudgeTimeout";
           };
         },
         void | ErrorMessage
