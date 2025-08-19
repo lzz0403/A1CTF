@@ -16,6 +16,7 @@ import { Button } from "components/ui/button"
 import React from 'react';
 import { useGlobalVariableContext } from 'contexts/GlobalVariableContext';
 import { useTranslation } from 'react-i18next';
+import { Loader2 } from "lucide-react";
 
 // 记忆化 SkyBackground 组件，防止不必要的重渲染
 const MemoizedSkyBackground = React.memo(SkyBackground);
@@ -30,7 +31,25 @@ const ThemeSwitcher = (
     const { theme, setTheme } = useTheme()
     const { t } = useTranslation()
 
-    const { i18n } = useTranslation();
+    const { i18n } = useTranslation()
+    const currentLang = i18n.language
+    const languages = [
+        { code: "zh", label: "简", enabled: true },
+        { code: "zh_tw", label: "繁", enabled: false },
+        { code: "en", label: "En", enabled: true },
+        { code: "ja", label: "日", enabled: false },
+    ]
+
+    const [loadingLang, setLoadingLang] = useState<string | null>(null)
+    const handleChangeLanguage = async (lng: string) => {
+        if (loadingLang || i18n.language === lng) return
+        setLoadingLang(lng)
+        try {
+            await i18n.changeLanguage(lng)
+        } finally {
+            setLoadingLang(null)
+        }
+    }
 
     useEffect(() => {
         setMounted(true)
@@ -89,7 +108,6 @@ const ThemeSwitcher = (
     }
 
     const toggleTheme = () => {
-        // console.log("added!")
         const body = document.querySelector("body");
         body?.classList.add("background-transition-class");
         setTheme(theme === 'light' ? 'dark' : 'light')
@@ -161,22 +179,21 @@ const ThemeSwitcher = (
                     onMouseLeave={() => setLangHovered(false)}
                 >
                     <div className='flex justify-center w-full gap-1 py-1'>
-                        <Button variant="ghost" size="icon">
-                            <a onClick={() => {
-                                i18n.changeLanguage("zh")
-                            }}><span className='font-bold'>简</span></a>
+                        {languages.map(({ code, label, enabled }) => (
+                        <Button
+                            key={code}
+                            variant={currentLang === code ? "default" : "ghost"}
+                            size="icon"
+                            onClick={() => handleChangeLanguage(code)}
+                            disabled={!!loadingLang || !enabled}
+                        >
+                            {loadingLang === code ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                            <span className='font-bold'>{label}</span>
+                            )}
                         </Button>
-                        <Button variant="ghost" size="icon" disabled>
-                            <span className='font-bold'>繁</span>
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                            <a onClick={() => {
-                                i18n.changeLanguage("en")
-                            }}><span className='font-bold'>En</span></a>
-                        </Button>
-                        <Button variant="ghost" size="icon" disabled>
-                            <span className='font-bold'>日</span>
-                        </Button>
+                        ))}
                     </div>
                 </animated.div>
                 <animated.div 
