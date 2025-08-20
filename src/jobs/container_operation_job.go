@@ -76,10 +76,14 @@ func getContainerPorts(podInfo k8stool.PodInfo, task *models.Container) error {
 		}
 
 		tasks.LogContainerOperation(nil, nil, models.ActionContainerStarted, task.ContainerID, map[string]interface{}{
-			"team_hash":    task.TeamHash,
-			"ingame_id":    task.InGameID,
-			"pod_name":     podInfo.Name,
-			"container_id": task.ContainerID,
+			"game_id":               task.GameID,
+			"team_id":               task.TeamID,
+			"team_hash":             task.TeamHash,
+			"challenge_name":        task.ChallengeName,
+			"ingame_id":             task.InGameID,
+			"pod_name":              podInfo.Name,
+			"container_id":          task.ContainerID,
+			"container_expose_info": task.ContainerExposeInfos,
 		}, nil)
 	}
 
@@ -90,10 +94,14 @@ func deleteRunningPod(podInfo k8stool.PodInfo, task *models.Container) error {
 	err := k8stool.DeletePod(&podInfo)
 	if err != nil {
 		tasks.LogContainerOperation(nil, nil, models.ActionContainerStopping, task.ContainerID, map[string]interface{}{
-			"team_hash":    task.TeamHash,
-			"ingame_id":    task.InGameID,
-			"pod_name":     podInfo.Name,
-			"container_id": task.ContainerID,
+			"game_id":               task.GameID,
+			"team_id":               task.TeamID,
+			"team_hash":             task.TeamHash,
+			"challenge_name":        task.ChallengeName,
+			"ingame_id":             task.InGameID,
+			"pod_name":              podInfo.Name,
+			"container_id":          task.ContainerID,
+			"container_expose_info": task.ContainerExposeInfos,
 		}, err)
 		return fmt.Errorf("DeletePod %+v error: %v", task, err)
 	} else {
@@ -105,10 +113,14 @@ func deleteRunningPod(podInfo k8stool.PodInfo, task *models.Container) error {
 	}
 
 	tasks.LogContainerOperation(nil, nil, models.ActionContainerStopped, task.ContainerID, map[string]interface{}{
-		"team_hash":    task.TeamHash,
-		"ingame_id":    task.InGameID,
-		"pod_name":     podInfo.Name,
-		"container_id": task.ContainerID,
+		"game_id":               task.GameID,
+		"team_id":               task.TeamID,
+		"team_hash":             task.TeamHash,
+		"challenge_name":        task.ChallengeName,
+		"ingame_id":             task.InGameID,
+		"pod_name":              podInfo.Name,
+		"container_id":          task.ContainerID,
+		"container_expose_info": task.ContainerExposeInfos,
 	}, nil)
 
 	return nil

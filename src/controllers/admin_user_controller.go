@@ -119,13 +119,7 @@ func AdminUpdateUser(c *gin.Context) {
 	}
 
 	// 更新用户信息
-	user.Username = payload.UserName
-	user.Realname = payload.RealName
-	user.StudentNumber = payload.StudentID
-	user.Phone = payload.Phone
-	user.Slogan = payload.Slogan
-	user.Email = payload.Email
-	user.Avatar = payload.Avatar
+	updatedFields := make([]map[string]interface{}, 0)
 
 	// 如果用户的角色被修改了，则需要重置这个用户的令牌
 	if user.Role != payload.Role {
@@ -138,12 +132,78 @@ func AdminUpdateUser(c *gin.Context) {
 			return
 		}
 		user.JWTVersion = general.RandomPassword(16)
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "role",
+			"old":   user.Role,
+			"new":   payload.Role,
+		})
 		user.Role = payload.Role
+	}
+
+	if user.Username != payload.UserName {
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "username",
+			"old":   user.Username,
+			"new":   payload.UserName,
+		})
+		user.Username = payload.UserName
+	}
+	if !general.CompareStringPtrEquals(user.Realname, payload.RealName) {
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "realname",
+			"old":   user.Realname,
+			"new":   payload.RealName,
+		})
+		user.Realname = payload.RealName
+	}
+	if !general.CompareStringPtrEquals(user.StudentNumber, payload.StudentID) {
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "student_number",
+			"old":   user.StudentNumber,
+			"new":   payload.StudentID,
+		})
+		user.StudentNumber = payload.StudentID
+	}
+	if !general.CompareStringPtrEquals(user.Phone, payload.Phone) {
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "phone",
+			"old":   user.Phone,
+			"new":   payload.Phone,
+		})
+		user.Phone = payload.Phone
+	}
+	if !general.CompareStringPtrEquals(user.Slogan, payload.Slogan) {
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "slogan",
+			"old":   user.Slogan,
+			"new":   payload.Slogan,
+		})
+		user.Slogan = payload.Slogan
+	}
+	if !general.CompareStringPtrEquals(user.Email, payload.Email) {
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "email",
+			"old":   user.Email,
+			"new":   payload.Email,
+		})
+		user.Email = payload.Email
+	}
+	if !general.CompareStringPtrEquals(user.Avatar, payload.Avatar) {
+		updatedFields = append(updatedFields, map[string]interface{}{
+			"field": "avatar",
+			"old":   user.Avatar,
+			"new":   payload.Avatar,
+		})
+		user.Avatar = payload.Avatar
 	}
 
 	if err := dbtool.DB().Save(&user).Error; err != nil {
 		// 记录失败日志
-		tasks.LogAdminOperationWithError(c, models.ActionUpdate, models.ResourceTypeUser, &payload.UserID, payload, err)
+		tasks.LogAdminOperationWithError(c, models.ActionUpdate, models.ResourceTypeUser, &payload.UserID, map[string]interface{}{
+			"username":       user.Username,
+			"payload":        payload,
+			"updated_fields": updatedFields,
+		}, err)
 
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    500,
@@ -154,9 +214,8 @@ func AdminUpdateUser(c *gin.Context) {
 
 	// 记录成功日志
 	tasks.LogAdminOperation(c, models.ActionUpdate, models.ResourceTypeUser, &payload.UserID, map[string]interface{}{
-		"updated_fields": []string{"username", "realname", "student_number", "phone", "slogan", "email", "avatar", "role"},
-		"old_username":   user.Username,
-		"new_username":   payload.UserName,
+		"username":       user.Username,
+		"updated_fields": updatedFields,
 	})
 
 	c.JSON(http.StatusOK, gin.H{

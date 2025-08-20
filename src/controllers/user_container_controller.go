@@ -78,6 +78,7 @@ func UserCreateGameContainer(c *gin.Context) {
 	}
 
 	clientIP := c.ClientIP()
+	now := time.Now()
 
 	// 加入数据库
 	newContainer := models.Container{
@@ -87,8 +88,8 @@ func UserCreateGameContainer(c *gin.Context) {
 		TeamID:               team.TeamID,
 		ChallengeID:          *gameChallenge.Challenge.ChallengeID,
 		InGameID:             gameChallenge.IngameID,
-		StartTime:            time.Now().UTC(),
-		ExpireTime:           time.Now().Add(time.Duration(2) * time.Hour).UTC(),
+		StartTime:            now.UTC(),
+		ExpireTime:           now.Add(time.Duration(2) * time.Hour).UTC(),
 		ContainerExposeInfos: make(models.ContainerExposeInfos, 0),
 		ContainerStatus:      models.ContainerQueueing,
 		ContainerConfig:      *gameChallenge.Challenge.ContainerConfig,
@@ -310,8 +311,8 @@ func UserExtendGameContainer(c *gin.Context) {
 		return
 	}
 
-	// 到期时间大于两小时的不可延长
-	if curContainer.ExpireTime.Sub(time.Now().UTC()) < time.Minute*30 {
+	// 到期时间大于半小时的不可延长
+	if curContainer.ExpireTime.Sub(time.Now().UTC()) > time.Minute*30 {
 		c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
 			Code:    400,
 			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "ContainerExpireTimeTooShort"}),
@@ -319,6 +320,8 @@ func UserExtendGameContainer(c *gin.Context) {
 		return
 	}
 
+	// 记录旧的容器到期时间，Updates更新后会改变该值
+	oldExpireTime := curContainer.ExpireTime
 	// 延长时间为当前时间的2小时之后
 	newExpireTime := time.Now().Add(time.Duration(2) * time.Hour).UTC()
 
@@ -332,7 +335,7 @@ func UserExtendGameContainer(c *gin.Context) {
 			"challenge_id":    challengeID,
 			"challenge_name":  curContainer.ChallengeName,
 			"container_id":    curContainer.ContainerID,
-			"old_expire_time": curContainer.ExpireTime,
+			"old_expire_time": oldExpireTime,
 			"new_expire_time": newExpireTime,
 		}, err)
 
@@ -350,7 +353,7 @@ func UserExtendGameContainer(c *gin.Context) {
 		"challenge_id":    challengeID,
 		"challenge_name":  curContainer.ChallengeName,
 		"container_id":    curContainer.ContainerID,
-		"old_expire_time": curContainer.ExpireTime,
+		"old_expire_time": oldExpireTime,
 		"new_expire_time": newExpireTime,
 	})
 

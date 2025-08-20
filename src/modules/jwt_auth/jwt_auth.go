@@ -424,11 +424,15 @@ func Login() func(c *gin.Context) (interface{}, error) {
 			return nil, jwt.ErrFailedAuthentication
 		} else {
 			if user_result.Password == general.SaltPassword(loginVals.Password, user_result.Salt) {
+				lastLoginTime := user_result.LastLoginTime
+				lastLoginIP := user_result.LastLoginIP
+				now := time.Now()
+				loginIP := c.ClientIP()
 
 				// Update last login time
 				if err := dbtool.DB().Model(&user_result).Updates(map[string]interface{}{
-					"last_login_time": time.Now().UTC(),
-					"last_login_ip":   c.ClientIP(),
+					"last_login_time": now.UTC(),
+					"last_login_ip":   loginIP,
 				}).Error; err != nil {
 					return nil, jwt.ErrFailedAuthentication
 				}
@@ -440,8 +444,11 @@ func Login() func(c *gin.Context) (interface{}, error) {
 					UserID:       &user_result.UserID,
 					Username:     &user_result.Username,
 					Details: map[string]interface{}{
-						"username":   user_result.Username,
-						"login_time": time.Now().UTC(),
+						"username":        user_result.Username,
+						"login_time":      now.UTC(),
+						"last_login_time": lastLoginTime.UTC(),
+						"login_ip":        loginIP,
+						"last_login_ip":   lastLoginIP,
 					},
 					Status: models.LogStatusSuccess,
 				})
