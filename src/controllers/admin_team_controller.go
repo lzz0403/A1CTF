@@ -363,7 +363,7 @@ func AdminDeleteTeam(c *gin.Context) {
 	if team.TeamType == models.TeamTypeAdmin {
 		c.JSON(http.StatusForbidden, gin.H{
 			"code":    403,
-			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "CannotBanAdminTeam"}),
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "CannotDeleteAdminTeam"}),
 		})
 		return
 	}
