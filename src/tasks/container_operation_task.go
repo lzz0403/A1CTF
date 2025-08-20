@@ -79,10 +79,14 @@ func HandleContainerStartTask(ctx context.Context, t *asynq.Task) error {
 	if err != nil {
 		// 记录容器创建失败日志
 		LogContainerOperation(nil, nil, models.ActionContainerStarting, task.ContainerID, map[string]interface{}{
-			"team_hash":    task.TeamHash,
-			"ingame_id":    task.InGameID,
-			"pod_name":     podInfo.Name,
-			"container_id": task.ContainerID,
+			"game_id":               task.GameID,
+			"team_id":               task.TeamID,
+			"team_hash":             task.TeamHash,
+			"challenge_name":        task.ChallengeName,
+			"ingame_id":             task.InGameID,
+			"pod_name":              podInfo.Name,
+			"container_id":          task.ContainerID,
+			"container_expose_info": task.ContainerExposeInfos,
 		}, err)
 		zaphelper.Logger.Error("CreatePod", zap.Error(err), zap.Any("task", task))
 		// 强制关闭
@@ -92,10 +96,14 @@ func HandleContainerStartTask(ctx context.Context, t *asynq.Task) error {
 		task.ContainerStatus = models.ContainerStarting
 		if err := dbtool.DB().Model(&task).Update("container_status", task.ContainerStatus).Error; err != nil {
 			LogContainerOperation(nil, nil, models.ActionContainerStarting, task.ContainerID, map[string]interface{}{
-				"team_hash":    task.TeamHash,
-				"ingame_id":    task.InGameID,
-				"pod_name":     podInfo.Name,
-				"container_id": task.ContainerID,
+				"game_id":               task.GameID,
+				"team_id":               task.TeamID,
+				"team_hash":             task.TeamHash,
+				"challenge_name":        task.ChallengeName,
+				"ingame_id":             task.InGameID,
+				"pod_name":              podInfo.Name,
+				"container_id":          task.ContainerID,
+				"container_expose_info": task.ContainerExposeInfos,
 			}, err)
 			return fmt.Errorf("failed to update container status: %v", err)
 		}
@@ -126,10 +134,14 @@ func HandleContainerStopTask(ctx context.Context, t *asynq.Task) error {
 	err := k8stool.DeletePod(&podInfo)
 	if err != nil {
 		LogContainerOperation(nil, nil, models.ActionContainerStopping, task.ContainerID, map[string]interface{}{
-			"team_hash":    task.TeamHash,
-			"ingame_id":    task.InGameID,
-			"pod_name":     podInfo.Name,
-			"container_id": task.ContainerID,
+			"game_id":               task.GameID,
+			"team_id":               task.TeamID,
+			"team_hash":             task.TeamHash,
+			"challenge_name":        task.ChallengeName,
+			"ingame_id":             task.InGameID,
+			"pod_name":              podInfo.Name,
+			"container_id":          task.ContainerID,
+			"container_expose_info": task.ContainerExposeInfos,
 		}, err)
 		return fmt.Errorf("DeletePod %+v error: %v", task, err)
 	} else {
@@ -137,20 +149,28 @@ func HandleContainerStopTask(ctx context.Context, t *asynq.Task) error {
 			"container_status": models.ContainerStopped,
 		}).Error; err != nil {
 			LogContainerOperation(nil, nil, models.ActionContainerStopping, task.ContainerID, map[string]interface{}{
-				"team_hash":    task.TeamHash,
-				"ingame_id":    task.InGameID,
-				"pod_name":     podInfo.Name,
-				"container_id": task.ContainerID,
+				"game_id":               task.GameID,
+				"team_id":               task.TeamID,
+				"team_hash":             task.TeamHash,
+				"challenge_name":        task.ChallengeName,
+				"ingame_id":             task.InGameID,
+				"pod_name":              podInfo.Name,
+				"container_id":          task.ContainerID,
+				"container_expose_info": task.ContainerExposeInfos,
 			}, err)
 			return fmt.Errorf("failed to update container status: %v", err)
 		}
 	}
 
 	LogContainerOperation(nil, nil, models.ActionContainerStopped, task.ContainerID, map[string]interface{}{
-		"team_hash":    task.TeamHash,
-		"ingame_id":    task.InGameID,
-		"pod_name":     podInfo.Name,
-		"container_id": task.ContainerID,
+		"game_id":               task.GameID,
+		"team_id":               task.TeamID,
+		"team_hash":             task.TeamHash,
+		"challenge_name":        task.ChallengeName,
+		"ingame_id":             task.InGameID,
+		"pod_name":              podInfo.Name,
+		"container_id":          task.ContainerID,
+		"container_expose_info": task.ContainerExposeInfos,
 	}, nil)
 
 	return nil
@@ -181,10 +201,14 @@ func HandleContainerFailedTask(ctx context.Context, t *asynq.Task) error {
 	err := k8stool.DeletePod(&podInfo)
 	if err != nil {
 		LogContainerOperation(nil, nil, models.ActionContainerFailed, task.ContainerID, map[string]interface{}{
-			"team_hash":    task.TeamHash,
-			"ingame_id":    task.InGameID,
-			"pod_name":     podInfo.Name,
-			"container_id": task.ContainerID,
+			"game_id":               task.GameID,
+			"team_id":               task.TeamID,
+			"team_hash":             task.TeamHash,
+			"challenge_name":        task.ChallengeName,
+			"ingame_id":             task.InGameID,
+			"pod_name":              podInfo.Name,
+			"container_id":          task.ContainerID,
+			"container_expose_info": task.ContainerExposeInfos,
 		}, err)
 		return fmt.Errorf("DeletePod %+v error: %v", task, err)
 	} else {
@@ -192,21 +216,29 @@ func HandleContainerFailedTask(ctx context.Context, t *asynq.Task) error {
 			"container_status": models.ContainerError,
 		}).Error; err != nil {
 			LogContainerOperation(nil, nil, models.ActionContainerFailed, task.ContainerID, map[string]interface{}{
-				"team_hash":    task.TeamHash,
-				"ingame_id":    task.InGameID,
-				"pod_name":     podInfo.Name,
-				"container_id": task.ContainerID,
+				"game_id":               task.GameID,
+				"team_id":               task.TeamID,
+				"team_hash":             task.TeamHash,
+				"challenge_name":        task.ChallengeName,
+				"ingame_id":             task.InGameID,
+				"pod_name":              podInfo.Name,
+				"container_id":          task.ContainerID,
+				"container_expose_info": task.ContainerExposeInfos,
 			}, err)
 			return fmt.Errorf("failed to update container status: %v", err)
 		}
 	}
 
 	LogContainerOperation(nil, nil, models.ActionContainerFailed, task.ContainerID, map[string]interface{}{
-		"team_hash":    task.TeamHash,
-		"ingame_id":    task.InGameID,
-		"pod_name":     podInfo.Name,
-		"container_id": task.ContainerID,
-		"reason":       podStatus.Message,
+		"game_id":               task.GameID,
+		"team_id":               task.TeamID,
+		"team_hash":             task.TeamHash,
+		"challenge_name":        task.ChallengeName,
+		"ingame_id":             task.InGameID,
+		"pod_name":              podInfo.Name,
+		"container_id":          task.ContainerID,
+		"container_expose_info": task.ContainerExposeInfos,
+		"reason":                podStatus.Message,
 	}, fmt.Errorf("failed to open container"))
 
 	return nil
