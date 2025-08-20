@@ -136,7 +136,7 @@ func HandleContainerStopTask(ctx context.Context, t *asynq.Task) error {
 		if err := dbtool.DB().Model(&task).Updates(map[string]interface{}{
 			"container_status": models.ContainerStopped,
 		}).Error; err != nil {
-			LogContainerOperation(nil, nil, models.ActionContainerStarting, task.ContainerID, map[string]interface{}{
+			LogContainerOperation(nil, nil, models.ActionContainerStopping, task.ContainerID, map[string]interface{}{
 				"team_hash":    task.TeamHash,
 				"ingame_id":    task.InGameID,
 				"pod_name":     podInfo.Name,
