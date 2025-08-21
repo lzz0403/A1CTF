@@ -59,7 +59,7 @@ export function ChallengesView({
 
     const { gameDescription, isLoading: isGameDescriptionLoading } = useGameDescription(gameID)
 
-    const { t } = useTranslation()
+    const { t } = useTranslation("notices_view")
 
     // 所有题目
     const [challenges, setChallenges] = useConditionalState<Record<string, UserSimpleGameChallenge[]>>({})
