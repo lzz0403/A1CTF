@@ -7,5 +7,17 @@
     "team_manage": "Manage Team",
     "admin_manage": "Manage Game",
     "switch_theme": "Switch Theme",
-    "exit": "Exit"
+    "exit": "Exit",
+    "score_adjustments": "Add score adjustment",
+    "add_challenge": "Add challenge",
+    "no_challenge": "There is no challenge yet",
+    "rest": "It's time to rest...",
+    "team_pending": "Your team application is currently under revie, please be patient",
+    "team_banned": "Sorry, you have been banned by the administrator",
+    "team_unregistered": "You haven't signed up this game yet, please sign up first",
+    "create_team": "Create Team",
+    "join_team": "Join Team",
+    "not_login": "You haven't logged in yet, please login first",
+    "login": "Login",
+    "register": "Register"
 }

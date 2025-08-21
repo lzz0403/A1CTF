@@ -7,5 +7,17 @@
     "team_manage": "队伍管理",
     "admin_manage": "管理后台",
     "switch_theme": "切换主题",
-    "exit": "退出"
+    "exit": "退出",
+    "score_adjustments": "添加分数修正",
+    "add_challenge": "添加题目",
+    "no_challenge": "暂时没有题目",
+    "rest": "该休息了...",
+    "team_pending": "你的队伍申请正在审核中哦，请耐心等待",
+    "team_banned": "抱歉，你已被管理员禁赛",
+    "team_unregistered": "你还没有报名哦，请先报名",
+    "create_team": "创建队伍",
+    "join_team": "加入队伍",
+    "not_login": "你还没有登录哦，请先登录",
+    "login": "登录",
+    "register": "注册"
 }

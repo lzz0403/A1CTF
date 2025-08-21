@@ -7,11 +7,12 @@ import { CreateTeamDialog } from "components/dialogs/CreateTeamDialog";
 import { JoinTeamDialog } from "components/dialogs/JoinTeamDialog";
 import { useGlobalVariableContext } from "contexts/GlobalVariableContext";
 import { useGame } from "hooks/UseGame";
+import { useTranslation } from "react-i18next";
 
 export default function GameTeamStatusCard(
-    { gameID } : { gameID: number }
+    { gameID }: { gameID: number }
 ) {
-
+    const { t } = useTranslation("game_view")
     const { gameInfo, teamStatus, isLoading, mutateGameInfo } = useGame(gameID)
 
     const teamStatusElement = {
@@ -19,7 +20,7 @@ export default function GameTeamStatusCard(
             <div className="flex flex-col gap-2 items-center backdrop-blur-sm rounded-2xl border-1 border-green-400 py-3 px-6 select-none">
                 <div className="flex gap-2 items-center text-green-500">
                     <ScanText size={24} />
-                    <span className="text-md font-bold">你的队伍申请正在审核中哦，请耐心等待</span>
+                    <span className="text-md font-bold">{t("team_pending")}</span>
                 </div>
             </div>
         ),
@@ -27,7 +28,7 @@ export default function GameTeamStatusCard(
             <div className="flex flex-col gap-2 items-center backdrop-blur-sm rounded-2xl border-1 border-red-400 py-3 px-6 select-none">
                 <div className="flex gap-2 items-center text-red-500">
                     <Lock size={24} />
-                    <span className="text-md font-bold">你已被管理员禁赛</span>
+                    <span className="text-md font-bold">{t("team_banned")}</span>
                 </div>
             </div>
         ),
@@ -35,20 +36,20 @@ export default function GameTeamStatusCard(
             <div className="flex flex-col gap-3 items-center bg-transparent backdrop-blur-sm border-blue-500 rounded-2xl border-1 py-4 px-6 select-none">
                 <div className="flex gap-2 items-center text-blue-500">
                     <PencilLine size={24} />
-                    <span className="text-md font-bold">你还没有报名哦，请先报名</span>
+                    <span className="text-md font-bold">{t("team_unregistered")}</span>
                 </div>
                 <div className="flex gap-4 pointer-events-auto">
                     <CreateTeamDialog callback={() => {
                         mutateGameInfo()
                     }} gameID={gameInfo?.game_id ?? 0}>
-                        <Button variant="outline" className="border-blue-300 hover:hover:bg-blue-300/10" type="button"><Pickaxe />创建队伍</Button>
+                        <Button variant="outline" className="border-blue-300 hover:hover:bg-blue-300/10" type="button"><Pickaxe />{t("create_team")}</Button>
                     </CreateTeamDialog>
-                    <JoinTeamDialog 
+                    <JoinTeamDialog
                         game_id={gameInfo?.game_id ?? 0}
                         callback={() => {
-                        mutateGameInfo()
-                    }}>
-                        <Button variant="outline" className="border-blue-300 hover:hover:bg-blue-300/10" type="button"><Users />加入队伍</Button>
+                            mutateGameInfo()
+                        }}>
+                        <Button variant="outline" className="border-blue-300 hover:hover:bg-blue-300/10" type="button"><Users />{t("join_team")}</Button>
                     </JoinTeamDialog>
                 </div>
             </div>
@@ -115,13 +116,14 @@ export default function GameTeamStatusCard(
 
 export function LoginFirstCard() {
 
+    const { t } = useTranslation("game_view")
     const [navigateFrom, _getNavigateFrom] = useNavigateFrom()
 
     return (
         <div className="pl-5 pr-5 py-2 border-l-1 border-y-1 rounded-l-2xl w-full flex gap-6 items-center select-none">
             <div className="flex gap-3 items-center">
                 <KeyRound size={26} />
-                <span className="text-md font-bold">你还没有登录哦，请先登录</span>
+                <span className="text-md font-bold">{t("not_login")}</span>
             </div>
             <div className="flex gap-3 items-center">
                 <Button variant="outline" className="pointer-events-auto border-blue-400 hover:hover:bg-blue-400/10 text-blue-600 [&_svg]:size-[22px] gap-2 bg-transparent"
@@ -130,7 +132,7 @@ export function LoginFirstCard() {
                     }}
                 >
                     <ScanFace />
-                    <span className="text-[16px] font-bold">登录</span>
+                    <span className="text-[16px] font-bold">{t("login")}</span>
                 </Button>
                 <Button variant="outline" className="pointer-events-auto border-green-400 hover:hover:bg-green-400/10 text-green-600 [&_svg]:size-[22px] gap-2 bg-transparent"
                     onClick={() => {
@@ -138,7 +140,7 @@ export function LoginFirstCard() {
                     }}
                 >
                     <IdCard />
-                    <span className="text-[16px] font-bold">注册</span>
+                    <span className="text-[16px] font-bold">{t("register")}</span>
                 </Button>
             </div>
         </div>
