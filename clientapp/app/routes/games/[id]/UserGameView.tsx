@@ -10,12 +10,15 @@ import { useGameSwitchContext } from "contexts/GameSwitchContext";
 import { Panda } from "lucide-react";
 import { A1GameStatus } from "components/modules/game/GameStatusEnum";
 import { useGame } from "hooks/UseGame";
+import { useTranslation } from 'react-i18next';
 
 export default function Games() {
-    
+
     const { id } = useParams();
     const { module } = useParams()
     const navigate = useNavigate()
+
+    const { t } = useTranslation("game_view")
 
     if (!id) {
         return <div>404</div>
@@ -54,42 +57,42 @@ export default function Games() {
         return (
             <div className="w-screen h-screen flex items-center justify-center gap-6 select-none">
                 <Panda size={64} />
-                <span className="text-4xl font-bold">没有该比赛</span>
+                <span className="text-4xl font-bold">{t("error_game")}</span>
             </div>
         )
     }
 
     return (
-        <div className="p-0 h-screen relative"> 
+        <div className="p-0 h-screen relative">
             <div className="flex w-full h-full">
-                <GameViewSidebar 
-                    curChoicedModule={curChoicedModule} 
+                <GameViewSidebar
+                    curChoicedModule={curChoicedModule}
                     gameID={gameID}
                 />
                 <div className="flex-1 h-full overflow-hidden">
-                    { curChoicedModule == "challenges" ? ( 
-                        <ChallengesView 
+                    {curChoicedModule == "challenges" ? (
+                        <ChallengesView
                             gameID={gameID}
                         />
-                    ) : <></> }
+                    ) : <></>}
 
-                    { curChoicedModule == "scoreboard" ? ( 
+                    {curChoicedModule == "scoreboard" ? (
                         <div className="relative w-full h-full">
                             <ScoreBoardPage gmid={parseInt(id)} />
                         </div>
-                    ) : <></> }
+                    ) : <></>}
 
-                    { curChoicedModule == "team" && (
-                        <MyTeamInfomationView 
-                            gameID={gameID} 
-                        />
-                    ) }
-
-                    { curChoicedModule == "info" && (
-                        <GameInfoView 
+                    {curChoicedModule == "team" && (
+                        <MyTeamInfomationView
                             gameID={gameID}
                         />
-                    ) }
+                    )}
+
+                    {curChoicedModule == "info" && (
+                        <GameInfoView
+                            gameID={gameID}
+                        />
+                    )}
                 </div>
             </div>
         </div>

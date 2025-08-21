@@ -1,0 +1,10 @@
+{
+    "error_game": "No such game",
+    "game_info": "Game Info",
+    "challenge_list": "Challenges",
+    "scoreboard": "Scoreboard",
+    "team_manage": "Manage Team",
+    "admin_manage": "Manage Game",
+    "switch_theme": "Switch Theme",
+    "exit": "Exit"
+}
