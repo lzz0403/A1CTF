@@ -194,13 +194,11 @@ var PermissionMap = map[string]PermissionSetting{
 	"/api/user/avatar/upload":     {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
 
 	// 战队管理相关权限
-	"/api/game/:game_id/team/join":                       {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id/requests":          {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/request/:request_id/handle": {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id/transfer-captain":  {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id/member/:user_id":   {RequestMethod: []string{"DELETE"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id":                   {RequestMethod: []string{"DELETE", "PUT"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/avatar/upload":              {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/join":                      {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/:team_id/transfer-captain": {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/:team_id/member/:user_id":  {RequestMethod: []string{"DELETE"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/:team_id":                  {RequestMethod: []string{"DELETE", "PUT"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/avatar/upload":             {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
 
 	"/api/admin/challenge/list":          {RequestMethod: []string{"GET", "POST"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
 	"/api/admin/challenge/create":        {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{models.UserRoleAdmin}},

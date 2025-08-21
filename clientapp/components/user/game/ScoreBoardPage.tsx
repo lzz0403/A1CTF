@@ -404,17 +404,6 @@ export default function ScoreBoardPage(
                 let end = dayjs(gameInfo.end_time).diff(current) > 0 ? current : dayjs(gameInfo.end_time)
 
                 const curTimeLine = JSON.stringify(res.data.data?.top10_timelines)
-
-                let lastestTime = +dayjs(gameInfo.end_time)
-
-                res.data.data?.top10_timelines?.forEach((data, _idx) => {
-                    data.scores?.forEach((score, _) => {
-                        lastestTime = Math.max(lastestTime, +dayjs(score.record_time))
-                    })
-                })
-
-                if (dayjs(lastestTime) > end && dayjs(gameInfo.end_time).diff(current) < 0) end = dayjs(lastestTime)
-
                 
                 lastTimeLine.current = curTimeLine
 
@@ -569,7 +558,7 @@ export default function ScoreBoardPage(
                                 {!isChartFloating && !isNormalChartMinimized && (
                                     <div className={`mx-auto transition-all duration-300 ${isChartFullscreen
                                         ? 'absolute top-0 left-0 w-full h-screen z-50 px-4 py-4'
-                                        : 'container px-10 h-[50vh] min-h-[450px]'
+                                        : 'container px-10 aspect-[16/7] min-h-[450px]'
                                         }`}>
                                         <BetterChart
                                             theme={theme == "dark" ? "dark" : "light"}

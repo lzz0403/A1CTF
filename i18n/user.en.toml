@@ -489,3 +489,7 @@ other = "File access denied"
 [TooManyRequests]
 description = "Too many requests, please try again later"
 other = "Too many requests, please try again later"
+
+[UserAlreadyInTeam]
+description = "User is already in another team"
+other = "User is already in another team"

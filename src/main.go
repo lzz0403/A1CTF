@@ -314,10 +314,6 @@ func main() {
 		teamManageGroup.Use(controllers.EmailVerifiedMiddleware())
 		{
 			// 比赛开始后加入队伍之类的还是允许的
-			teamManageGroup.GET("/:team_id/requests", controllers.GetTeamJoinRequests)
-			teamManageGroup.POST("/request/:request_id/handle", controllers.PayloadValidator(
-				webmodels.HandleJoinRequestPayload{},
-			), controllers.HandleTeamJoinRequest)
 			teamManageGroup.PUT("/:team_id", controllers.UpdateTeamInfo)
 			teamManageGroup.POST("/avatar/upload", controllers.UploadTeamAvatar)
 

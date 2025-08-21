@@ -263,9 +263,10 @@ func UserGameChallengeSubmitFlag(c *gin.Context) {
 		return
 	}
 
-	// 启动一个检查作弊任务
-
-	tasks.NewFlagAntiCheatTask(newJudge)
+	if game.EndTime.After(time.Now().UTC()) {
+		// 比赛结束前启动一个检查作弊任务
+		tasks.NewFlagAntiCheatTask(newJudge)
+	}
 
 	tasks.LogUserOperation(c, models.ActionSubmitFlag, models.ResourceTypeChallenge, &challengeIDStr, map[string]interface{}{
 		"game_id":        game.GameID,

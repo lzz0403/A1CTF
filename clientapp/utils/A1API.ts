@@ -819,23 +819,6 @@ export interface TeamJoinPayload {
   invite_code: string;
 }
 
-export interface TeamJoinRequestInfo {
-  /** @format int64 */
-  request_id: number;
-  user_id: string;
-  username: string;
-  user_avatar?: string | null;
-  status: "Pending" | "Approved" | "Rejected";
-  /** @format date-time */
-  create_time: string;
-  message?: string | null;
-}
-
-export interface HandleJoinRequestPayload {
-  /** 处理动作：approve批准，reject拒绝 */
-  action: "approve" | "reject";
-}
-
 export interface TransferCaptainPayload {
   /** 新队长的用户ID */
   new_captain_id: string;
@@ -1133,12 +1116,12 @@ export interface AdminSubmitItem {
   challenge_name: string;
   /** 判题状态 */
   judge_status:
-  | "JudgeAC"
-  | "JudgeWA"
-  | "JudgeError"
-  | "JudgeTimeout"
-  | "JudgeQueueing"
-  | "JudgeRunning";
+    | "JudgeAC"
+    | "JudgeWA"
+    | "JudgeError"
+    | "JudgeTimeout"
+    | "JudgeQueueing"
+    | "JudgeRunning";
   /**
    * 判题时间
    * @format date-time
@@ -1184,9 +1167,9 @@ export interface AdminCheatItem {
   cheat_id: string;
   /** 作弊类型 */
   cheat_type:
-  | "SubmitSomeonesFlag"
-  | "SubmitWithoutDownloadAttachments"
-  | "SubmitWithoutStartContainer";
+    | "SubmitSomeonesFlag"
+    | "SubmitWithoutDownloadAttachments"
+    | "SubmitWithoutStartContainer";
   /** 作弊者用户名 */
   username: string;
   /** 作弊者队伍名 */
@@ -1239,7 +1222,7 @@ export interface SystemSettings {
   /**
    * 页面底部信息
    * @maxLength 500
-   * @example "© 2024 A1CTF Team"
+   * @example "© 2025 A1CTF Team"
    */
   systemFooter?: string;
   /**
@@ -1247,20 +1230,13 @@ export interface SystemSettings {
    * @example "/images/favicon.ico"
    */
   systemFavicon?: string;
-  /**
-   * ICP备案号
-   * @example "浙ICP备2023022969号"
-   */
+  /** ICP备案号 */
   systemICP?: string;
-  /**
-   * 组织名称
-   * @example "浙江师范大学"
-   */
+  /** 组织名称 */
   systemOrganization?: string;
   /**
    * 组织官网链接
    * @format uri
-   * @example "https://www.zjnu.edu.cn"
    */
   systemOrganizationURL?: string;
   /**
@@ -1318,20 +1294,11 @@ export interface SystemSettings {
    * @example "/images/trophys/copper_trophy.png"
    */
   trophysBronze?: string;
-  /**
-   * 学校logo URL
-   * @example "/images/zjnu_logo.png"
-   */
+  /** 学校logo URL */
   schoolLogo?: string;
-  /**
-   * 学校小图标 URL
-   * @example "/images/zjnu_small_logo.png"
-   */
+  /** 学校小图标 URL */
   schoolSmallIcon?: string;
-  /**
-   * 学校联合认证文本
-   * @example "ZJNU Union Authserver"
-   */
+  /** 学校联合认证文本 */
   schoolUnionAuthText?: string;
   /**
    * 是否启用背景动画
@@ -1643,7 +1610,7 @@ export class HttpClient<SecurityDataType = unknown> {
       headers: {
         ...((method &&
           this.instance.defaults.headers[
-          method.toLowerCase() as keyof HeadersDefaults
+            method.toLowerCase() as keyof HeadersDefaults
           ]) ||
           {}),
         ...(params1.headers || {}),
@@ -1721,7 +1688,6 @@ export class HttpClient<SecurityDataType = unknown> {
       headers: {
         ...(requestParams.headers || {}),
         ...(type ? { "Content-Type": type } : {}),
-        "Accept-Language": localStorage.getItem("i18next") || "en",
       },
       params: query,
       responseType: responseFormat,
@@ -2184,12 +2150,12 @@ export class Api<
           data: {
             judge_id: string;
             judge_status:
-            | "JudgeQueueing"
-            | "JudgeRunning"
-            | "JudgeError"
-            | "JudgeWA"
-            | "JudgeAC"
-            | "JudgeTimeout";
+              | "JudgeQueueing"
+              | "JudgeRunning"
+              | "JudgeError"
+              | "JudgeWA"
+              | "JudgeAC"
+              | "JudgeTimeout";
           };
         },
         void | ErrorMessage
@@ -3935,64 +3901,6 @@ export class Api<
         ErrorMessage | void
       >({
         path: `/api/game/${gameId}/team/join`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description 队长获取战队的加入申请列表
-     *
-     * @tags team
-     * @name GetTeamJoinRequests
-     * @summary 获取战队加入申请列表
-     * @request GET:/api/game/{game_id}/team/{team_id}/requests
-     */
-    getTeamJoinRequests: (
-      teamId: number,
-      gameId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        {
-          /** @example 200 */
-          code: number;
-          data: TeamJoinRequestInfo[];
-        },
-        ErrorMessage | void
-      >({
-        path: `/api/game/${gameId}/team/${teamId}/requests`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description 队长批准或拒绝加入申请
-     *
-     * @tags team
-     * @name HandleTeamJoinRequest
-     * @summary 处理加入申请
-     * @request POST:/api/game/{game_id}/team/request/{request_id}/handle
-     */
-    handleTeamJoinRequest: (
-      requestId: number,
-      gameId: number,
-      data: HandleJoinRequestPayload,
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        {
-          /** @example 200 */
-          code: number;
-          /** @example "申请已处理" */
-          message: string;
-        },
-        ErrorMessage | void
-      >({
-        path: `/api/game/${gameId}/team/request/${requestId}/handle`,
         method: "POST",
         body: data,
         type: ContentType.Json,

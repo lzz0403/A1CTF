@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { Input } from "components/ui/input";
 import { Label } from "components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "components/ui/card";
 import { Badge } from "components/ui/badge";
-import { Users, Trophy, Hash, Copy, Crown, UserCheck, UserMinus, UserPlus, Settings, Trash2, CircleArrowLeft, Upload, Group, Pencil, Ban, Gift, AlertTriangle, Calculator, Loader2 } from "lucide-react";
+import { Users, Trophy, Hash, Copy, Crown, UserMinus, UserPlus, Settings, Trash2, CircleArrowLeft, Upload, Group, Pencil, Ban, Gift, AlertTriangle, Calculator, Loader2 } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -33,8 +33,6 @@ import { useTheme } from "next-themes";
 import { MacScrollbar } from "mac-scrollbar";
 import { api } from 'utils/ApiHelper';
 import type {
-    TeamJoinRequestInfo,
-    HandleJoinRequestPayload,
     TransferCaptainPayload,
     UpdateTeamInfoPayload,
     GameScoreboardData,
@@ -59,7 +57,6 @@ const MyTeamInfomationView = ({
 
     const [scoreBoardData, setScoreBoardData] = useState<GameScoreboardData>();
     const [currentUserTeam, setCurrentUserTeam] = useState<TeamScore>();
-    const [joinRequests, setJoinRequests] = useState<TeamJoinRequestInfo[]>([]);
     const [challenges, setChallenges] = useState<Record<string, UserSimpleGameChallenge[]>>({});
     const [loading, setLoading] = useState(false);
     const [sloganDialogOpen, setSloganDialogOpen] = useState(false);
@@ -105,16 +102,6 @@ const MyTeamInfomationView = ({
             })
     };
 
-    // 获取加入申请列表
-    const fetchJoinRequests = () => {
-        if (!isTeamCaptain || !gameInfo?.team_info?.team_id) return;
-
-        api.team.getTeamJoinRequests(gameInfo.team_info.team_id, gameInfo.game_id)
-            .then((response) => {
-                setJoinRequests(response.data.data);
-            })
-    };
-
     // 获取题目信息
     const getChallenge = (id: number): UserSimpleGameChallenge | undefined => {
         let target: UserSimpleGameChallenge | undefined;
@@ -130,7 +117,6 @@ const MyTeamInfomationView = ({
     useEffect(() => {
         if (gameInfo && curProfile.user_id) {
             fetchScoreBoardData();
-            fetchJoinRequests();
         }
     }, [gameInfo, curProfile.user_id]);
 
@@ -139,19 +125,6 @@ const MyTeamInfomationView = ({
             setCurrentUserTeam(scoreBoardData?.your_team);
         }
     }, [gameInfo, scoreBoardData]);
-
-    // 处理加入申请
-    const handleJoinRequest = (requestId: number, action: 'approve' | 'reject') => {
-        setLoading(true);
-        api.team.handleTeamJoinRequest(requestId, gameInfo?.game_id ?? 0, { action } as HandleJoinRequestPayload)
-            .then(() => {
-                toast.success(action === 'approve' ? '申请已批准' : '申请已拒绝');
-                fetchJoinRequests();
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
 
     // 转移队长
     const handleTransferCaptain = (newCaptainId: string) => {
@@ -473,72 +446,6 @@ const MyTeamInfomationView = ({
                             </div>
                         </CardContent>
                     </Card>
-
-                    {/* 加入申请（仅队长可见） */}
-                    {isTeamCaptain && (
-                        <Card className='bg-transparent backdrop-blur-md'>
-                            <CardHeader>
-                                <CardTitle className="flex items-center space-x-2">
-                                    <UserCheck className="w-5 h-5" />
-                                    <span>加入申请</span>
-                                    {joinRequests.length > 0 && (
-                                        <Badge variant="destructive">{joinRequests.length}</Badge>
-                                    )}
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                {joinRequests.length === 0 ? (
-                                    <p className="text-muted-foreground">暂无待处理的加入申请</p>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {joinRequests.map((request) => (
-                                            <div key={request.request_id} className="flex items-center justify-between p-3 border rounded-lg">
-                                                <div className="flex items-center space-x-3">
-                                                    <Avatar>
-                                                        {request.user_avatar ? (
-                                                            <AvatarImage src={request.user_avatar} alt={request.username} />
-                                                        ) : (
-                                                            <AvatarFallback>{request.username.substring(0, 2)}</AvatarFallback>
-                                                        )}
-                                                    </Avatar>
-                                                    <div>
-                                                        <div className="font-medium">{request.username}</div>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            申请时间: {dayjs(request.create_time).format('YYYY-MM-DD HH:mm:ss')}
-                                                        </div>
-                                                        {request.message && (
-                                                            <div className="text-sm text-muted-foreground mt-1">
-                                                                留言: {request.message}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                <div className="flex space-x-2">
-                                                    <Button
-                                                        size="sm"
-                                                        onClick={() => handleJoinRequest(request.request_id, 'approve')}
-                                                        disabled={loading}
-                                                    >
-                                                        <UserCheck className="w-4 h-4 mr-2" />
-                                                        批准
-                                                    </Button>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => handleJoinRequest(request.request_id, 'reject')}
-                                                        disabled={loading}
-                                                    >
-                                                        <UserMinus className="w-4 h-4 mr-2" />
-                                                        拒绝
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    )}
 
                     {/* 解题情况 */}
                     <Card className='bg-transparent backdrop-blur-md'>

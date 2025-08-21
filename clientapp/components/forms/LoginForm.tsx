@@ -182,15 +182,6 @@ export function LoginForm() {
                         </svg>
                         {t("login_with_github")}
                     </Button>
-                    {/* <Button variant="outline" className="w-full" disabled>
-                        <img
-                            src={clientConfig.SchoolSmallIcon}
-                            alt={clientConfig.SchoolUnionAuthText}
-                            width={24}
-                            height={24}
-                        />
-                        {t("login_with_zjnu")}
-                    </Button> */}
                 </div>
             </div>
         </Form>

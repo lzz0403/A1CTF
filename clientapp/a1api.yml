@@ -2658,133 +2658,6 @@ paths:
             schema:
               $ref: '#/components/schemas/TeamJoinPayload'
         required: true
-  /api/game/{game_id}/team/{team_id}/requests:
-    get:
-      tags: [team]
-      operationId: getTeamJoinRequests
-      summary: 获取战队加入申请列表
-      description: 队长获取战队的加入申请列表
-      parameters:
-        - name: team_id
-          in: path
-          required: true
-          description: 战队ID
-          schema:
-            type: integer
-            format: int64
-        - name: game_id
-          in: path
-          required: true
-          description: 比赛ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 成功获取申请列表
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: integer
-                    example: 200
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TeamJoinRequestInfo'
-                required:
-                  - code
-                  - data
-        '400':
-          description: 请求错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorMessage'
-        '401':
-          description: 未授权，用户未登录
-        '403':
-          description: 权限不足，非队长
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorMessage'
-        '500':
-          description: 服务器错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorMessage'
-  /api/game/{game_id}/team/request/{request_id}/handle:
-    post:
-      tags: [team]
-      operationId: handleTeamJoinRequest
-      summary: 处理加入申请
-      description: 队长批准或拒绝加入申请
-      parameters:
-        - name: request_id
-          in: path
-          required: true
-          description: 申请ID
-          schema:
-            type: integer
-            format: int64
-        - name: game_id
-          in: path
-          required: true
-          description: 比赛ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 申请处理成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                    example: "申请已处理"
-                required:
-                  - code
-                  - message
-        '400':
-          description: 请求错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorMessage'
-        '401':
-          description: 未授权，用户未登录
-        '403':
-          description: 权限不足，非队长
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorMessage'
-        '404':
-          description: 申请不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorMessage'
-        '500':
-          description: 服务器错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorMessage'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HandleJoinRequestPayload'
-        required: true
   /api/game/{game_id}/team/{team_id}/transfer-captain:
     post:
       tags: [team]
@@ -4965,43 +4838,6 @@ components:
           description: 战队邀请码
       required:
         - invite_code
-    TeamJoinRequestInfo:
-      type: object
-      properties:
-        request_id:
-          type: integer
-          format: int64
-        user_id:
-          type: string
-        username:
-          type: string
-        user_avatar:
-          type: string
-          nullable: true
-        status:
-          type: string
-          enum: [Pending, Approved, Rejected]
-        create_time:
-          type: string
-          format: date-time
-        message:
-          type: string
-          nullable: true
-      required:
-        - request_id
-        - user_id
-        - username
-        - status
-        - create_time
-    HandleJoinRequestPayload:
-      type: object
-      properties:
-        action:
-          type: string
-          enum: [approve, reject]
-          description: 处理动作：approve批准，reject拒绝
-      required:
-        - action
     TransferCaptainPayload:
       type: object
       properties:
@@ -5634,7 +5470,7 @@ components:
         systemFooter:
           type: string
           description: 页面底部信息
-          example: "© 2024 A1CTF Team"
+          example: "© 2025 A1CTF Team"
           maxLength: 500
         systemFavicon:
           type: string
@@ -5643,16 +5479,13 @@ components:
         systemICP:
           type: string
           description: ICP备案号
-          example: "浙ICP备2023022969号"
         systemOrganization:
           type: string
           description: 组织名称
-          example: "浙江师范大学"
         systemOrganizationURL:
           type: string
           description: 组织官网链接
           format: uri
-          example: "https://www.zjnu.edu.cn"
 
         # 主题设置
         themeColor:
@@ -5705,15 +5538,12 @@ components:
         schoolLogo:
           type: string
           description: 学校logo URL
-          example: "/images/zjnu_logo.png"
         schoolSmallIcon:
           type: string
           description: 学校小图标 URL
-          example: "/images/zjnu_small_logo.png"
         schoolUnionAuthText:
           type: string
           description: 学校联合认证文本
-          example: "ZJNU Union Authserver"
         bgAnimation:
           type: boolean
           description: 是否启用背景动画
