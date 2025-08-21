@@ -1,4 +1,5 @@
 {
+    "game_not_start": "Game has not started",
     "error_game": "No such game",
     "game_info": "Game Info",
     "challenge_list": "Challenges",

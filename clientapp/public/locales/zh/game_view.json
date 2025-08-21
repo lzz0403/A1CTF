@@ -1,4 +1,5 @@
 {
+    "game_not_start": "比赛还未开始",
     "error_game": "没有该比赛",
     "game_info": "比赛信息",
     "challenge_list": "题目列表",
