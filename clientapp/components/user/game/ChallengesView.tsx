@@ -52,14 +52,15 @@ export function ChallengesView({
 
     const {
         gameInfo,
-        gameStatus, 
-        teamStatus, 
-        isLoading: isGameDataLoading 
+        gameStatus,
+        teamStatus,
+        isLoading: isGameDataLoading
     } = useGame(gameID)
 
     const { gameDescription, isLoading: isGameDescriptionLoading } = useGameDescription(gameID)
 
-    const { t } = useTranslation("notices_view")
+    const { t: noticesViewT } = useTranslation("notices_view")
+    const { t: gameViewT } = useTranslation("game_view")
 
     // 所有题目
     const [challenges, setChallenges] = useConditionalState<Record<string, UserSimpleGameChallenge[]>>({})
@@ -283,15 +284,15 @@ export function ChallengesView({
                                     gameInfo?.team_info?.team_name?.toString().trim() == message.data[0]?.toString().trim()) {
                                     switch (message.notice_category) {
                                         case NoticeCategory.FirstBlood:
-                                            setBloodMessage(`${t("notices_view.congratulations")}${t("notices_view.blood_message_p1")} ${message.data[1]} ${t("notices_view.blood1")}`)
+                                            setBloodMessage(`${noticesViewT("congratulations")}${noticesViewT("blood_message_p1")} ${message.data[1]} ${noticesViewT("blood1")}`)
                                             setBlood("gold")
                                             break
                                         case NoticeCategory.SecondBlood:
-                                            setBloodMessage(`${t("notices_view.congratulations")}${t("notices_view.blood_message_p1")} ${message.data[1]} ${t("notices_view.blood2")}`)
+                                            setBloodMessage(`${noticesViewT("congratulations")}${noticesViewT("blood_message_p1")} ${message.data[1]} ${noticesViewT("blood2")}`)
                                             setBlood("silver")
                                             break
                                         case NoticeCategory.ThirdBlood:
-                                            setBloodMessage(`${t("notices_view.congratulations")}${t("notices_view.blood_message_p1")} ${message.data[1]} ${t("notices_view.blood3")}`)
+                                            setBloodMessage(`${noticesViewT("congratulations")}${noticesViewT("blood_message_p1")} ${message.data[1]} ${noticesViewT("blood3")}`)
                                             setBlood("copper")
                                             break
                                     }
@@ -377,7 +378,7 @@ export function ChallengesView({
     if (!([A1GameStatus.Running, A1GameStatus.PracticeMode].includes(gameStatus) || teamStatus == ParticipationStatus.Banned || isAdmin())) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <span className="text-2xl font-bold">比赛未开始</span>
+                <span className="text-2xl font-bold">{gameViewT("game_not_start")}</span>
             </div>
         )
     }
