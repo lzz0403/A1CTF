@@ -20,5 +20,7 @@
     "page_not_found": "Page not found",
     "login_first": "Please login first",
     "loading": "Loading...",
-    "admin": "Admin"
+    "admin": "Admin",
+    "continue": "Continue",
+    "cancel": "Cancel"
 }
