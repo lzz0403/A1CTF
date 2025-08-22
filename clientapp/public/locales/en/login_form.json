@@ -2,6 +2,7 @@
     "username_not_null": "Username can not be null",
     "password_not_null": "Password can not be null",
     "login_successful": "Login successful",
+    "login_failed": "Incorrect username or password",
     "unknow_error": "Unknow error",
     "form_account": "Account",
     "form_account_desc": "Username or email address.",
@@ -14,5 +15,6 @@
     "login_with_github": "Login with Github",
     "dont_have_account": "Don't have an account?",
     "sign_up_title": "Sign up",
-    "login": "Login"
+    "login": "Login",
+    "cap_err": "Failed to obtain verification code"
 }

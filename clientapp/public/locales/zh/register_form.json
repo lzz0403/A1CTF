@@ -20,5 +20,6 @@
     "form_confirm_password": "确认密码",
     "signup": "注册",
     "or_continue_with": "其他注册方式",
-    "login": "登录"
+    "login": "登录",
+    "cap_err": "获取验证码失败"
 }

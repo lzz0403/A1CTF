@@ -20,5 +20,6 @@
     "form_confirm_password": "Confirm password",
     "signup": "Sign up",
     "or_continue_with": "Or continue with",
-    "login": "Login"
+    "login": "Login",
+    "cap_err": "Failed to obtain verification code"
 }

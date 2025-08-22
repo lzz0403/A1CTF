@@ -76,9 +76,9 @@ export function LoginForm() {
         }).catch((error: AxiosError) => {
             setToken("")
             if (error.response?.status == 401) {
-                toast.error("用户名或者密码错误")
+                toast.error(t("login_failed"))
             } else {
-                toast.error("未知错误")
+                toast.error(t("unknow_error"))
             }
         }).finally(() => {
             setLoading(false)
@@ -146,18 +146,18 @@ export function LoginForm() {
                         }}
                         customWaspUrl={
                             "https://cdn.jsdmirror.com/npm/@cap.js/wasm@0.0.6/browser/cap_wasm.min.js"
-                        }      
+                        }
                         onError={() => {
-                            toast.error("获取验证码失败")
+                            toast.error(t("cap_err"))
                         }}
                     />
 
                 ) : <></>}
 
                 <div className='h-0' />
-                <Button 
-                    type="submit" 
-                    className="transition-all duration-300 w-full" 
+                <Button
+                    type="submit"
+                    className="transition-all duration-300 w-full"
                     disabled={loading || (clientConfig.captchaEnabled && token == "")}
                     onClick={form.handleSubmit(onSubmit)}
                 >{t("login")}</Button>
