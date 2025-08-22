@@ -4,6 +4,7 @@ import { Progress } from "components/ui/progress";
 import { AttachmentType, UserAttachmentConfig } from "utils/A1API";
 import { useState } from "react";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 interface DownloadInfo {
     size: string;
@@ -12,35 +13,36 @@ interface DownloadInfo {
 };
 
 const FileDownloader = (
-    { attach, setRedirectURL } : { attach: UserAttachmentConfig, setRedirectURL: React.Dispatch<React.SetStateAction<string>> },
-) => {  
+    { attach, setRedirectURL }: { attach: UserAttachmentConfig, setRedirectURL: React.Dispatch<React.SetStateAction<string>> },
+) => {
 
     const [downloadSpeed, setDownloadSpeed] = useState<DownloadInfo>();
     const [downloading, setDownloading] = useState(false);
+    const { t } = useTranslation("challenge_view")
 
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) return '0 Bytes';
-        
+
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
-        
+
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
-    
+
     const formatDownloadSpeed = (bytesPerSecond: number): string => {
         if (bytesPerSecond === 0) return '0 B/s';
-        
+
         const k = 1024;
         const sizes = ['B/s', 'KB/s', 'MB/s', 'GB/s'];
         const i = Math.floor(Math.log(bytesPerSecond) / Math.log(k));
-        
+
         return Math.round(bytesPerSecond / Math.pow(k, i)).toString() + ' ' + sizes[i];
     };
 
     const handleDownload = (attach: UserAttachmentConfig) => {
-        
-    
+
+
         if (attach.attach_type == AttachmentType.STATICFILE || attach.attach_type == AttachmentType.REMOTEFILE) {
             const fileName = attach.attach_name
 
@@ -50,7 +52,7 @@ const FileDownloader = (
                 speed: "0 KB/s",
             });
             setDownloading(true)
-    
+
             const fetchFile = async (url: string) => {
                 try {
                     const response = await fetch(url);
@@ -58,21 +60,21 @@ const FileDownloader = (
                     if (!response.ok) {
                         throw new Error("Network response was not ok");
                     }
-    
+
                     const reader = response.body!.getReader();
                     const totalBytes = parseInt(contentLength, 10);
                     let receivedBytes = 0;
                     const startTime = Date.now();
                     let lastUpdateTime = startTime;
                     let lastReceivedBytes = 0;
-    
+
                     const chunks: Uint8Array[] = [];
                     const pump = async () => {
                         const { done, value } = await reader.read();
                         if (done) {
                             const blob = new Blob(chunks);
                             const downloadUrl = URL.createObjectURL(blob);
-    
+
                             setDownloadSpeed({
                                 size: formatFileSize(totalBytes),
                                 progress: Math.round(Math.min(100, (receivedBytes / totalBytes) * 100)),
@@ -86,34 +88,34 @@ const FileDownloader = (
                                 a.click();
                                 URL.revokeObjectURL(downloadUrl);
                             }, 300);
-    
+
                             return;
                         }
-    
+
                         chunks.push(value);
                         receivedBytes += value.length;
-                        
+
                         const now = Date.now();
                         const timeElapsed = (now - lastUpdateTime) / 1000; // 转换为秒
-                        
+
                         // 每0.5秒更新一次速度显示，避免闪烁
                         if (timeElapsed > 0.5) {
                             const bytesSinceLastUpdate = receivedBytes - lastReceivedBytes;
                             const currentSpeed = bytesSinceLastUpdate / timeElapsed;
-                            
+
                             setDownloadSpeed({
                                 size: formatFileSize(totalBytes),
                                 progress: Math.round(Math.min(100, (receivedBytes / totalBytes) * 100)),
                                 speed: formatDownloadSpeed(currentSpeed),
                             });
-                            
+
                             lastUpdateTime = now;
                             lastReceivedBytes = receivedBytes;
                         }
-    
+
                         pump();
                     };
-    
+
                     pump();
                 } catch (error) {
                     console.error("Download failed:", error);
@@ -166,7 +168,7 @@ const FileDownloader = (
                         </div>
                         <div className="flex gap-2 items-center">
                             <FileDown />
-                            <span>点击下载</span>
+                            <span>{t("download")}</span>
                         </div>
                     </>
                 )}

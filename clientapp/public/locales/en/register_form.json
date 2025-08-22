@@ -20,5 +20,14 @@
     "form_confirm_password": "Confirm password",
     "signup": "Sign up",
     "or_continue_with": "Or continue with",
-    "login": "Login"
+    "login": "Login",
+    "cap_err": "Failed to obtain verification code",
+        "cap_init": "I'm a human",
+    "cap_solved": "You're a human",
+    "cap_error": "Error. Try again.",
+    "cap_error_aria": "An error occurred, please try again",
+    "cap_verifying": "Verifying...",
+    "cap_verify_aria": "Click to verify you're a human",
+    "cap_verifying_aria": "Verifying you're a human, please wait",
+    "cap_verifyed_aria": "We have verified you're a human, you may now continue"
 }

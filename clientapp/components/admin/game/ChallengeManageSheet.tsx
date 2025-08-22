@@ -27,6 +27,7 @@ import { ContainerManageView } from "./ContainerManageView"
 import { GameEventModule } from "./GameEventModule"
 import ChallengeTools from "./ChallengeTools"
 import { ChallengeManageFormWrapper } from "./ChallengeManageForm"
+import { useTranslation } from "react-i18next"
 
 export default function ChallengeManageSheet(
     {
@@ -40,6 +41,7 @@ export default function ChallengeManageSheet(
     }
 ) {
 
+    const { t } = useTranslation("challenge_manage")
     const { theme } = useTheme()
     const [isOpen, setIsOpen] = useState(false)
     const [isDataLoaded, setIsDataLoaded] = useState(false)
@@ -68,7 +70,7 @@ export default function ChallengeManageSheet(
 
     const handleSubmit = (values: z.infer<typeof GameChallengeSchema>) => {
         api.admin.updateGameChallenge(gameID, challengeID, values as any as AdminDetailGameChallenge).then(() => {
-            toast.success("更新成功")
+            toast.success(t("update_success"))
         })
     }
 
@@ -102,15 +104,15 @@ export default function ChallengeManageSheet(
                                     <SheetHeader className="p-0 mb-5">
                                         <SheetTitle>
                                             <div className="flex w-full items-center h-[38px]">
-                                                <span className="font-bold text-2xl">题目设置</span>
+                                                <span className="font-bold text-2xl">{t("setting")}</span>
                                             </div>
                                         </SheetTitle>
                                         <SheetDescription>
-                                            在这里可以修改题目的基本信息
+                                            {t("setting_description")}
                                         </SheetDescription>
                                     </SheetHeader>
-                                    <ChallengeManageFormWrapper 
-                                        challenge_id={challengeDetail?.challenge_id} 
+                                    <ChallengeManageFormWrapper
+                                        challenge_id={challengeDetail?.challenge_id}
                                     />
                                 </div>
                             ) : <></>}
@@ -120,11 +122,11 @@ export default function ChallengeManageSheet(
                                     <SheetHeader className="p-0 mb-5">
                                         <SheetTitle>
                                             <div className="flex w-full items-center  h-[38px]">
-                                                <span className="font-bold text-2xl">评测设置 & 提示设置</span>
+                                                <span className="font-bold text-2xl">{t("judge_and_hint")}</span>
                                             </div>
                                         </SheetTitle>
                                         <SheetDescription>
-                                            在这里可以覆盖题目的默认评测
+                                            {t("judge_and_hint_description")}
                                         </SheetDescription>
                                     </SheetHeader>
                                     {isDataLoaded ? (
@@ -148,7 +150,7 @@ export default function ChallengeManageSheet(
                                             onClick={form.handleSubmit(handleSubmit)}
                                         >
                                             <Save />
-                                            保存
+                                            {t("save")}
                                         </Button>
                                     </div>
                                 </>
@@ -157,7 +159,7 @@ export default function ChallengeManageSheet(
                             {curChoicedModule == "containers" ? (
                                 <div>
                                     <div className="flex w-full items-center  h-[38px]">
-                                        <span className="font-bold text-2xl">容器管理</span>
+                                        <span className="font-bold text-2xl">{t("container")}</span>
                                     </div>
                                     <ContainerManageView
                                         gameId={gameID}
@@ -176,7 +178,7 @@ export default function ChallengeManageSheet(
                             {curChoicedModule == "tools" ? (
                                 <div>
                                     <div className="flex w-full items-center  h-[38px]">
-                                        <span className="font-bold text-2xl">题目工具</span>
+                                        <span className="font-bold text-2xl">{t("challenge_tool")}</span>
                                     </div>
                                     <ChallengeTools
                                         gameID={gameID}

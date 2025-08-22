@@ -20,5 +20,7 @@
   "page_not_found": "页面未找到",
   "login_first": "请先登录",
   "loading": "加载中...",
-  "admin": "后台管理"
+  "admin": "后台管理",
+  "continue": "继续操作",
+  "cancel": "取消"
 }

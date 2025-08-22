@@ -6,6 +6,7 @@ import GamePosterInfoModule from "./GamePosterInfoModule";
 import GameTeamStatusCard, { LoginFirstCard } from "components/modules/game/GameTeamStatusCard";
 import { useTheme } from "next-themes";
 import { useGame, useGameDescription } from "hooks/UseGame";
+import { useTranslation } from "react-i18next";
 
 export default function GameInfoView(
     {
@@ -20,7 +21,9 @@ export default function GameInfoView(
     const { checkLoginStatus } = useGlobalVariableContext()
 
     const { theme } = useTheme()
-    
+
+    const { t } = useTranslation("game_view")
+
     if (isLoading) return <></>
 
     return (
@@ -39,7 +42,7 @@ export default function GameInfoView(
                         </div>
                         <div className="flex gap-2 items-center mb-2 border-b-2 pb-4 select-none">
                             <LibraryBig />
-                            <span className="text-2xl font-bold">比赛介绍</span>
+                            <span className="text-2xl font-bold">{t("game_info")}</span>
                             <div className="flex-1" />
                             <QrCode />
                         </div>
@@ -47,7 +50,7 @@ export default function GameInfoView(
                             <Mdx source={gameDescription || ""} />
                         ) : (
                             <div className="w-full h-[60vh] flex items-center justify-center select-none">
-                                <span className="font-bold text-lg">Emmmmmm</span>
+                                <span className="font-bold text-lg">{t("no_game_info")}</span>
                             </div>
                         )}
                     </div>
