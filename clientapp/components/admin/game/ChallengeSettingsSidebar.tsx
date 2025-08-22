@@ -18,7 +18,7 @@ export default function ChallengeSettingsSidebar(
 ) {
 
     const { theme } = useTheme()
-    const { t } = useTranslation()
+    const { t } = useTranslation("challenge_manage")
     const { clientConfig } = useGlobalVariableContext()
 
     type Module = {
