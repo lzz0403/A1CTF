@@ -22,5 +22,6 @@
     "basic_info": "Basic Information",
     "change_password": "Change password",
     "email_setting": "Email Settings",
-    "rm_rf": "Delete Account"
+    "rm_rf": "Delete Account",
+    "developing": "This feature is not available yet :)"
 }

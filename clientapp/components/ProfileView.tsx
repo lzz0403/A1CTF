@@ -25,7 +25,7 @@ export function ProfileView() {
 
     const navigate = useNavigate()
     const { action } = useParams();
-    const { t } = useTranslation()
+    const { t } = useTranslation("profile_settings")
 
     const modules = [
         {
