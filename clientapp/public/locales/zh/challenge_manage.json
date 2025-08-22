@@ -1,0 +1,21 @@
+{
+    "delete": "删除题目",
+    "alert_title": "注意",
+    "save": "保存",
+    "close": "关闭",
+    "delete_description": "你确定要删除这个题目吗？（此操作不可逆！）",
+    "delete_success": "题目删除成功",
+    "offline": "下线题目",
+    "online": "上线题目",
+    "switch_description": "此操作会切换题目状态, 请再次确认！",
+    "magic_tool": "妙妙工具箱",
+    "update_success": "更新成功",
+    "setting": "题目设置",
+    "setting_description": "在这里可以修改题目的基本信息",
+    "base": "基本设置",
+    "judge_and_hint": "评测设置 & 提示设置",
+    "judge_and_hint_description": "在这里可以覆盖题目的默认评测",
+    "container": "容器管理",
+    "challenge_tool": "题目工具",
+    "history": "提交历史"
+}

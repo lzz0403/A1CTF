@@ -12,6 +12,8 @@
     "check_security": "请注意检查链接是否安全合法",
     "continue_redirect": "继续跳转",
     "cancel_redirect": "取消",
+    "challenge_info": "题目信息",
+    "hints": "提示",
     "oops_empty": "题目简介是空的?!",
     "you_have_be_banned": "你已被禁赛，请联系管理员",
     "back_to_main": "返回主页",

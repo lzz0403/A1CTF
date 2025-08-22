@@ -12,6 +12,8 @@
     "check_security": "Check the security of the link",
     "continue_redirect": "Continue",
     "cancel_redirect": "Cancel",
+    "challenge_info": "Challenge Info",
+    "hints": "hints",
     "oops_empty": "Oops, this challenge's description is empty!",
     "you_have_be_banned": "You have been banned, please contact the administrator for details",
     "back_to_main": "Back to main",

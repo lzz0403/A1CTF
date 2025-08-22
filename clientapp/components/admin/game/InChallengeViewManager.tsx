@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import AlertConformer from "components/modules/AlertConformer";
 import { toast } from "react-toastify/unstyled";
 import { useSearchParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export default function InChallengeViewManager(
     { gameID, curChallenge, setCurChallenge, setChallenges }: {
@@ -18,6 +19,7 @@ export default function InChallengeViewManager(
 ) {
 
     const [switchVisibleLoading, setSwitchVisibleLoading] = useState(false)
+    const { t } = useTranslation("challenge_manage")
 
     const switchVisible = () => {
         setSwitchVisibleLoading(true)
@@ -75,42 +77,42 @@ export default function InChallengeViewManager(
                 delete newChallenges[categoryKey];
                 return newChallenges;
             });
-            
+
             // 移除旧的 id 参数
             const newParams = new URLSearchParams(searchParams);
             newParams.delete("id");
             setSearchParams(newParams)
 
-            toast.success("删除成功")
+            toast.success(t("delete_success"))
         })
     }
 
     return (
         <div className="absolute bottom-0 left-0 p-5 z-10 flex flex-col gap-2">
             <AlertConformer
-                title="注意"
-                description="你确定要删除这个题目吗（此操作不可逆）"
+                title={t("alert_title")}
+                description={t("delete_description")}
                 onConfirm={deleteChallenge}
                 type="danger"
             >
                 <Button variant="ghost" size="icon"
                     className={`rounded-xl w-12 h-12 [&_svg]:size-6 bg-foreground/10 hover:hover:bg-foreground/20 cursor-pointer text-red-400`}
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-html="删除题目"
+                    data-tooltip-html={t("delete")}
                     data-tooltip-place="right"
                 >
                     <Trash2 />
                 </Button>
             </AlertConformer>
             <AlertConformer
-                title="注意"
-                description="此操作会切换题目状态, 请再次确认"
+                title={t("alert_title")}
+                description={t("switch_description")}
                 onConfirm={switchVisible}
             >
                 <Button variant="ghost" size="icon"
                     className={`rounded-xl w-12 h-12 [&_svg]:size-6 bg-foreground/10 hover:hover:bg-foreground/20 cursor-pointer ${curChallenge?.visible ? "text-red-400" : "text-blue-400"}`}
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-html={curChallenge?.visible ? "下线题目" : "上线题目"}
+                    data-tooltip-html={curChallenge?.visible ? t("offline") : t("online")}
                     data-tooltip-place="right"
                     disabled={switchVisibleLoading}
                 >
@@ -125,7 +127,7 @@ export default function InChallengeViewManager(
             >
                 <Button variant="ghost" size="icon" className="rounded-xl w-12 h-12 [&_svg]:size-6 bg-foreground/10 hover:hover:bg-foreground/20 cursor-pointer"
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-html="妙妙小工具"
+                    data-tooltip-html={t("magic_tool")}
                     data-tooltip-place="right"
                 >
                     <Wrench />
