@@ -150,6 +150,14 @@ export function LoginForm() {
                         onError={() => {
                             toast.error(t("cap_err"))
                         }}
+                        i18nInitial={t("cap_init")}
+                        i18nSolved={t("cap_solved")}
+                        i18nError={t("cap_error")}
+                        i18nErrorAriaLabel={t("cap_error_aria")}
+                        i18nVerifying={t("cap_verifying")}
+                        i18nVerifyAriaLabel={t("cap_verify_aria")}
+                        i18nVerifyingAriaLabel={t("cap_verifying_aria")}
+                        i18nVerifiedAriaLabel={t("cap_verifyed_aria")}
                     />
 
                 ) : <></>}

@@ -21,5 +21,13 @@
     "signup": "注册",
     "or_continue_with": "其他注册方式",
     "login": "登录",
-    "cap_err": "获取验证码失败"
+    "cap_err": "获取验证码失败",
+    "cap_init": "点击验证",
+    "cap_solved": "验证通过",
+    "cap_error": "验证失败，请重试！",
+    "cap_error_aria": "验证失败，请重新尝试",
+    "cap_verifying": "验证中...",
+    "cap_verify_aria": "点击进行人机验证",
+    "cap_verifying_aria": "正在验证，请稍候",
+    "cap_verifyed_aria": "验证成功，请继续操作"
 }
