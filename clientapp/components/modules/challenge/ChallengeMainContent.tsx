@@ -17,6 +17,7 @@ import copy from "copy-to-clipboard"
 import InChallengeViewManager from "components/admin/game/InChallengeViewManager"
 import { useGlobalVariableContext } from "contexts/GlobalVariableContext"
 import { AxiosError } from "axios"
+import { useTranslation } from "react-i18next"
 
 export default function ChallengeMainContent(
     {
@@ -48,7 +49,7 @@ export default function ChallengeMainContent(
     const [containerExpireTime, setContainerExpireTime] = useState<dayjs.Dayjs | null>(dayjs())
 
     const { curProfile } = useGlobalVariableContext()
-
+    const { t } = useTranslation("challenge_view")
     const { theme } = useTheme()
 
     const handleLaunchContainer = () => {
@@ -58,7 +59,7 @@ export default function ChallengeMainContent(
             // 开始刷新靶机状态
             setRefreshContainerTrigger(true)
         }).catch((err: AxiosError) => {
-            const errorMessage = ((err.response?.data ?? { message: "未知错误" }) as ErrorMessage).message 
+            const errorMessage = ((err.response?.data ?? { message: t("unknow_error") }) as ErrorMessage).message
             if (err.response?.status == 409) {
                 // 容器数量超限
                 setContainerLaunching(false)
@@ -70,9 +71,9 @@ export default function ChallengeMainContent(
             } else if (err.response?.status == 429) {
                 // 速率过快
                 setContainerLaunching(false)
-                toast.error(errorMessage) 
+                toast.error(errorMessage)
             } else if (err.response?.status == 500) {
-                 // 系统错误
+                // 系统错误
                 setContainerLaunching(false)
                 toast.error(errorMessage)
             } else {
@@ -122,7 +123,7 @@ export default function ChallengeMainContent(
                 <Mdx source={curChallenge.description} />
             </div>
         ) : (
-            <span>题目简介为空哦</span>
+            <span>{t("oops_empty")}</span>
         );
     }, [curChallenge?.description]); // 只依赖description
 
@@ -139,7 +140,7 @@ export default function ChallengeMainContent(
                             ? dayjs(res.data.data.container_expiretime)
                             : null)
 
-                        toast.success("靶机开启成功")
+                        toast.success(t("container_start_success"))
 
                         clearInterval(inter)
                         setRefreshContainerTrigger(false)
@@ -201,7 +202,7 @@ export default function ChallengeMainContent(
                             onClick={() => { }}
                         >
                             <CheckCheck />
-                            <span className="font-bold text-xl">Solved!</span>
+                            <span className="font-bold text-xl">{t("solved")}</span>
                         </Button>
                     ) : (
                         <Button
@@ -209,7 +210,7 @@ export default function ChallengeMainContent(
                             onClick={() => setSubmitFlagWindowVisible(true)}
                         >
                             <Flag className="rotate-12" />
-                            <span className="font-bold text-xl">Submit!</span>
+                            <span className="font-bold text-xl">{t("submit_flag")}</span>
                         </Button>
                     ) : (<></>)
                     }
@@ -243,7 +244,7 @@ export default function ChallengeMainContent(
                         <div className="flex flex-col gap-4 mb-8">
                             <div className={`flex items-center gap-2 px-5 py-[9px] border-2 rounded-xl bg-foreground/[0.04] backdrop-blur-sm select-none`}>
                                 <Package />
-                                <span className="font-bold text-lg">靶机列表</span>
+                                <span className="font-bold text-lg">{t("containers")}</span>
                                 <div className="flex-1" />
                                 {!containerRunningTrigger ? (
                                     <div className="flex gap-2 items-center">
@@ -254,12 +255,12 @@ export default function ChallengeMainContent(
                                             {containerLaunching ? (
                                                 <>
                                                     <Loader2 className="animate-spin" />
-                                                    <span className="font-bold text-[1.125em]">Launching</span>
+                                                    <span className="font-bold text-[1.125em]">{t("launching")}</span>
                                                 </>
                                             ) : (
                                                 <>
                                                     <CirclePower />
-                                                    <span className="font-bold text-[1.125em]">Launch</span>
+                                                    <span className="font-bold text-[1.125em]">{t("launch")}</span>
                                                 </>
                                             )}
                                         </Button>
@@ -274,13 +275,13 @@ export default function ChallengeMainContent(
                                             onClick={handleExtendContainer}
                                         >
                                             <ClockArrowUp />
-                                            <span className="font-bold text-[1.125em]">延长靶机</span>
+                                            <span className="font-bold text-[1.125em]">{t("container_extend")}</span>
                                         </Button>
                                         <Button className="h-[34px] rounded-[10px] p-0 border-2 px-2 border-red-400 text-red-400 bg-background dark:hover:bg-red-200/20 hover:bg-red-200/60 [&_svg]:size-[24px]"
                                             onClick={handleDestoryContainer}
                                         >
                                             <CircleX />
-                                            <span className="font-bold text-[1.125em]">销毁</span>
+                                            <span className="font-bold text-[1.125em]">{t("destory")}</span>
                                         </Button>
                                     </div>
                                 )}
@@ -301,9 +302,9 @@ export default function ChallengeMainContent(
                                                                 onClick={() => {
                                                                     const status = copy(`${port.ip}:${port.port}`)
                                                                     if (status) {
-                                                                        toast.success("已复制")
+                                                                        toast.success(t("copied"))
                                                                     } else {
-                                                                        toast.success("复制失败")
+                                                                        toast.success(t("fail_copy"))
                                                                     }
                                                                 }}
                                                             >
@@ -313,7 +314,7 @@ export default function ChallengeMainContent(
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <span className="font-bold">等待启动</span>
+                                                <span className="font-bold">{t("wait_launch")}</span>
                                             )}
                                         </div>
                                     </div>
@@ -326,7 +327,7 @@ export default function ChallengeMainContent(
                         <div className="flex flex-col gap-4 mb-4">
                             <div className={`flex items-center gap-2 px-5 py-3 border-2 rounded-xl bg-foreground/[0.04] backdrop-blur-sm `}>
                                 <Paperclip />
-                                <span className="font-bold text-lg">附件列表</span>
+                                <span className="font-bold text-lg">{t("attachments")}</span>
                             </div>
                             <div className="flex gap-6 mt-4 flex-col lg:flex-row">
                                 {curChallenge?.attachments?.map((attach, attach_index) => (
