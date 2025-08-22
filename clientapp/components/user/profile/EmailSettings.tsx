@@ -6,6 +6,7 @@ import { useGlobalVariableContext } from "contexts/GlobalVariableContext";
 import { BadgeAlert, BadgeCheck, MailPlus, Save } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from 'react-toastify/unstyled';
 import { api } from "utils/ApiHelper";
 import { z } from "zod"
@@ -13,10 +14,11 @@ import { z } from "zod"
 export default function EmailSettings() {
 
     const { curProfile, setCurProfile } = useGlobalVariableContext()
+    const { t } = useTranslation("change_email")
 
     const MailOperationSchema = z.object({
         email: z.string().email({
-            message: "请输入有效的邮箱地址"
+            message: t("please_input_vaild_email")
         })
     })
 
@@ -35,7 +37,7 @@ export default function EmailSettings() {
         api.user.updateEmailAddress({
             email: values.email
         }).then(() => {
-            toast.success("邮箱地址已更新")
+            toast.success(t("update_email_success"))
             setCurProfile((prev) => ({
                 ...prev,
                 ["email"]: values.email,
@@ -46,7 +48,7 @@ export default function EmailSettings() {
 
     function sendVerifyEmail() {
         api.user.sendVerifyEmail().then(() => {
-            toast.success("验证邮件已发出")
+            toast.success(t("sending_verification"))
         })
     }
 
@@ -55,7 +57,7 @@ export default function EmailSettings() {
             <div className="space-y-8">
                 <div className="space-y-2">
                     <div className="h-[20px] flex items-center">
-                        <span className="text-sm font-bold">邮箱地址</span>
+                        <span className="text-sm font-bold">{t("email_address")}</span>
                     </div>
                     <div className="flex items-center gap-4 mb-1 w-full">
                         <FormField
@@ -75,13 +77,13 @@ export default function EmailSettings() {
                                                 onClick={form.handleSubmit(onSubmit)}
                                             >
                                                 <Save />
-                                                保存
+                                                {t("save")}
                                             </Button>
                                             <Button variant="outline"
                                                 onClick={sendVerifyEmail}
                                             >
                                                 <MailPlus />
-                                                重新发送
+                                                {t("resend")}
                                             </Button>
                                         </div>
                                     </FormControl>
@@ -90,17 +92,17 @@ export default function EmailSettings() {
                             )}
                         />
                     </div>
-                    <span className="text-muted-foreground text-sm">如果你选择了保存, 意味着你想要修改邮箱地址, 你的邮箱验证状态会重新变为未验证</span>
+                    <span className="text-muted-foreground text-sm">{t("description")}</span>
                     <div className="w-full rounded-md overflow-hidden mt-4">
                         {curProfile.email_verified ? (
                             <div className="flex items-center justify-center gap-3 py-4 bg-green-500/40">
                                 <BadgeCheck size={30} />
-                                <span className="font-bold text-xl">Verifed!</span>
+                                <span className="font-bold text-xl">{t("verifed")}</span>
                             </div>
                         ) : (
                             <div className="flex items-center justify-center gap-3 py-4 bg-red-500/40">
                                 <BadgeAlert size={30} />
-                                <span className="font-bold text-xl">Not verifed!</span>
+                                <span className="font-bold text-xl">{t("not_verifed")}</span>
                             </div>
                         )}
                     </div>

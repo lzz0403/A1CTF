@@ -59,6 +59,7 @@ export function ChallengesView({
 
     const { gameDescription, isLoading: isGameDescriptionLoading } = useGameDescription(gameID)
 
+    const { t } = useTranslation()
     const { t: noticesViewT } = useTranslation("notices_view")
     const { t: gameViewT } = useTranslation("game_view")
 
@@ -439,7 +440,7 @@ export function ChallengesView({
                                         >
                                             <div className="flex">
                                                 <Loader2 className="animate-spin" />
-                                                <span className="font-bold ml-3">Loading...</span>
+                                                <span className="font-bold ml-3">{t("loading")}</span>
                                             </div>
                                         </motion.div>
                                     ) : (null)}

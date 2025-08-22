@@ -105,7 +105,7 @@ export function PasswordView() {
                     onClick={form.handleSubmit(onSubmit)}
                 >
                     <Save />
-                    修改密码
+                    {t("form_title_change_your_password")}
                 </Button>
             </div>
         </Form>

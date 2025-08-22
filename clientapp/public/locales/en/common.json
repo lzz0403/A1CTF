@@ -18,5 +18,7 @@
     "close": "Close",
     "back_to_home": "Back to home",
     "page_not_found": "Page not found",
-    "login_first": "Please login first"
+    "login_first": "Please login first",
+    "loading": "Loading...",
+    "admin": "Admin"
 }

@@ -44,16 +44,18 @@ import { UploadImageDialog } from 'components/dialogs/UploadImageDialog';
 import { useGlobalVariableContext } from 'contexts/GlobalVariableContext';
 import AlertConformer from 'components/modules/AlertConformer';
 import { useGame } from 'hooks/UseGame';
+import { useTranslation } from 'react-i18next';
 
 
 const MyTeamInfomationView = ({
     gameID,
-} : {
+}: {
     gameID: number;
 }) => {
 
     const { gameInfo, gameStatus } = useGame(gameID)
     const { theme } = useTheme();
+    const { t } = useTranslation()
 
     const [scoreBoardData, setScoreBoardData] = useState<GameScoreboardData>();
     const [currentUserTeam, setCurrentUserTeam] = useState<TeamScore>();
@@ -233,7 +235,7 @@ const MyTeamInfomationView = ({
             <div className="w-full h-full flex items-center justify-center">
                 <div className="flex">
                     <Loader2 className="animate-spin" />
-                    <span className="font-bold ml-3">Loading...</span>
+                    <span className="font-bold ml-3">{t("loading")}</span>
                 </div>
             </div>
         )
