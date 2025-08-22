@@ -44,6 +44,7 @@ const ChallengesViewHeader = (
 
     const { t } = useTranslation('challenge_view');
     const [wsStatusTooltipVisible, setWsStatusTooltipVisible] = useState(wsStatus != "ingore" ? true : false)
+    const [newNoticesCount, setNewNoticesCount] = useState(notices.filter((e) => e.notice_category == NoticeCategory.NewAnnouncement).length || 0)
 
     const getWsStatusClassName = () => {
         switch (wsStatus) {
@@ -66,6 +67,13 @@ const ChallengesViewHeader = (
         }
     }, [wsStatus])
 
+    useEffect(() => {
+        const count = notices.filter((e) => e.notice_category == NoticeCategory.NewAnnouncement).length
+        if (newNoticesCount !== count) {
+            setNewNoticesCount(count)
+        }
+    }, [notices])
+
     if (isLoading) return <></>
 
     return (
@@ -85,7 +93,7 @@ const ChallengesViewHeader = (
             <div id="rightArea" className="justify-end flex h-ful gap-[6px] lg:gap-[10px] items-center pointer-events-auto">
                 {!loadingVisible ? (
                     <>
-                        <GameTimeCounter 
+                        <GameTimeCounter
                             gameID={gameID}
                         />
                         {gameStatus == "running" ? (
@@ -132,14 +140,14 @@ const ChallengesViewHeader = (
                             <DropdownMenuContent className="mr-4 mt-2">
                                 <div className="w-full h-full flex flex-col gap-1">
                                     <DropdownMenuItem>
-                                        <GameTimeCounter 
+                                        <GameTimeCounter
                                             gameID={gameID}
                                         />
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => setNoticeOpened(true)} disabled={notices.length == 0}>
                                         <PackageOpen />
                                         <span>{t("open_notices")}</span>
-                                        {notices.length ? <Badge variant="destructive" className="p-0 pl-1 pr-1">{notices.filter((e) => e.notice_category == NoticeCategory.NewAnnouncement).length}</Badge> : <></>}
+                                        {newNoticesCount > 0 ? <Badge variant="destructive" className="p-0 pl-1 pr-1">{newNoticesCount}</Badge> : <></>}
                                     </DropdownMenuItem>
                                 </div>
 
@@ -149,7 +157,7 @@ const ChallengesViewHeader = (
                             <div className="flex items-center gap-1">
                                 <PackageOpen />
                                 <span>{t("open_notices")}</span>
-                                {notices.length ? <Badge variant="destructive" className="p-0 pl-1 pr-1 text-white">{notices.filter((e) => e.notice_category == NoticeCategory.NewAnnouncement).length}</Badge> : <></>}
+                                {newNoticesCount > 0 ? <Badge variant="destructive" className="p-0 pl-1 pr-1 text-white">{newNoticesCount}</Badge> : <></>}
                             </div>
                         </Button>
                         {/* <Button size="icon" variant="outline" onClick={testFunction}><FlaskConical /></Button> */}
