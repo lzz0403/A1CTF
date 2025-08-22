@@ -15,5 +15,12 @@
     "form_desc_label": "Description",
     "form_desc_desc": "Input your description here.",
     "submit": "Submit",
-    "change_email": "Change email"
+    "change_email": "Change email",
+    "info": "Profile",
+    "info_setting": "Set Proifle",
+    "main_page": "Home",
+    "basic_info": "Basic Information",
+    "change_password": "Change password",
+    "email_setting": "Email Settings",
+    "rm_rf": "Delete Account"
 }

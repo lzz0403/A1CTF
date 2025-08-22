@@ -19,31 +19,33 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "components/ui/dropdown-menu"
+import { useTranslation } from "react-i18next";
 
 export function ProfileView() {
 
     const navigate = useNavigate()
     const { action } = useParams();
+    const { t } = useTranslation()
 
     const modules = [
         {
             id: "basic",
-            name: "基本信息",
+            name: t("basic_info"),
             icon: <UserRoundPen className="h-4 w-4" />
         },
         {
             id: "password",
-            name: "修改密码",
+            name: t("change_password"),
             icon: <KeyRound className="h-4 w-4" />
         },
         {
             id: "email",
-            name: "邮箱设置",
+            name: t("email_setting"),
             icon: <Mail className="h-4 w-4" />
         },
         {
             id: "mambaout",
-            name: "删号跑路",
+            name: t("rm_rf"),
             icon: <Accessibility className="h-4 w-4" />
         },
     ];
@@ -70,7 +72,7 @@ export function ProfileView() {
                     {/* 左侧模块导航 */}
                     <div className="w-64 flex-none border-r-1 select-none hidden md:block sticky top-0">
                         <div className="px-6 pt-5">
-                            <h3 className="font-bold text-lg mb-4 text-foreground/90">个人资料</h3>
+                            <h3 className="font-bold text-lg mb-4 text-foreground/90">{t("info")}</h3>
                             <div className="space-y-2">
                                 {modules.map((module) => (
                                     <Button
@@ -104,7 +106,7 @@ export function ProfileView() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="start">
-                                <DropdownMenuLabel>资料设置</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t("info_setting")}</DropdownMenuLabel>
                                 {modules.map((e) => (
                                     <DropdownMenuItem
                                         onClick={() => {
@@ -119,7 +121,7 @@ export function ProfileView() {
                                 ))}
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
-                                    主页
+                                    {t("main_page")}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
