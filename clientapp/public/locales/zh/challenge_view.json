@@ -40,7 +40,7 @@
     "container_destory_success": "销毁靶机成功",
     "containers": "靶机列表",
     "container_extend": "延长时间",
-    "submit_flag": "提交Flag!",
+    "submit_flag": "提交!",
     "solved": "已解决!",
     "wait_launch": "靶机等待启动",
     "flag_error": "Flag 错误, 请检查后重新尝试",

@@ -61,7 +61,7 @@ const SubmitFlagView = ({ curChallenge, gameID, setChallengeSolved, challengeSol
                                         }, 200)
 
                                     } else if (res2.data.data.judge_status == "JudgeWA") {
-                                        toast.error(t("error_flag"));
+                                        toast.error(t("flag_error"));
                                         setBorderRed(true)
                                         setJudgeing(false)
                                         clearInterval(judgeingInter)
