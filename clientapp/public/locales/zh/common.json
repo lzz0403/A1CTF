@@ -19,5 +19,6 @@
   "back_to_home": "返回主页",
   "page_not_found": "页面未找到",
   "login_first": "请先登录",
-  "loading": "加载中..."
+  "loading": "加载中...",
+  "admin": "后台管理"
 }

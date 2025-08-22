@@ -96,7 +96,7 @@ const PageHeader = () => {
                         {((curProfile.role == UserRole.ADMIN || curProfile.role == UserRole.MONITOR) && checkLoginStatus()) && (
                             <Button variant={"outline"} onClick={() => {
                                 navigate(`/admin/`)
-                            }}><Wrench />Admin</Button>
+                            }}><Wrench />{t("admin")}</Button>
                         )}
                         <ThemeSwitcher />
                         {checkLoginStatus() ? (
