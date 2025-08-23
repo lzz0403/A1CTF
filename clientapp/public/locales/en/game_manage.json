@@ -1,0 +1,22 @@
+{
+  "events": "Game Events",
+  "basic": "Basic Information",
+  "settings": "Detailed Settings",
+  "timeline": "Stage Settings",
+  "groups": "Group Management",
+  "notices": "Notice Management",
+  "teams": "Team Management",
+  "containers": "Container Management",
+  "update_success": "Game info updated successfully",
+  "title": "Game Management",
+  "left_title": "Management Modules",
+  "edited": "Unsaved changes",
+  "save": "Save Settings",
+  "goto": "Go to this game",
+  "back": "Back to games",
+  "timeline_title": "Timeline & Challenge Assignment",
+  "groups_title": "Group Management",
+  "notices_title": "Notice Management",
+  "teams_title": "Team Management",
+  "containers_title": "Container Management"
+}

@@ -24,10 +24,13 @@ import { TeamManageView } from './game/TeamManageView';
 import { ContainerManageView } from './game/ContainerManageView';
 import { useTheme } from 'next-themes';
 import { GameEventModule } from './game/GameEventModule';
+import { useTranslation } from 'react-i18next';
 
 export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
 
     const { action } = useParams();
+
+    const { t } = useTranslation("game_manage")
 
     const navigate = useNavigate()
 
@@ -144,7 +147,9 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
         };
 
         api.admin.updateGame(game_info.game_id, finalData as any as AdminFullGameInfo).then(() => {
-            toast.success("比赛信息更新成功")
+            toast.success(t("update_success"))
+            setFormEdited(false)
+            formJsonRef.current = ""
         })
     }
 
@@ -175,32 +180,32 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
     const modules = [
         {
             id: "events",
-            name: "比赛事件",
+            name: t("events"),
             icon: <Activity className="h-4 w-4" />
         },
         {
             id: 'basic',
-            name: '基本信息',
+            name: t("basic"),
             icon: <Info className="h-4 w-4" />
         },
         {
             id: 'settings',
-            name: '详细设置',
+            name: t("settings"),
             icon: <Settings className="h-4 w-4" />
         },
         {
             id: 'timeline',
-            name: '阶段设置',
+            name: t("timeline"),
             icon: <CalendarIcon className="h-4 w-4" />
         },
         {
             id: 'groups',
-            name: '分组管理',
+            name: t("groups"),
             icon: <Users className="h-4 w-4" />
         },
         {
             id: 'notices',
-            name: '公告管理',
+            name: t("notices"),
             icon: <MessageSquareLock className="h-4 w-4" />
         },
         // {
@@ -210,12 +215,12 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
         // },
         {
             id: "teams",
-            name: "队伍管理",
+            name: t("teams"),
             icon: <Users className="h-4 w-4" />
         },
         {
             id: "containers",
-            name: "容器管理",
+            name: t("containers"),
             icon: <PackageSearch className="h-4 w-4" />
         }
     ];
@@ -226,7 +231,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
             <div className="absolute top-0 z-10 backdrop-blur-sm bg-background/20 border-b px-6 w-full h-20 flex flex-col justify-center">
                 <div className="flex items-center justify-between select-none">
                     <div className="flex items-center gap-4">
-                        <span className="font-bold text-xl">比赛管理</span>
+                        <span className="font-bold text-xl">{t("title")}</span>
                         <div className="h-8 w-px bg-border" />
                         <div className='flex gap-2 items-center'>
                             <span className="text-xl text-muted-foreground">
@@ -237,7 +242,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                     <div className='flex gap-3 items-center'>
                         {
                             formEdited && (
-                                <span className='text-red-500'>* 有未保存的修改</span>
+                                <span className='text-red-500'>* {t("edited")}</span>
                             )
                         }
                         <Button
@@ -246,14 +251,14 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                             onClick={form.handleSubmit(onSubmit)}
                         >
                             <Save className="h-4 w-4" />
-                            保存设置
+                            {t("save")}
                         </Button>
                         <Button
                             size="sm"
                             variant="outline"
                             className="h-9 w-9 p-0"
                             onClick={() => window.open(`/games/${game_info.game_id}/info`)}
-                            data-tooltip-content="前往比赛"
+                            data-tooltip-content={t("goto")}
                             data-tooltip-id="my-tooltip"
                             data-tooltip-place="bottom"
                         >
@@ -266,7 +271,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                             className=""
                         >
                             <CircleArrowLeft className="h-4 w-4" />
-                            返回比赛列表
+                            {t("back")}
                         </Button>
                     </div>
                 </div>
@@ -276,7 +281,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                 {/* 左侧模块导航 */}
                 <div className="w-64 flex-none border-r-1 select-none">
                     <div className="px-6 pt-28">
-                        <h3 className="font-semibold text-lg mb-4 text-foreground/90">管理模块</h3>
+                        <h3 className="font-semibold text-lg mb-4 text-foreground/90">{t("left_title")}</h3>
                         <div className="space-y-2">
                             {modules.map((module) => (
                                 <Button
@@ -334,7 +339,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                                         <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-600/10 flex items-center justify-center">
                                             <CalendarIcon className="h-4 w-4 text-purple-600" />
                                         </div>
-                                        <h2 className="text-xl font-semibold">时间线与题目分配</h2>
+                                        <h2 className="text-xl font-semibold">{t("timeline_title")}</h2>
                                     </div>
                                     <GameTimelineEditor
                                         form={form}
@@ -349,7 +354,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                                         <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/10 flex items-center justify-center">
                                             <Users className="h-4 w-4 text-orange-600" />
                                         </div>
-                                        <h2 className="text-xl font-semibold">分组管理</h2>
+                                        <h2 className="text-xl font-semibold">{t("groups_title")}</h2>
                                     </div>
                                     <GameGroupManager gameId={game_info.game_id} />
                                 </div>
@@ -362,7 +367,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                                         <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center">
                                             <MessageSquareLock className="h-4 w-4 text-blue-600" />
                                         </div>
-                                        <h2 className="text-xl font-semibold">公告管理</h2>
+                                        <h2 className="text-xl font-semibold">{t("notices_title")}</h2>
                                     </div>
                                     <GameNoticeManager gameId={game_info.game_id} />
                                 </div>
@@ -391,7 +396,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                                         <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center">
                                             <Users className="h-4 w-4 text-blue-600" />
                                         </div>
-                                        <h2 className="text-xl font-semibold">队伍管理</h2>
+                                        <h2 className="text-xl font-semibold">{t("teams_title")}</h2>
                                     </div>
                                     <TeamManageView
                                         gameId={game_info.game_id}
@@ -406,7 +411,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                                         <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-green-500/20 to-green-600/10 flex items-center justify-center">
                                             <PackageSearch className="h-4 w-4 text-green-600" />
                                         </div>
-                                        <h2 className="text-xl font-semibold">容器管理</h2>
+                                        <h2 className="text-xl font-semibold">{t("containers_title")}</h2>
                                     </div>
                                     <ContainerManageView
                                         gameId={game_info.game_id}
