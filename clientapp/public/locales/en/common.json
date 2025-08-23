@@ -22,5 +22,19 @@
     "loading": "Loading...",
     "admin": "Admin",
     "continue": "Continue",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "error": {
+        "unknow": "An unknown error occurred",
+        "default": "Server error",
+        "request": "Network connection failed, please check your network",
+        "email": "Please verify your email first",
+        "400": "Bad request",
+        "401": "Unauthorized, please login again",
+        "403": "Forbidden: Access denied",
+        "404": "Resource not found",
+        "500": "Internal server error",
+        "502": "Bad gateway",
+        "503": "Service unavailable",
+        "504": "Gateway timeout"
+    }
 }

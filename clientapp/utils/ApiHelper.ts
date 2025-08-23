@@ -1,5 +1,9 @@
+import i18n from "../i18n"
 import { Api } from "./A1API";
 import { toast } from 'react-toastify/unstyled';
+
+// 获取 i18n 函数
+const t = (key: string) => i18n.t(`error.${key}`)
 
 // 导航函数类型
 type NavigateFunction = (path: string) => void;
@@ -15,12 +19,12 @@ class ErrorToastDebouncer {
     canShowToast(errorCode: number): boolean {
         const now = Date.now();
         const lastTime = this.lastToastTime[errorCode];
-        
+
         if (!lastTime || now - lastTime > this.debounceDelay) {
             this.lastToastTime[errorCode] = now;
             return true;
         }
-        
+
         return false;
     }
 
@@ -52,7 +56,7 @@ const getNavigate = (): NavigateFunction => {
 // 创建 API 实例并配置拦截器
 export const api = new Api({
     baseURL: "/",
-    withCredentials: true,
+    withCredentials: true
 });
 
 export const sAPI = new Api({
@@ -69,7 +73,7 @@ const handleGlobalError = (error: any, config?: any) => {
     }
 
     // 获取错误信息
-    let errorMessage = "发生未知错误";
+    let errorMessage = t("unknow");
     let errorCode = 0;
 
     if (error.response) {
@@ -89,42 +93,17 @@ const handleGlobalError = (error: any, config?: any) => {
             errorMessage = data;
         } else {
             // 根据状态码提供默认错误信息
-            switch (status) {
-                case 400:
-                    errorMessage = "请求参数错误";
-                    break;
-                case 401:
-                    errorMessage = "未授权，请重新登录";
-                    break;
-                case 403:
-                    errorMessage = "没有权限访问";
-                    break;
-                case 404:
-                    errorMessage = "请求的资源不存在";
-                    break;
-                case 500:
-                    errorMessage = "服务器内部错误";
-                    break;
-                case 502:
-                    errorMessage = "网关错误";
-                    break;
-                case 503:
-                    errorMessage = "服务暂时不可用";
-                    break;
-                case 504:
-                    errorMessage = "网关超时";
-                    break;
-                default:
-                    errorMessage = `服务器错误 (${status})`;
-            }
+            errorMessage = [400, 401, 403, 404, 500, 502, 503, 504].includes(status) ?
+                t(`${status}`) :
+                `${t("default")} (${status})`
         }
     } else if (error.request) {
         // 网络错误
-        errorMessage = "网络连接失败，请检查网络";
+        errorMessage = t("request")
         errorCode = -1;
     } else {
         // 其他错误
-        errorMessage = error.message || "发生未知错误";
+        errorMessage = error.message || t("unknow");
         errorCode = -2;
     }
 
@@ -150,7 +129,7 @@ const handleGlobalError = (error: any, config?: any) => {
     } else if (errorCode == 421) {
         // 使用防抖机制，避免短时间内重复显示421错误提示
         if (errorToastDebouncer.canShowToast(421)) {
-            toast.error("请先验证邮箱")
+            toast.error(t("email"))
             getNavigate()("/profile/email")
         }
     } else {
@@ -159,6 +138,13 @@ const handleGlobalError = (error: any, config?: any) => {
 
     return Promise.reject(error);
 };
+
+// 为 api 实例添加请求拦截器
+api.instance.interceptors.request.use((config) => {
+    // 获取 i18n 的配置
+    config.headers["Accept-Language"] = localStorage.getItem("i18next") || "en";
+    return config;
+})
 
 // 为 api 实例添加响应拦截器
 api.instance.interceptors.response.use(
@@ -171,6 +157,13 @@ api.instance.interceptors.response.use(
         return handleGlobalError(error, error.config);
     }
 );
+
+// 为 sAPI 实例添加请求拦截器
+sAPI.instance.interceptors.request.use((config) => {
+    // 获取 i18n 的配置
+    config.headers["Accept-Language"] = localStorage.getItem("i18next") || "en";
+    return config;
+})
 
 // 为 sAPI 实例添加响应拦截器
 sAPI.instance.interceptors.response.use(
