@@ -50,7 +50,7 @@ export default function GameViewSidebar(
         },
         {
             id: 'scoreboard',
-            name: gameViewT("scoreboard"),
+            name: gameViewT("scoreboard.title"),
             icon: <Cctv className="h-4 w-4" />,
             shouldDisable: () => {
                 return gameStatus == A1GameStatus.Pending || gameStatus == A1GameStatus.NoSuchGame
