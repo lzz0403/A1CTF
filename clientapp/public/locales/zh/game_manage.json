@@ -1,0 +1,22 @@
+{
+    "events": "比赛事件",
+    "basic": "基本信息",
+    "settings": "详细设置",
+    "timeline": "阶段设置",
+    "groups": "分组管理",
+    "notices": "公告管理",
+    "teams": "队伍管理",
+    "containers": "容器管理",
+    "update_success": "比赛信息更新成功",
+    "title": "比赛管理",
+    "left_title": "管理模块",
+    "edited": "有未保存的修改",
+    "save": "保存设置",
+    "goto": "前往比赛",
+    "back": "返回比赛列表",
+    "timeline_title": "时间线与题目分配",
+    "groups_title": "分组管理",
+    "notices_title": "公告管理",
+    "teams_title": "队伍管理",
+    "containers_title": "容器管理"
+}
