@@ -1688,6 +1688,8 @@ export class HttpClient<SecurityDataType = unknown> {
       headers: {
         ...(requestParams.headers || {}),
         ...(type ? { "Content-Type": type } : {}),
+        // 适配后端的i18n
+        "Accept-Language": localStorage.getItem("i18next") || "en",
       },
       params: query,
       responseType: responseFormat,
