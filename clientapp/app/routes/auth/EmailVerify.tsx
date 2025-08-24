@@ -1,17 +1,19 @@
 import { Button } from "components/ui/button";
 import { BadgeCheck, BadgePercent, BadgeX, House } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
 import { api, createSkipGlobalErrorConfig } from "utils/ApiHelper";
 
 export default function EmailVerify() {
     const [search, _] = useSearchParams()
     const code = search.get("code")
+    const { t } = useTranslation("verify")
 
     if (!search.has("code") || code?.trim().length == 0) {
         return (
             <div className="w-screen h-screen flex items-center justify-center">
-                <span className="font-bold text-2xl">Missing code...</span>
+                <span className="font-bold text-2xl">{t("miss_code")}</span>
             </div>
         )
     }
@@ -32,29 +34,29 @@ export default function EmailVerify() {
 
     return (
         <div className="w-screen h-screen flex flex-col items-center justify-center select-none gap-8">
-            { emailVerifyStatus == "verified" ? (
+            {emailVerifyStatus == "verified" ? (
                 <div className="flex flex-col items-center justify-center gap-4 text-green-500">
                     <BadgeCheck size={64} />
-                    <span className="font-bold text-3xl">Email verified</span>
+                    <span className="font-bold text-3xl">{t("email_verified")}</span>
                 </div>
             ) : emailVerifyStatus == "error" ? (
                 <div className="flex flex-col items-center justify-center gap-4 text-red-400">
                     <BadgeX size={64} />
-                    <span className="font-bold text-3xl">Invalid Code</span>
+                    <span className="font-bold text-3xl">{t("invalid_code")}</span>
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center gap-4">
                     <BadgePercent size={64} />
-                    <span className="font-bold text-3xl">Verifying email</span>
+                    <span className="font-bold text-3xl">{t("email_verifying")}</span>
                 </div>
-            ) }
+            )}
             <Button variant="outline"
                 onClick={() => {
                     navigate("/")
                 }}
             >
                 <House />
-                Main page
+                {t("home")}
             </Button>
         </div>
     )
