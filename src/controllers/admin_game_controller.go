@@ -132,15 +132,13 @@ func AdminCreateGame(c *gin.Context) {
 	}
 
 	// 创建管理员默认队伍
-	adminTeamName := "A1CTF-Admins"
-	adminTeamSlogan := "All admins in this team"
 	adminTeam := models.Team{
 		TeamID:          0,
 		GameID:          game.GameID,
-		TeamName:        adminTeamName,
+		TeamName:        "A1CTF-Admins",
 		TeamDescription: nil,
 		TeamAvatar:      nil,
-		TeamSlogan:      &adminTeamSlogan,
+		TeamSlogan:      nil,
 		TeamMembers:     []string{},
 		TeamScore:       0,
 		TeamHash:        general.RandomHash(16),

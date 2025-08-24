@@ -55,7 +55,7 @@ const MyTeamInfomationView = ({
 
     const { gameInfo, gameStatus } = useGame(gameID)
     const { theme } = useTheme();
-    const { t } = useTranslation()
+    const { t } = useTranslation("team_view")
 
     const [scoreBoardData, setScoreBoardData] = useState<GameScoreboardData>();
     const [currentUserTeam, setCurrentUserTeam] = useState<TeamScore>();
@@ -135,7 +135,7 @@ const MyTeamInfomationView = ({
         setLoading(true);
         api.team.transferTeamCaptain(gameInfo.team_info.team_id, gameInfo.game_id, { new_captain_id: newCaptainId } as TransferCaptainPayload)
             .then(() => {
-                toast.success('队长已转移');
+                toast.success(t("transfer_captain_success"));
             })
             .finally(() => {
                 setLoading(false);
@@ -149,7 +149,7 @@ const MyTeamInfomationView = ({
         setLoading(true);
         api.team.removeTeamMember(gameInfo.team_info.team_id, userId, gameInfo.game_id)
             .then(() => {
-                toast.success('队员已移除');
+                toast.success(t("remove_member_success"));
             })
             .finally(() => {
                 setLoading(false);
@@ -163,7 +163,7 @@ const MyTeamInfomationView = ({
         setLoading(true);
         api.team.deleteTeam(gameInfo.team_info.team_id, gameInfo.game_id)
             .then(() => {
-                toast.success('战队已解散');
+                toast.success(t("delete_success"));
             })
             .finally(() => {
                 setLoading(false);
@@ -177,7 +177,7 @@ const MyTeamInfomationView = ({
         setLoading(true);
         api.team.updateTeamInfo(gameInfo.team_info.team_id, gameInfo.game_id ?? 0, { team_slogan: newSlogan } as UpdateTeamInfoPayload)
             .then(() => {
-                toast.success('战队口号已更新');
+                toast.success(t("update"));
                 setSloganDialogOpen(false);
             })
             .finally(() => {
@@ -186,11 +186,11 @@ const MyTeamInfomationView = ({
     };
 
     // 复制文本
-    const copyToClipboard = (text: string, successMessage: string) => {
+    const copyToClipboard = (text: string, successField: string) => {
         if (copy(text)) {
-            toast.success(successMessage);
+            toast.success(`${successField}${t("copy_success")}`);
         } else {
-            toast.error('复制失败');
+            toast.error(t("copy_failed"));
         }
     };
 
@@ -207,25 +207,25 @@ const MyTeamInfomationView = ({
                 return {
                     icon: <Ban className="w-4 h-4" />,
                     color: 'text-red-500',
-                    label: '作弊扣分'
+                    label: t("cheat")
                 };
             case 'reward':
                 return {
                     icon: <Gift className="w-4 h-4" />,
                     color: 'text-green-500',
-                    label: '奖励加分'
+                    label: t("reward")
                 };
             case 'other':
                 return {
                     icon: <AlertTriangle className="w-4 h-4" />,
                     color: 'text-yellow-500',
-                    label: '其他调整'
+                    label: t("other")
                 };
             default:
                 return {
                     icon: <Calculator className="w-4 h-4" />,
                     color: 'text-gray-500',
-                    label: '未知'
+                    label: t("unknow")
                 };
         }
     }
@@ -251,7 +251,7 @@ const MyTeamInfomationView = ({
             >
                 <div className="container mx-auto p-6 space-y-6 py-10">
                     <div className='flex items-center'>
-                        <span className='text-3xl font-bold [text-shadow:_hsl(var(--foreground))_1px_1px_20px] select-none'>Team Info</span>
+                        <span className='text-3xl font-bold [text-shadow:_hsl(var(--foreground))_1px_1px_20px] select-none'>{t("title")}</span>
                     </div>
                     {/* 战队基本信息 */}
                     <Card className='bg-transparent backdrop-blur-md mt-6'>
@@ -269,7 +269,7 @@ const MyTeamInfomationView = ({
                                     </Avatar>
                                     <div>
                                         <CardTitle className="text-2xl">{teamInfo?.team_name}</CardTitle>
-                                        <CardDescription>{teamInfo?.team_slogan || '这个战队很神秘，什么都没有留下'}</CardDescription>
+                                        <CardDescription>{teamInfo?.team_slogan || t("empty_slogan")}</CardDescription>
                                     </div>
                                 </div>
                                 {isTeamCaptain && (
@@ -277,40 +277,40 @@ const MyTeamInfomationView = ({
                                         <UploadImageDialog type="team" game_id={gameInfo.game_id} updateTeam={() => { }} id={gameInfo?.team_info?.team_id}>
                                             <Button variant="outline" size="sm">
                                                 <Upload className="w-4 h-4" />
-                                                上传头像
+                                                {t("upload")}
                                             </Button>
                                         </UploadImageDialog>
                                         <Dialog open={sloganDialogOpen} onOpenChange={setSloganDialogOpen}>
                                             <DialogTrigger asChild>
                                                 <Button variant="outline" size="sm">
                                                     <Settings className="w-4 h-4" />
-                                                    编辑口号
+                                                    {t("edit")}
                                                 </Button>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
-                                                    <DialogTitle>编辑战队口号</DialogTitle>
+                                                    <DialogTitle>{t("edit_title")}</DialogTitle>
                                                     <DialogDescription>
-                                                        修改你的战队口号，让其他人了解你们的风格
+                                                        {t("edit_description")}
                                                     </DialogDescription>
                                                 </DialogHeader>
                                                 <div className="space-y-4">
                                                     <div>
-                                                        <Label htmlFor="slogan">战队口号</Label>
+                                                        <Label htmlFor="slogan">{t("slogan")}</Label>
                                                         <Input
                                                             id="slogan"
                                                             value={newSlogan}
                                                             onChange={(e) => setNewSlogan(e.target.value)}
-                                                            placeholder="输入新的战队口号"
+                                                            placeholder={t("slogan_placeholder")}
                                                         />
                                                     </div>
                                                 </div>
                                                 <DialogFooter>
                                                     <Button variant="outline" onClick={() => setSloganDialogOpen(false)}>
-                                                        取消
+                                                        {t("cancel")}
                                                     </Button>
                                                     <Button onClick={handleUpdateSlogan} disabled={loading}>
-                                                        保存
+                                                        {t("save")}
                                                     </Button>
                                                 </DialogFooter>
                                             </DialogContent>
@@ -323,34 +323,34 @@ const MyTeamInfomationView = ({
                             <div className='flex flex-col gap-2'>
                                 <div className="flex items-center space-x-2 h-[32px]">
                                     <Trophy className="w-5 h-5 text-yellow-500" />
-                                    <span className="font-semibold">分数: {teamInfo?.team_score}</span>
+                                    <span className="font-semibold">{t("points")}: {teamInfo?.team_score}</span>
                                     {currentUserTeam?.rank && (
-                                        <Badge variant="secondary">排名: #{currentUserTeam.rank}</Badge>
+                                        <Badge variant="secondary">{t("rank")}: #{currentUserTeam.rank}</Badge>
                                     )}
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <Hash className="w-5 h-5 text-blue-500" />
-                                    <span>Hash: {teamInfo?.team_hash}</span>
+                                    <span>{t("team_hash")}: {teamInfo?.team_hash}</span>
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() => copyToClipboard(teamInfo?.team_hash ?? "", 'Hash已复制')}
+                                        onClick={() => copyToClipboard(teamInfo?.team_hash ?? "", t("team_hash"))}
                                     >
                                         <Copy className="w-4 h-4" />
                                     </Button>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <Group className="w-5 h-5 text-purple-500" />
-                                    <span>所属队伍: {teamInfo?.group_name ?? "Public"}</span>
+                                    <span>{t("belong")}: {teamInfo?.group_name ?? "Public"}</span>
                                 </div>
                                 {teamInfo?.invite_code && (
                                     <div className="flex items-center space-x-2">
                                         <UserPlus className="w-5 h-5 text-green-500" />
-                                        <span>邀请码: {teamInfo?.invite_code}</span>
+                                        <span>{t("team_code")}: {teamInfo?.invite_code}</span>
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={() => copyToClipboard(teamInfo?.invite_code ?? "", '邀请码已复制')}
+                                            onClick={() => copyToClipboard(teamInfo?.invite_code ?? "", t("team_code"))}
                                         >
                                             <Copy className="w-4 h-4" />
                                         </Button>
@@ -365,86 +365,90 @@ const MyTeamInfomationView = ({
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2">
                                 <Users className="w-5 h-5" />
-                                <span>战队成员</span>
+                                <span>{t("team_member")}</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {teamInfo?.team_members?.map((member) => (
-                                    <div key={member.user_id} className="flex items-center justify-between p-3 border rounded-lg">
-                                        <div className="flex items-center space-x-3">
-                                            <Avatar>
-                                                {member.avatar ? (
-                                                    <AvatarImage src={member.avatar} alt={member.user_name} />
-                                                ) : (
-                                                    <AvatarFallback>{member.user_name.substring(0, 2)}</AvatarFallback>
-                                                )}
-                                            </Avatar>
-                                            <div>
-                                                <div className="flex items-center space-x-2">
-                                                    <span className="font-medium">{member.user_name}</span>
-                                                    {member.captain && (
-                                                        <Badge variant="default">
-                                                            <Crown className="w-3 h-3 mr-1" />
-                                                            队长
-                                                        </Badge>
+                                {!teamInfo?.team_members || teamInfo.team_members.length === 0 ?
+                                    <p className="text-muted-foreground">{t("empty_team")}</p>
+                                    :
+                                    teamInfo?.team_members?.map((member) => (
+                                        <div key={member.user_id} className="flex items-center justify-between p-3 border rounded-lg">
+                                            <div className="flex items-center space-x-3">
+                                                <Avatar>
+                                                    {member.avatar ? (
+                                                        <AvatarImage src={member.avatar} alt={member.user_name} />
+                                                    ) : (
+                                                        <AvatarFallback>{member.user_name.substring(0, 2)}</AvatarFallback>
                                                     )}
+                                                </Avatar>
+                                                <div>
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="font-medium">{member.user_name}</span>
+                                                        {member.captain && (
+                                                            <Badge variant="default">
+                                                                <Crown className="w-3 h-3 mr-1" />
+                                                                {t("team_captain")}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
+                                            {isTeamCaptain && !member.captain && member.user_id !== curProfile.user_id && (
+                                                <div className="flex space-x-2">
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="outline" size="sm">
+                                                                <Crown className="w-4 h-4 mr-2" />
+                                                                {t("transfer_captain")}
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>{t("transfer_title")}</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    {t("transfer_description", { username: member.user_name })}
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleTransferCaptain(member.user_id)}>
+                                                                    {t("sure")}
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                                                                <UserMinus className="w-4 h-4 mr-2" />
+                                                                {t("remove_member")}
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>{t("remove_title")}</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    {t("remove_description", { username: member.user_name })}
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                                                                <AlertDialogAction
+                                                                    onClick={() => handleRemoveMember(member.user_id)}
+                                                                    className="bg-red-600 hover:bg-red-700"
+                                                                >
+                                                                    {t("sure")}
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
+                                            )}
                                         </div>
-                                        {isTeamCaptain && !member.captain && member.user_id !== curProfile.user_id && (
-                                            <div className="flex space-x-2">
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button variant="outline" size="sm">
-                                                            <Crown className="w-4 h-4 mr-2" />
-                                                            转移队长
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>确认转移队长</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                你确定要将队长权限转移给 {member.user_name} 吗？此操作不可撤销。
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>取消</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleTransferCaptain(member.user_id)}>
-                                                                确认转移
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                                                            <UserMinus className="w-4 h-4 mr-2" />
-                                                            踢出
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>确认踢出队员</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                你确定要将 {member.user_name} 踢出战队吗？
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>取消</AlertDialogCancel>
-                                                            <AlertDialogAction
-                                                                onClick={() => handleRemoveMember(member.user_id)}
-                                                                className="bg-red-600 hover:bg-red-700"
-                                                            >
-                                                                确认踢出
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
+                                    ))
+                                }
                             </div>
                         </CardContent>
                     </Card>
@@ -454,20 +458,20 @@ const MyTeamInfomationView = ({
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2">
                                 <Trophy className="w-5 h-5" />
-                                <span>解题情况</span>
+                                <span>{t("solve")}</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             {!currentUserTeam?.solved_challenges || currentUserTeam.solved_challenges.length === 0 ? (
-                                <p className="text-muted-foreground">暂无解题记录</p>
+                                <p className="text-muted-foreground">{t("empty_solve")}</p>
                             ) : (
                                 <div className="space-y-2">
                                     {currentUserTeam.solved_challenges.map((solvedChallenge, index) => (
                                         <div key={`solved-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
                                             <div>
-                                                <div className="font-medium">{getChallenge(solvedChallenge.challenge_id || 0)?.challenge_name || `题目 ${solvedChallenge.challenge_id}`}</div>
+                                                <div className="font-medium">{getChallenge(solvedChallenge.challenge_id || 0)?.challenge_name || `${t("challenge")} ${solvedChallenge.challenge_id}`}</div>
                                                 <div className="text-sm text-muted-foreground">
-                                                    解题者: {solvedChallenge.solver} | 解题时间: {dayjs(solvedChallenge.solve_time).format('YYYY-MM-DD HH:mm:ss')}
+                                                    {t("solver")}: {solvedChallenge.solver} | {t("solve_time")}: {dayjs(solvedChallenge.solve_time).format('YYYY-MM-DD HH:mm:ss')}
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-2">
@@ -485,12 +489,12 @@ const MyTeamInfomationView = ({
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2">
                                 <Pencil className="w-5 h-5" />
-                                <span>分数修正</span>
+                                <span>{t("adjust")}</span>
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             {!currentUserTeam?.score_adjustments || currentUserTeam.score_adjustments.length === 0 ? (
-                                <p className="text-muted-foreground">暂无分数修正</p>
+                                <p className="text-muted-foreground">{t("empty_adjust")}</p>
                             ) : (
                                 <div className="space-y-2">
                                     {currentUserTeam.score_adjustments.map((adjustedScore, index) => (
@@ -501,7 +505,7 @@ const MyTeamInfomationView = ({
                                                     <div className={`font-medium`}>{getAdjustmentTypeInfo(adjustedScore.adjustment_type).label}</div>
                                                 </div>
                                                 <div className="text-sm text-muted-foreground">
-                                                    理由：{adjustedScore.reason} 修正时间: {dayjs(adjustedScore.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                                                    {t("adjust_reason")}: {adjustedScore.reason} {t("adjust_time")}: {dayjs(adjustedScore.created_at).format('YYYY-MM-DD HH:mm:ss')}
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-2">
@@ -524,22 +528,22 @@ const MyTeamInfomationView = ({
                             <CardHeader>
                                 <CardTitle className="text-red-600 flex items-center space-x-2">
                                     <Trash2 className="w-5 h-5" />
-                                    <span>危险操作</span>
+                                    <span>{t("danger")}</span>
                                 </CardTitle>
                                 <CardDescription>
-                                    以下操作不可撤销，请谨慎操作
+                                    {t("danger_description")}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <AlertConformer
-                                    title='确认解散战队'
+                                    title={t("delete_title")}
                                     type='danger'
-                                    description={`你确定要解散战队 ${teamInfo?.team_name} 吗？此操作将删除所有战队数据，且不可撤销。`}
+                                    description={t("delete_description", { teamname: teamInfo?.team_name })}
                                     onConfirm={handleDeleteTeam}
                                 >
                                     <Button variant="destructive">
                                         <Trash2 className="w-4 h-4 mr-2" />
-                                        解散战队
+                                        {t("delete_team")}
                                     </Button>
                                 </AlertConformer>
                             </CardContent>
@@ -551,13 +555,13 @@ const MyTeamInfomationView = ({
                     <Card className='bg-transparent backdrop-blur-md select-none px-20'>
                         <CardContent className="py-6">
                             <div className="text-center">
-                                <h3 className="text-lg font-semibold mb-2">您还没有加入战队</h3>
-                                <p className="text-muted-foreground mb-4">请先创建或加入一个战队来查看战队信息</p>
+                                <h3 className="text-lg font-semibold mb-2">{t("not_join_team")}</h3>
+                                <p className="text-muted-foreground mb-4">{t("not_join_team_description")}</p>
                                 <Button variant="outline" onClick={() => {
                                     navigator(gamePath)
                                 }}>
                                     <CircleArrowLeft size={32} />
-                                    返回
+                                    {t("back")}
                                 </Button>
                             </div>
                         </CardContent>
