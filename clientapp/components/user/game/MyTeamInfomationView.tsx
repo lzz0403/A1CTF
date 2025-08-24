@@ -371,7 +371,7 @@ const MyTeamInfomationView = ({
                         <CardContent>
                             <div className="space-y-4">
                                 {!teamInfo?.team_members || teamInfo.team_members.length === 0 ?
-                                    <p className="text-muted-foreground">{t("empty_solve")}</p>
+                                    <p className="text-muted-foreground">{t("empty_team")}</p>
                                     :
                                     teamInfo?.team_members?.map((member) => (
                                         <div key={member.user_id} className="flex items-center justify-between p-3 border rounded-lg">
