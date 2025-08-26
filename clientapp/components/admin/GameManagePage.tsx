@@ -8,11 +8,14 @@ import { UserGameSimpleInfo } from "utils/A1API";
 import { api } from "utils/ApiHelper";
 import { useNavigate } from "react-router";
 import GameCard from "./GameCard";
+import { useTranslation } from "react-i18next";
 
 export function AdminGameManagePage() {
 
     const { theme } = useTheme()
     const [games, setGames] = useState<UserGameSimpleInfo[]>([])
+
+    const { t } = useTranslation("game_manage")
 
     const navigate = useNavigate()
 
@@ -43,8 +46,8 @@ export function AdminGameManagePage() {
                                 <Trophy className="h-5 w-5 text-primary" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">比赛管理</h1>
-                                <p className="text-sm text-muted-foreground">管理和配置 {games.length} 场比赛</p>
+                                <h1 className="text-2xl font-bold">{t("title")}</h1>
+                                <p className="text-sm text-muted-foreground">{t("sub_title", { length: games?.length ?? '?' })}</p>
                             </div>
                         </div>
 
@@ -54,7 +57,7 @@ export function AdminGameManagePage() {
                                 <Input
                                     value={searchContent}
                                     onChange={(e) => setSearchContent(e.target.value)}
-                                    placeholder="搜索比赛名称或简介..."
+                                    placeholder={t("search_placeholder")}
                                     className="pl-10 bg-background/50 backdrop-blur-sm"
                                 />
                             </div>
@@ -66,7 +69,7 @@ export function AdminGameManagePage() {
                         onClick={() => navigate(`/admin/games/create`)}
                     >
                         <CirclePlus className="h-4 w-4" />
-                        添加比赛
+                        {t("add_game")}
                     </Button>
                 </div>
             </div>
@@ -93,12 +96,12 @@ export function AdminGameManagePage() {
                             )}
                         </div>
                         <h3 className="text-xl font-semibold mb-2">
-                            {searchContent ? "没有找到比赛" : "还没有比赛"}
+                            {searchContent ? t("empty_search") : t("empty_game")}
                         </h3>
                         <p className="text-muted-foreground max-w-md">
                             {searchContent
-                                ? `没有找到包含 "${searchContent}" 的比赛`
-                                : "开始创建您的第一场比赛吧！"
+                                ? t("search_failed", { content: searchContent })
+                                : t("create_first")
                             }
                         </p>
                         {searchContent ? (
@@ -107,7 +110,7 @@ export function AdminGameManagePage() {
                                 onClick={() => setSearchContent("")}
                                 className="mt-4"
                             >
-                                清除搜索
+                                {t("clear_search")}
                             </Button>
                         ) : (
                             <Button
@@ -115,7 +118,7 @@ export function AdminGameManagePage() {
                                 className="mt-4"
                             >
                                 <CirclePlus className="h-4 w-4" />
-                                创建比赛
+                                t("add_game")
                             </Button>
                         )}
                     </div>
