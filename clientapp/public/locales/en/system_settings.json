@@ -107,5 +107,35 @@
             "description": "You can set the password reset email template here",
             "email_description": "You can enter your email template here. The template variable for username is {username}, and the template variable for the reset link is {reset_link}"
         }
-    }
+    },
+    "security": {
+        "title": "Security Settings",
+        "captcha": "Enable CAPTCHA",
+        "captcha_description": "Enable CAPTCHA verification on login, registration, and other pages"
+    },
+    "user": {
+        "title": "User Policy",
+        "register_enable": "Enable Registration",
+        "register_enable_description": "Allow new users to register",
+        "active_method": "Account Activation Method",
+        "active_choose": "Please select an account activation method",
+        "active_auto": "Automatic Activation (No verification required)",
+        "active_email": "Email Verification Activation",
+        "active_admin": "Admin Approval Activation"
+    },
+    "other": {
+        "title": "Other Settings",
+        "language": "Default Language",
+        "language_placeholder": "Select default language",
+        "zh": "Simplified Chinese (简体中文)",
+        "en": "English (US)",
+        "timezone": "Timezone Settings",
+        "timezone_placeholder": "Select system timezone",
+        "shanghai": "China Standard Time (UTC+8)",
+        "utc": "Coordinated Universal Time (UTC)",
+        "nk": "Eastern Time (US) (UTC-5/4)",
+        "london": "UK Time / GMT (UTC+0/1)",
+        "file_max_size": "Maximum Upload File Size (MB)"
+    },
+    "aboutus": "About Page - Edit"
 }

@@ -3,23 +3,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "c
 import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "components/ui/form";
 import { SystemSettingsValues } from "./AdminSettingsPage";
+import { useTranslation } from "react-i18next";
 
 export const OtherSettings = (
-    { form } : {
+    { form }: {
         form: UseFormReturn<SystemSettingsValues>,
     }
 ) => {
 
+    const { t: systemSettingsT } = useTranslation("system_settings")
+
+    const t = (key: string) => systemSettingsT(`other.${key}`)
+
     return (
         <>
-            <span className="text-2xl font-bold mb-4">其他设置</span>
+            <span className="text-2xl font-bold mb-4">{t("title")}</span>
             <FormField
                 control={form.control}
                 name="defaultLanguage"
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>默认语言</FormLabel>
+                            <FormLabel>{t("language")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
@@ -29,12 +34,12 @@ export const OtherSettings = (
                         >
                             <FormControl>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="选择默认语言" />
+                                    <SelectValue placeholder={t("language_placeholder")} />
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="zh-CN">简体中文</SelectItem>
-                                <SelectItem value="en-US">English (US)</SelectItem>
+                                <SelectItem value="zh-CN">{t("zh")}</SelectItem>
+                                <SelectItem value="en-US">{t("en")}</SelectItem>
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -48,7 +53,7 @@ export const OtherSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>时区设置</FormLabel>
+                            <FormLabel>{t("timezone")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
@@ -58,14 +63,14 @@ export const OtherSettings = (
                         >
                             <FormControl>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="选择时区" />
+                                    <SelectValue placeholder={t("timezone_placeholder")} />
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="Asia/Shanghai">中国标准时间 (UTC+8)</SelectItem>
-                                <SelectItem value="UTC">协调世界时 (UTC)</SelectItem>
-                                <SelectItem value="America/New_York">美国东部时间 (UTC-5/4)</SelectItem>
-                                <SelectItem value="Europe/London">英国标准时间 (UTC+0/1)</SelectItem>
+                                <SelectItem value="Asia/Shanghai">{t("shanghai")}</SelectItem>
+                                <SelectItem value="UTC">{t("utc")}</SelectItem>
+                                <SelectItem value="America/New_York">{t("nk")}</SelectItem>
+                                <SelectItem value="Europe/London">{t("london")}</SelectItem>
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -79,7 +84,7 @@ export const OtherSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>最大上传文件大小 (MB)</FormLabel>
+                            <FormLabel>{t("file_max_size")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
