@@ -1,0 +1,31 @@
+{
+    "email": {
+        "title": "Email Settings",
+        "smtp_host": "SMTP Host",
+        "smtp_port": "SMTP Port",
+        "smtp_port_type": {
+            "title": "SMTP Port Type",
+            "placeholder": "Please select SMTP port type",
+            "none": "None (Default Port 25)",
+            "tls": "TLS",
+            "starttls": "STARTTLS"
+        },
+        "smtp_sender": "Sender Name",
+        "smtp_username": "SMTP Username",
+        "smtp_password": {
+            "title": "SMTP Password",
+            "description": "Email password or authorization code"
+        },
+        "smtp_address": {
+            "title": "Sender Address",
+            "example": "Example: noreply@example.com"
+        },
+        "smtp_test": {
+            "title": "Email Test",
+            "empty_error": "Please enter a test email",
+            "success": "Test email sent successfully",
+            "send": "Send Test",
+            "description": "Please save the settings before sending a test email :)"
+        }
+    }
+}

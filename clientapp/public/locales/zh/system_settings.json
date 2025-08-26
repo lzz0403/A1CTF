@@ -1,0 +1,31 @@
+{
+    "email": {
+        "title": "邮件设置",
+        "smtp_host": "SMTP服务器",
+        "smtp_port": "SMTP端口",
+        "smtp_port_type": {
+            "title": "SMTP端口类型",
+            "placeholder": "请选择SMTP端口类型",
+            "none": "无(25端口默认)",
+            "tls": "TLS",
+            "starttls": "STARTTLS"
+        },
+        "smtp_sender": "发件人名字",
+        "smtp_username": "SMTP用户名",
+        "smtp_password": {
+            "title": "SMTP密码",
+            "description": "邮箱密码或授权码"
+        },
+        "smtp_address": {
+            "title": "发件人地址",
+            "example": "例如: noreply@example.com"
+        },
+        "smtp_test": {
+            "title": "邮件测试",
+            "empty_error": "请输入测试邮箱",
+            "success": "测试邮件已发送",
+            "send": "测试发送",
+            "description": "请先保存设置再发送测试邮件 :)"
+        }
+    }
+}

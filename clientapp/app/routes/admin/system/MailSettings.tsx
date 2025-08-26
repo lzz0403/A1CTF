@@ -5,9 +5,10 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { SystemSettingsValues } from "./AdminSettingsPage";
 import { Mail } from "lucide-react";
 import { useState } from "react";
-import { api, createSkipGlobalErrorConfig } from "utils/ApiHelper";
+import { api } from "utils/ApiHelper";
 import { toast } from 'react-toastify/unstyled';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "components/ui/select";
+import { useTranslation } from "react-i18next";
 
 export const MailSettings = (
     { form }: {
@@ -15,11 +16,12 @@ export const MailSettings = (
     }
 ) => {
 
+    const { t } = useTranslation("system_settings")
     const [smtpTestTarget, setSmtpTestTarget] = useState("")
 
     return (
         <>
-            <span className="text-2xl font-bold mb-4">邮件设置</span>
+            <span className="text-2xl font-bold mb-4">{t("email.title")}</span>
 
             <FormField
                 control={form.control}
@@ -27,7 +29,7 @@ export const MailSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>SMTP服务器</FormLabel>
+                            <FormLabel>{t("email.smtp_host")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
@@ -44,7 +46,7 @@ export const MailSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>SMTP端口</FormLabel>
+                            <FormLabel>{t("email.smtp_port")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
@@ -59,11 +61,10 @@ export const MailSettings = (
                 control={form.control}
                 name="smtpPortType"
                 render={({ field }) => {
-                    console.log(field.value)
                     return (
                         <FormItem>
                             <div className="flex items-center h-[20px]">
-                                <FormLabel>SMTP端口类型</FormLabel>
+                                <FormLabel>{t("email.smtp_port_type.title")}</FormLabel>
                                 <div className="flex-1" />
                                 <FormMessage className="text-[14px]" />
                             </div>
@@ -73,13 +74,13 @@ export const MailSettings = (
                             >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="选择账户激活方式" />
+                                        <SelectValue placeholder={t("email.smtp_port_type.placeholder")} />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    <SelectItem value="none">无(25端口默认)</SelectItem>
-                                    <SelectItem value="tls">TLS</SelectItem>
-                                    <SelectItem value="starttls">STARTTLS</SelectItem>
+                                    <SelectItem value="none">{t("email.smtp_port_type.none")}</SelectItem>
+                                    <SelectItem value="tls">{t("email.smtp_port_type.tls")}</SelectItem>
+                                    <SelectItem value="starttls">{t("email.smtp_port_type.starttls")}</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />
@@ -94,7 +95,7 @@ export const MailSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>发件人名字</FormLabel>
+                            <FormLabel>{t("email.smtp_sender")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
@@ -111,7 +112,7 @@ export const MailSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>SMTP用户名</FormLabel>
+                            <FormLabel>{t("email.smtp_username")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
@@ -128,14 +129,14 @@ export const MailSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>SMTP密码</FormLabel>
+                            <FormLabel>{t("email.smtp_password.title")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>邮箱密码或授权码</FormDescription>
+                        <FormDescription>{t("email.smtp_password.description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -146,43 +147,41 @@ export const MailSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>发件人地址</FormLabel>
+                            <FormLabel>{t("email.smtp_address.title")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>例如: noreply@example.com</FormDescription>
+                        <FormDescription>{t("email.smtp_address.example")}</FormDescription>
                     </FormItem>
                 )}
             />
 
             <div className="flex flex-col gap-2 mt-1">
-                <FormLabel>邮件测试</FormLabel>
+                <FormLabel>{t("email.smtp_test.title")}</FormLabel>
                 <div className="flex gap-4 mt-1">
-                    <Input value={smtpTestTarget} onChange={(val) => setSmtpTestTarget(val.target.value)} />
+                    <Input value={smtpTestTarget} onChange={(val) => setSmtpTestTarget(val.target.value)} placeholder={t("email.smtp_test.empty_error")} />
                     <Button
                         onClick={() => {
                             if (!smtpTestTarget) {
-                                toast.error("请输入测试邮箱")
+                                toast.error(t("email.smtp_test.empty_error"))
                                 return
                             }
                             api.system.sendSmtpTestMail({
                                 to: smtpTestTarget,
                                 type: "test"
-                            }, createSkipGlobalErrorConfig()).then((_res) => {
-                                toast.success("测试邮件已发送")
-                            }).catch((_err) => {
-                                toast.success("测试邮件发送失败，请查看系统日志检查错误")
+                            }).then((_res) => {
+                                toast.success(t("email.smtp_test.success"))
                             })
                         }}
                     >
                         <Mail />
-                        发送
+                        {t("email.smtp_test.send")}
                     </Button>
                 </div>
-                <FormDescription>请先保存再发送测试</FormDescription>
+                <FormDescription>{t("email.smtp_test.description")}</FormDescription>
             </div>
         </>
     );
