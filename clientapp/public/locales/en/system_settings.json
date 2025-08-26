@@ -1,4 +1,20 @@
 {
+    "fetch_error": "Failed to fetch system settings, please refresh and try again",
+    "update_success": "System settings updated successfully",
+    "update_error": "Unable to save system settings, please try again later",
+    "save": "Save Settings",
+    "saving": "Saving...",
+    "sidebar": {
+        "title": "Module Management",
+        "basic": "Basic Settings",
+        "resource": "Resource Settings",
+        "mail": "Email Settings",
+        "template": "Template Settings",
+        "security": "Security Policy",
+        "account-policy": "Account Policy",
+        "others": "Other Settings",
+        "aboutus": "About Page"
+    },
     "email": {
         "title": "Email Settings",
         "smtp_host": "SMTP Host",

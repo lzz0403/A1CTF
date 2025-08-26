@@ -1,4 +1,20 @@
 {
+    "fetch_error": "获取系统设置失败，请刷新后重试",
+    "update_success": "系统设置更新成功",
+    "update_error": "无法保存系统设置，请稍后重试",
+    "save": "保存设置",
+    "saving": "保存中...",
+    "sidebar": {
+        "title": "模块管理",
+        "basic": "基本设置",
+        "resource": "资源设置",
+        "mail": "邮件设置",
+        "template": "模版设置",
+        "security": "安全策略",
+        "account-policy": "账户策略",
+        "others": "其他设置",
+        "aboutus": "关于设置"
+    },
     "email": {
         "title": "邮件设置",
         "smtp_host": "SMTP服务器",
