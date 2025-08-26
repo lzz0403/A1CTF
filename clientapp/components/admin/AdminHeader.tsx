@@ -1,6 +1,7 @@
 import { Cable, ContactRound, Dices, Flag, Home, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 import { useLocation, useNavigate } from "react-router";
+import ThemeSwitcher from "components/ToggleTheme";
 
 export function AdminHeader() {
 
@@ -39,6 +40,7 @@ export function AdminHeader() {
                 <div className="flex-1" />
                 <Button variant={get_button_style("system")} onClick={() => move_to_page("system/basic")} className="font-bold"><Settings />系统设置</Button>
                 <Button variant={get_button_style("system")} onClick={() => navigate("/")} className="font-bold"><Home />返回主页</Button>
+                <ThemeSwitcher />
             </div>
         </header>
     )

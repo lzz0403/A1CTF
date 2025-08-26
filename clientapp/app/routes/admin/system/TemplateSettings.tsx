@@ -16,7 +16,8 @@ import { Button } from "components/ui/button";
 import { useState } from "react";
 import { Send } from "lucide-react";
 import { toast } from "react-toastify/unstyled";
-import { api, createSkipGlobalErrorConfig } from "utils/ApiHelper";
+import { api } from "utils/ApiHelper";
+import { useTranslation } from "react-i18next";
 
 export default function TemplateSettings(
     { form }: {
@@ -26,30 +27,30 @@ export default function TemplateSettings(
 
     const [testEmailReceiver, setTestEmailReceiver] = useState("")
 
+    const { t } = useTranslation("system_settings")
+
     const handleSendTestMail = function (type: "forget" | "verify" | "test") {
         if (!testEmailReceiver) {
-            toast.error("请输入测试邮箱")
+            toast.error(t("email.smtp_test.empty_error"))
             return
         }
         api.system.sendSmtpTestMail({
             to: testEmailReceiver,
             type: type
-        }, createSkipGlobalErrorConfig()).then((_res) => {
-            toast.success("测试邮件已发送")
-        }).catch((_err) => {
-            toast.success("测试邮件发送失败，请查看系统日志检查错误")
+        }).then((_res) => {
+            toast.success(t("email.smtp_test.success"))
         })
     }
 
     return (
         <>
-            <span className="text-2xl font-bold mb-4">模板设置</span>
+            <span className="text-2xl font-bold mb-4">{t("template.title")}</span>
             <div className="space-y-8">
                 <Card className="w-full">
                     <CardHeader>
-                        <CardTitle>邮箱验证模板</CardTitle>
+                        <CardTitle>{t("template.verify.title")}</CardTitle>
                         <CardDescription>
-                            可以在这里设置邮箱验证邮件的模板
+                            {t("template.verify.description")}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="gap-4 flex flex-col mt-4">
@@ -59,7 +60,7 @@ export default function TemplateSettings(
                             render={({ field }) => (
                                 <FormItem>
                                     <div className="flex items-center h-[20px]">
-                                        <FormLabel>邮件标题</FormLabel>
+                                        <FormLabel>{t("template.email_title")}</FormLabel>
                                         <div className="flex-1" />
                                         <FormMessage className="text-[14px]" />
                                     </div>
@@ -75,7 +76,7 @@ export default function TemplateSettings(
                             render={({ field }) => (
                                 <FormItem>
                                     <div className="flex items-center h-[20px]">
-                                        <FormLabel>邮件正文</FormLabel>
+                                        <FormLabel>{t("template.email_content")}</FormLabel>
                                         <div className="flex-1" />
                                         <FormMessage className="text-[14px]" />
                                     </div>
@@ -87,22 +88,22 @@ export default function TemplateSettings(
                                             className='h-[500px]'
                                         />
                                     </FormControl>
-                                    <FormDescription>可以在这里输入你的邮件模板, 关键数据的模板名称请参考文档</FormDescription>
+                                    <FormDescription>{t("template.verify.email_description")}</FormDescription>
                                 </FormItem>
                             )}
                         />
                     </CardContent>
                     <CardFooter className="flex flex-col pt-4 gap-2">
                         <div className="flex gap-2 w-full items-center">
-                            <span className="text-sm font-bold">发送测试邮件(模板变量不会被替换)</span>
+                            <span className="text-sm font-bold">{t("template.email_test")}</span>
                         </div>
                         <div className="flex gap-4 w-full">
-                            <Input placeholder="请输入接受者的邮箱" value={testEmailReceiver} className="flex-1" onChange={(e) => setTestEmailReceiver(e.target.value)}></Input>
+                            <Input placeholder={t("template.email_test_placeholder")} value={testEmailReceiver} className="flex-1" onChange={(e) => setTestEmailReceiver(e.target.value)}></Input>
                             <Button type="submit" variant="outline"
                                 onClick={() => handleSendTestMail("verify")}
                             >
                                 <Send />
-                                测试发送
+                                {t("template.send")}
                             </Button>
                         </div>
 
@@ -111,9 +112,9 @@ export default function TemplateSettings(
 
                 <Card className="w-full">
                     <CardHeader>
-                        <CardTitle>找回密码邮件模板</CardTitle>
+                        <CardTitle>{t("template.reset.title")}</CardTitle>
                         <CardDescription>
-                            可以在这里设置找回密码邮件的模板
+                            {t("template.reset.description")}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="gap-4 flex flex-col mt-4">
@@ -123,7 +124,7 @@ export default function TemplateSettings(
                             render={({ field }) => (
                                 <FormItem>
                                     <div className="flex items-center h-[20px]">
-                                        <FormLabel>邮件标题</FormLabel>
+                                        <FormLabel>{t("template.email_title")}</FormLabel>
                                         <div className="flex-1" />
                                         <FormMessage className="text-[14px]" />
                                     </div>
@@ -139,7 +140,7 @@ export default function TemplateSettings(
                             render={({ field }) => (
                                 <FormItem>
                                     <div className="flex items-center h-[20px]">
-                                        <FormLabel>邮件正文</FormLabel>
+                                        <FormLabel>{t("template.email_content")}</FormLabel>
                                         <div className="flex-1" />
                                         <FormMessage className="text-[14px]" />
                                     </div>
@@ -151,22 +152,22 @@ export default function TemplateSettings(
                                             className='h-[500px]'
                                         />
                                     </FormControl>
-                                    <FormDescription>可以在这里输入你的邮件模板, 关键数据的模板名称请参考文档</FormDescription>
+                                    <FormDescription>{t("template.reset.email_description")}</FormDescription>
                                 </FormItem>
                             )}
                         />
                     </CardContent>
                     <CardFooter className="flex flex-col pt-4 gap-2">
                         <div className="flex gap-2 w-full items-center">
-                            <span className="text-sm font-bold">发送测试邮件(模板变量不会被替换)</span>
+                            <span className="text-sm font-bold">{t("template.email_test")}</span>
                         </div>
                         <div className="flex gap-4 w-full">
-                            <Input placeholder="请输入接受者的邮箱" value={testEmailReceiver} className="flex-1" onChange={(e) => setTestEmailReceiver(e.target.value)}></Input>
+                            <Input placeholder={t("template.email_test_placeholder")} value={testEmailReceiver} className="flex-1" onChange={(e) => setTestEmailReceiver(e.target.value)}></Input>
                             <Button type="submit" variant="outline"
                                 onClick={() => handleSendTestMail("forget")}
                             >
                                 <Send />
-                                测试发送
+                                {t("template.send")}
                             </Button>
                         </div>
 

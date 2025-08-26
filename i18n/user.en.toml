@@ -493,3 +493,13 @@ other = "Too many requests, please try again later"
 [UserAlreadyInTeam]
 description = "User is already in another team"
 other = "User is already in another team"
+
+# Email SMTP 错误信息
+
+[SmtpConfigEmpty]
+description = "Email SMTP config is empty, please contact admin"
+other = "Email SMTP config is empty, please contact admin"
+
+[SmtpConfigError]
+description = "Email SMTP conig error, please contact admin"
+other = "Email SMTP conig error, please contact admin"
