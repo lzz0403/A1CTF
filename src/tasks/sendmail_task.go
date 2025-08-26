@@ -36,7 +36,23 @@ type SendMailTaskPayload struct {
 	TestMailType          *string
 }
 
+func checkEmailConfig() error {
+	// 配置为空
+	if clientconfig.ClientConfig.SmtpHost == "" || clientconfig.ClientConfig.SmtpUsername == "" || clientconfig.ClientConfig.SmtpPassword == "" || clientconfig.ClientConfig.SmtpFrom == "" {
+		return fmt.Errorf("SmtpConfigEmpty")
+	}
+	// 配置错误
+	if clientconfig.ClientConfig.SmtpPort < 1 || clientconfig.ClientConfig.SmtpPort > 65535 {
+		return fmt.Errorf("SmtpConfigError")
+	}
+	return nil
+}
+
 func NewEmailVerificationTask(user models.User) error {
+	if err := checkEmailConfig(); err != nil {
+		return err
+	}
+
 	payload, err := msgpack.Marshal(SendMailTaskPayload{
 		MailSendType:          MailTaskTypeEmailVerification,
 		EmailVerificationData: &EmailVerificationData{User: user},
@@ -57,6 +73,10 @@ func NewEmailVerificationTask(user models.User) error {
 }
 
 func NewForgePasswordEmailTask(user models.User) error {
+	if err := checkEmailConfig(); err != nil {
+		return err
+	}
+
 	payload, err := msgpack.Marshal(SendMailTaskPayload{
 		MailSendType:          MailTaskTypeForgetPassword,
 		EmailVerificationData: &EmailVerificationData{User: user},
@@ -77,6 +97,10 @@ func NewForgePasswordEmailTask(user models.User) error {
 }
 
 func NewSendTestMailTask(to string, mailType string) error {
+	if err := checkEmailConfig(); err != nil {
+		return err
+	}
+
 	payload, err := msgpack.Marshal(SendMailTaskPayload{
 		MailSendType:   MailTaskTypeSendTestMail,
 		SendTestMailTo: &to,

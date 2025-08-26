@@ -174,7 +174,7 @@ func Register(c *gin.Context) {
 
 	// 发送账号验证邮件
 	if clientconfig.ClientConfig.AccountActivationMethod == "email" {
-		tasks.NewEmailVerificationTask(newUser)
+		_ = tasks.NewEmailVerificationTask(newUser) // 忽略潜在的SMTP错误
 	}
 
 	// 记录注册成功日志
@@ -344,7 +344,15 @@ func SendVerifyEmail(c *gin.Context) {
 		return
 	}
 
-	tasks.NewEmailVerificationTask(user)
+	// 判断邮箱SMTP是否配置成功
+	if err := tasks.NewEmailVerificationTask(user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: err.Error()}),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 	})
@@ -449,7 +457,14 @@ func UserForgetPassword(c *gin.Context) {
 				return
 			}
 
-			tasks.NewForgePasswordEmailTask(v)
+			// 判断邮箱SMTP是否配置成功
+			if err := tasks.NewForgePasswordEmailTask(v); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"code":    400,
+					"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: err.Error()}),
+				})
+				return
+			}
 			break
 		}
 	}

@@ -493,3 +493,13 @@ other = "请求过多, 请稍后再试"
 [UserAlreadyInTeam]
 description = "用户已在其他队伍中"
 other = "用户已在其他队伍中"
+
+# Email SMTP 错误信息
+
+[SmtpConfigEmpty]
+description = "邮件SMTP配置为空，请联系管理员配置"
+other = "邮件SMTP配置为空，请联系管理员配置"
+
+[SmtpConfigError]
+description = "邮件SMTP配置错误，请联系管理员配置"
+other = "邮件SMTP配置错误，请联系管理员配置"
