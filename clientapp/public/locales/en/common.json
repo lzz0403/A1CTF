@@ -11,7 +11,6 @@
     "login_out": "Login out",
     "version": "Version",
     "login_out_success": "Login out successful!",
-    "title": "A1CTF | A1natas",
     "system_color": "System Color",
     "enable_background_animation": "Enable Animation",
     "disable_background_animation": "Disable Animation",
@@ -23,6 +22,9 @@
     "admin": "Admin",
     "continue": "Continue",
     "cancel": "Cancel",
+    "confirm": "Confirm",
+    "copy_success": "Copied successfully",
+    "copy_failed": "Copy failed",
     "error": {
         "unknow": "An unknown error occurred",
         "default": "Server error",
@@ -36,5 +38,17 @@
         "502": "Bad gateway",
         "503": "Service unavailable",
         "504": "Gateway timeout"
+    },
+    "toast": {
+        "notice": {
+            "title": "A new announcement has been published, please check it out!",
+            "open": "Open Announcement"
+        },
+        "hint": {
+            "title": "A new hint has been added to a challenge!",
+            "content": "💡 Challenge [{{name}}] has a new hint"
+        },
+        "copy_success": "Copied successfully",
+        "copy_failed": "Copy failed"
     }
 }
