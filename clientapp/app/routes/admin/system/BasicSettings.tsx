@@ -4,6 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "components/ui/form";
 import { SystemSettingsValues } from "./AdminSettingsPage";
 import { Switch } from "components/ui/switch";
+import { useTranslation } from "react-i18next";
 
 export const BasicSettings = (
     { form }: {
@@ -11,9 +12,11 @@ export const BasicSettings = (
     }
 ) => {
 
+    const { t } = useTranslation("system_settings")
+
     return (
         <>
-            <span className="text-2xl font-bold mb-4">基本设置</span>
+            <span className="text-2xl font-bold mb-4">{t("basic.title")}</span>
 
             <FormField
                 control={form.control}
@@ -21,14 +24,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>系统名称</FormLabel>
+                            <FormLabel>{t("basic.name")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>请填写比赛名称</FormDescription>
+                        <FormDescription>{t("basic.name_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -39,14 +42,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>系统标语</FormLabel>
+                            <FormLabel>{t("basic.slogan")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>输入系统标语</FormDescription>
+                        <FormDescription>{t("basic.slogan_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -57,14 +60,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>页脚内容</FormLabel>
+                            <FormLabel>{t("basic.footer")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>输入页脚内容</FormDescription>
+                        <FormDescription>{t("basic.footer_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -75,14 +78,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>备案号</FormLabel>
+                            <FormLabel>{t("basic.icp")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>工信部备案号</FormDescription>
+                        <FormDescription>{t("basic.icp_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -93,14 +96,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>组织名称</FormLabel>
+                            <FormLabel>{t("basic.org")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>组织名称</FormDescription>
+                        <FormDescription>{t("basic.org_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -111,14 +114,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>组织链接</FormLabel>
+                            <FormLabel>{t("basic.url")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>组织链接, 支持跳转</FormDescription>
+                        <FormDescription>{t("basic.url_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -129,14 +132,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>图标的AltData</FormLabel>
+                            <FormLabel>{t("basic.logo")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>长时间悬停在系统图标上显示的 Title</FormDescription>
+                        <FormDescription>{t("basic.logo_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -147,14 +150,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>统一认证显示名称</FormLabel>
+                            <FormLabel>{t("basic.auth")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Input {...field} />
                         </FormControl>
-                        <FormDescription>登录页的统一认证按钮显示名称</FormDescription>
+                        <FormDescription>{t("basic.auth_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -165,14 +168,14 @@ export const BasicSettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>系统摘要</FormLabel>
+                            <FormLabel>{t("basic.summary")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
                         <FormControl>
                             <Textarea {...field} rows={3} />
                         </FormControl>
-                        <FormDescription>系统摘要</FormDescription>
+                        <FormDescription>{t("basic.summary_description")}</FormDescription>
                     </FormItem>
                 )}
             />
@@ -184,9 +187,9 @@ export const BasicSettings = (
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5 mb-[-1px]">
-                                <FormLabel>是否启用背景动画</FormLabel>
+                                <FormLabel>{t("basic.animation")}</FormLabel>
                                 <FormDescription>
-                                    背景动画资源占用有点高，可以选择性的关闭
+                                    {t("basic.animation_description")}
                                 </FormDescription>
                             </div>
                             <FormControl>
