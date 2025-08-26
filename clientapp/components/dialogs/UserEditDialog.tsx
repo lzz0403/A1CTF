@@ -30,6 +30,7 @@ import { AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui/skeleton";
 import { AdminListUserItem, UserRole } from "utils/A1API";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { useTranslation } from "react-i18next"
 
 interface UserEditDialogProps {
     user: AdminListUserItem;
@@ -37,21 +38,24 @@ interface UserEditDialogProps {
     children: React.ReactNode;
 }
 
-export const UserEditDialog: React.FC<UserEditDialogProps> = ({ 
-    user, 
-    updateUsers, 
-    children 
+export const UserEditDialog: React.FC<UserEditDialogProps> = ({
+    user,
+    updateUsers,
+    children
 }) => {
+
+    const { t } = useTranslation("user_manage")
+
     const formSchema = z.object({
         userName: z.string().min(2, {
-            message: "用户名至少需要2个字符",
+            message: t("edit.name_error"),
         }),
         realName: z.string().optional(),
         studentId: z.string().optional(),
         phone: z.string().optional(),
         slogan: z.string().optional(),
         email: z.string().email({
-            message: "请输入有效的邮箱地址",
+            message: t("edit.email_error"),
         }),
         role: z.enum(["ADMIN", "USER", "MONITOR"])
     });
@@ -99,7 +103,7 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
             avatar: user.avatar || null,
             role: values.role as UserRole
         }).then(() => {
-            toast.success("用户信息更新成功");
+            toast.success(t("edit.success"));
             updateUsers();
             setSubmitDisabled(false);
             setIsOpen(false);
@@ -120,7 +124,7 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
                 onInteractOutside={(e) => e.preventDefault()}
             >
                 <DialogHeader>
-                    <DialogTitle>编辑用户 - {user.user_name || ""}</DialogTitle>
+                    <DialogTitle>{t("edit.title")} - {user.user_name || ""}</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -131,12 +135,12 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
                                     name="userName"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>用户名</FormLabel>
+                                            <FormLabel>{t("username")}</FormLabel>
                                             <FormControl>
                                                 <Input placeholder="username" {...field} />
                                             </FormControl>
                                             <FormDescription>
-                                                用户的登录名
+                                                {t("edit.username")}
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -158,28 +162,28 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
                                 )}
                             </Avatar>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="realName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>真实姓名</FormLabel>
+                                        <FormLabel>{t("realname")}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="张三" {...field} value={field.value || ""} />
+                                            <Input placeholder={t("edit.default_name")} {...field} value={field.value || ""} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            
+
                             <FormField
                                 control={form.control}
                                 name="studentId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>学号</FormLabel>
+                                        <FormLabel>{t("student_id")}</FormLabel>
                                         <FormControl>
                                             <Input placeholder="202301010101" {...field} value={field.value || ""} />
                                         </FormControl>
@@ -188,14 +192,14 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
                                 )}
                             />
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="phone"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>手机号</FormLabel>
+                                        <FormLabel>{t("phone")}</FormLabel>
                                         <FormControl>
                                             <Input placeholder="13800138000" {...field} value={field.value || ""} />
                                         </FormControl>
@@ -203,13 +207,13 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
                                     </FormItem>
                                 )}
                             />
-                            
+
                             <FormField
                                 control={form.control}
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>邮箱</FormLabel>
+                                        <FormLabel>{t("email")}</FormLabel>
                                         <FormControl>
                                             <Input placeholder="user@example.com" {...field} />
                                         </FormControl>
@@ -218,48 +222,48 @@ export const UserEditDialog: React.FC<UserEditDialogProps> = ({
                                 )}
                             />
                         </div>
-                        
+
                         <FormField
                             control={form.control}
                             name="slogan"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>个性签名</FormLabel>
+                                    <FormLabel>{t("slogan")}</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="我爱CTF!" {...field} value={field.value || ""} />
+                                        <Textarea placeholder={t("edit.slogan")} {...field} value={field.value || ""} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        
+
                         <FormField
                             control={form.control}
                             name="role"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>用户角色</FormLabel>
+                                    <FormLabel>{t("role.title")}</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="选择用户角色" />
+                                                <SelectValue placeholder={t("edit.role")} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="USER">普通用户</SelectItem>
-                                            <SelectItem value="MONITOR">监控员</SelectItem>
-                                            <SelectItem value="ADMIN">管理员</SelectItem>
+                                            <SelectItem value="USER">{t("role.user")}</SelectItem>
+                                            <SelectItem value="MONITOR">{t("role.monitor")}</SelectItem>
+                                            <SelectItem value="ADMIN">{t("role.admin")}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormDescription>
-                                        用户角色决定了用户的权限
+                                        {t("edit.role_description")}
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        
-                        <Button type="submit" className="transition-all duration-300" disabled={submitDisabled}>保存</Button>
+
+                        <Button type="submit" className="transition-all duration-300" disabled={submitDisabled}>{t("save")}</Button>
                     </form>
                 </Form>
             </DialogContent>

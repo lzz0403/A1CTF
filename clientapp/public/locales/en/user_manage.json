@@ -1,7 +1,7 @@
 {
     "username": "Username",
     "role": {
-        "title": "Role",
+        "title": "User Role",
         "admin": "Admin",
         "monitor": "Monitor",
         "user": "User",
@@ -12,12 +12,11 @@
     "last_ip": "Last Login IP",
     "realname": "Real Name",
     "student_id": "Student ID",
+    "phone": "Phone Number",
+    "slogan": "Slogan",
     "actions": {
         "title": "Actions",
-        "edit": {
-            "title": "Edit User",
-            "op": "Edit"
-        },
+        "edit": "Edit",
         "open": "Open Menu",
         "copy": "Copy User ID",
         "reset": "Reset Password",
@@ -43,5 +42,17 @@
         "pending": "Resetting...",
         "success": "New password: {{pwd}} (copied to clipboard)",
         "error": "Password reset failed"
-    }
+    },
+    "edit": {
+        "name_error": "Username must be at least 2 characters",
+        "email_error": "Please enter a valid email address",
+        "success": "User information updated successfully",
+        "title": "Edit User",
+        "default_name": "San Zhang",
+        "username": "User login name",
+        "slogan": "I love CTF!",
+        "role": "Please select a user role",
+        "role_description": "The user role determines the user's permissions"
+    },
+    "save": "Save"
 }

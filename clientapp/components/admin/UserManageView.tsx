@@ -339,8 +339,8 @@ export function UserManageView() {
                 return (
                     <div className="flex gap-2">
                         <UserEditDialog user={userItem} updateUsers={fetchUsers}>
-                            <Button variant="ghost" className="h-8 w-8 p-0" title={t("actions.edit.title")}>
-                                <span className="sr-only">{t("actions.edit.op")}</span>
+                            <Button variant="ghost" className="h-8 w-8 p-0" title={t("edit.title")}>
+                                <span className="sr-only">{t("actions.edit")}</span>
                                 <Pencil className="h-4 w-4" />
                             </Button>
                         </UserEditDialog>
@@ -455,7 +455,7 @@ export function UserManageView() {
                     <div className="flex items-center justify-end space-x-2 select-none">
                         <div className="flex-1 text-sm text-muted-foreground flex items-center">
                             {table.getFilteredSelectedRowModel().rows.length} /
-                            {t("choose", { count: table.getFilteredRowModel().rows.length })}
+                            {" " + t("actions.choose", { count: table.getFilteredRowModel().rows.length })}
                         </div>
                         <div className="flex gap-3 items-center">
                             <Button
