@@ -27,5 +27,23 @@
             "send": "测试发送",
             "description": "请先保存设置再发送测试邮件 :)"
         }
+    },
+    "template": {
+        "title": "邮件模版",
+        "email_title": "邮件标题",
+        "email_content": "邮件正文",
+        "email_test": "发送测试邮件(模板变量不会被替换)",
+        "email_test_placeholder": "请输入接受者的邮箱",
+        "send": "测试发送",
+        "verify": {
+            "title": "邮箱验证模版",
+            "description": "你可以在这里设置邮箱验证邮件的模板",
+            "email_description": "你可以在这里输入你的邮件模板, 用户名的模版变量是 {username}，验证链接的模版变量是 {verification_link}"
+        },
+        "reset": {
+            "title": "找回密码模板",
+            "description": "你可以在这里设置找回密码邮件的模板",
+            "email_description": "你可以在这里输入你的邮件模板, 用户名的模版变量是 {username}，重置密码链接的模版变量是 {reset_link}"
+        }
     }
 }

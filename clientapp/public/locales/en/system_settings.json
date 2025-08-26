@@ -27,5 +27,23 @@
             "send": "Send Test",
             "description": "Please save the settings before sending a test email :)"
         }
+    },
+    "template": {
+        "title": "Email Templates",
+        "email_title": "Email Title",
+        "email_content": "Email Content",
+        "email_test": "Send Test Email (Template variables will not be replaced)",
+        "email_test_placeholder": "Please enter the recipient's email address",
+        "send": "Send Test",
+        "verify": {
+            "title": "User Email Verification Template",
+            "description": "You can set the user email verification template here",
+            "email_description": "You can enter your email template here. The template variable for username is {username}, and the template variable for the verification link is {verification_link}"
+        },
+        "reset": {
+            "title": "Password Reset Template",
+            "description": "You can set the password reset email template here",
+            "email_description": "You can enter your email template here. The template variable for username is {username}, and the template variable for the reset link is {reset_link}"
+        }
     }
 }
