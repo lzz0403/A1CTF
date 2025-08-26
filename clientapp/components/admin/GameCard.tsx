@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { FastAverageColor } from "fast-average-color";
 import { EyeClosed, Calendar, Settings, Calculator, Trash2, Pause, Play, Square, Plane } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { UserGameSimpleInfo } from "utils/A1API";
 import { api } from "utils/ApiHelper";
@@ -17,6 +18,8 @@ export default function GameCard(
         game: UserGameSimpleInfo
     }
 ) {
+
+    const { t } = useTranslation("game_manage")
 
     const { clientConfig, updateClientConfg } = useGlobalVariableContext()
 
@@ -35,11 +38,11 @@ export default function GameCard(
         const end = dayjs(game.end_time)
 
         if (now.isBefore(start)) {
-            return { text: "即将开始", variant: "secondary", icon: <Pause className="h-3 w-3" /> }
+            return { text: t("ready"), variant: "secondary", icon: <Pause className="h-3 w-3" /> }
         } else if (now.isAfter(start) && now.isBefore(end)) {
-            return { text: "进行中", variant: "default", icon: <Play className="h-3 w-3" /> }
+            return { text: t("running"), variant: "default", icon: <Play className="h-3 w-3" /> }
         } else {
-            return { text: "已结束", variant: "destructive", icon: <Square className="h-3 w-3" /> }
+            return { text: t("end"), variant: "destructive", icon: <Square className="h-3 w-3" /> }
         }
     }
 
@@ -70,7 +73,7 @@ export default function GameCard(
                                     setPrimeColor(brightColor)
                                 })
                                 .catch((e: any) => {
-                                    console.log(e);
+                                    console.error("fac.getColorAsync error:", e);
                                 });
                         }}
                     />
@@ -95,7 +98,7 @@ export default function GameCard(
                                 <Badge variant="outline" className="backdrop-blur-sm select-none bg-background/20 border-white/20 text-white">
                                     <div className="flex gap-1   items-center justify-center">
                                         <EyeClosed className="h-3 w-3" />
-                                        隐藏
+                                        {t("hide")}
                                     </div>
                                 </Badge>
                             )}
@@ -124,7 +127,7 @@ export default function GameCard(
                                 </span>
                             </div>
                             <div className="flex items-center gap-2 text-white/90">
-                                <span className="text-sm">至</span>
+                                <span className="text-sm">{t("to")}</span>
                                 <span className="text-sm font-medium">
                                     {dayjs(game.end_time).format("MM/DD HH:mm")}
                                 </span>
@@ -135,7 +138,7 @@ export default function GameCard(
                         <div className="flex gap-2">
                             <div className="h-9 flex items-center flex-none">
                                 <Label className="hover:bg-accent/50 flex gap-3 rounded-lg border h-9 items-center px-3 backdrop-blur-lg has-[[aria-checked=true]]:border-blue-600 text-white has-[[aria-checked=true]]:text-blue-500 has-[[aria-checked=true]]:bg-blue-50/80 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950 transition-[background-color] duration-300"
-                                    data-tooltip-content="开启后访问网站主页会直接跳转到这个比赛"
+                                    data-tooltip-content={t("race_mode")}
                                     data-tooltip-id="my-tooltip"
                                     data-tooltip-place="bottom"
                                 >
@@ -159,7 +162,7 @@ export default function GameCard(
                                     />
                                     <div className="grid gap-1.5 font-normal">
                                         <p className="text-sm leading-none font-medium">
-                                            开启比赛模式
+                                            {t("enable_race")}
                                         </p>
                                     </div>
                                 </Label>
@@ -169,7 +172,7 @@ export default function GameCard(
                                 variant="secondary"
                                 className="backdrop-blur-sm bg-white/20 hover:bg-white/30 border-white/20 text-white h-9 w-9 p-0"
                                 onClick={() => window.open(`/games/${game.game_id}/info`)}
-                                data-tooltip-content="前往比赛"
+                                data-tooltip-content={t("goto")}
                                 data-tooltip-id="my-tooltip"
                                 data-tooltip-place="bottom"
                             >
@@ -180,7 +183,7 @@ export default function GameCard(
                                 variant="secondary"
                                 className="backdrop-blur-sm bg-white/20 hover:bg-white/30 border-white/20 text-white h-9 w-9 p-0"
                                 onClick={() => navigate(`/admin/games/${game.game_id}/events`)}
-                                data-tooltip-content="编辑比赛"
+                                data-tooltip-content={t("edit")}
                                 data-tooltip-id="my-tooltip"
                                 data-tooltip-place="bottom"
                             >
@@ -191,27 +194,20 @@ export default function GameCard(
                                 variant="secondary"
                                 className="backdrop-blur-sm bg-white/20 hover:bg-white/30 border-white/20 text-white h-9 w-9 p-0"
                                 onClick={() => navigate(`/admin/games/${game.game_id}/score-adjustments`)}
-                                data-tooltip-content="分数修正"
+                                data-tooltip-content={t("adjust")}
                                 data-tooltip-id="my-tooltip"
                                 data-tooltip-place="bottom"
                             >
                                 <Calculator className="h-4 w-4" />
                             </Button>
-                            {/* <Button
-                                                                    size="sm"
-                                                                    variant="secondary"
-                                                                    className="backdrop-blur-sm bg-white/20 hover:bg-white/30 border-white/20 text-white h-9 w-9 p-0"
-                                                                    title="设置"
-                                                                >
-                                                                    <Settings className="h-4 w-4" />
-                                                                </Button> */}
                             <Button
                                 size="sm"
                                 variant="destructive"
                                 className="backdrop-blur-sm bg-red-500/30 hover:bg-red-500/50 border-red-500/20 text-white h-9 w-9 p-0"
-                                data-tooltip-content="删除比赛"
+                                data-tooltip-content={t("remove")}
                                 data-tooltip-id="my-tooltip"
                                 data-tooltip-place="bottom"
+                                disabled={true} // TODO 暂时没有实现删除比赛的功能,先禁用
                             >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
