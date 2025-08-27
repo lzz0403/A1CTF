@@ -1,10 +1,10 @@
 {
     "welcome": "Welcome Admin {{name}}!",
-    "title": "Dashboard",
-    "games": "Game Management",
-    "challenges": "Challenge Management",
-    "users": "User Management",
-    "logs": "System Logs",
-    "system": "System Settings",
-    "home": "Home Page"
+    "title": "Admin",
+    "games": "Games",
+    "challenges": "Challenges",
+    "users": "Users",
+    "logs": "Logs",
+    "system": "Settings",
+    "home": "Home"
 }
