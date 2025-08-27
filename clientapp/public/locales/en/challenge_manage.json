@@ -17,5 +17,26 @@
     "judge_and_hint_description": "Here you can override the default judging of the challenge",
     "container": "Container Management",
     "challenge_tool": "Challenge Tools",
-    "history": "Submission History"
+    "history": "Submission History",
+    "dashboard": {
+        "title": "Challenges",
+        "description": "Manage and edit {{count}} challenges",
+        "placeholder": "Search challenge name...",
+        "add": "Add Challenge",
+        "filter": "Categories",
+        "all": "All",
+        "copy": "Copy Challenge Name",
+        "edit": "Edit Challenge",
+        "delete": {
+            "title": "Delete Challenge",
+            "message": "Are you sure you want to delete challenge「{{name}}」?",
+            "success": "Challenge「{{name}}」deleted successfully"
+        },
+        "empty": {
+            "title": "No Challenges Found",
+            "search": "No challenges found containing \"{{content}}\"",
+            "category": "No challenges in the current category"
+        },
+        "clear": "Clear Search"
+    }
 }

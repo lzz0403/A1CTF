@@ -26,7 +26,7 @@
     "search": {
         "title": "Enter a keyword to search for users",
         "description": "Supports searching by username, email address, profile info, user slogan, user ID, or last login IP",
-        "row": "Row",
+        "row": "Columns",
         "empty": "No data available"
     },
     "delete": {

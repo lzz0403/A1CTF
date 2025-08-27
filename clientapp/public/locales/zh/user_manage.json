@@ -26,7 +26,7 @@
     "search": {
         "title": "请输入关键字进行用户搜索",
         "description": "支持搜索 用户名、邮箱地址、个人资料信息、账号Slogan、用户ID、上一次登陆IP",
-        "row": "列",
+        "row": "列显示",
         "empty": "暂无数据"
     },
     "delete": {
