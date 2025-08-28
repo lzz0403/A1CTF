@@ -23,8 +23,6 @@
     "continue": "Continue",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "copy_success": "Copied successfully",
-    "copy_failed": "Copy failed",
     "error": {
         "unknow": "An unknown error occurred",
         "default": "Server error",
@@ -48,7 +46,9 @@
             "title": "A new hint has been added to a challenge!",
             "content": "💡 Challenge [{{name}}] has a new hint"
         },
-        "copy_success": "Copied successfully",
-        "copy_failed": "Copy failed"
+        "copy": {
+            "success": "Copied Successfully",
+            "failed": "Copy Failed"
+        }
     }
 }

@@ -8,7 +8,6 @@ import dayjs from "dayjs"
 import { api } from "utils/ApiHelper"
 import { AdminSubmitItem, AdminCheatItem } from "utils/A1API"
 import { useTheme } from "next-themes"
-import { toast } from 'react-toastify/unstyled';
 import { Input } from "components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "components/ui/dialog"
 
@@ -19,7 +18,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "components/ui/select"
-import copy from "copy-to-clipboard"
 import { Switch } from "components/ui/switch"
 import { Label } from "components/ui/label"
 import { useTranslation } from "react-i18next"
@@ -371,7 +369,7 @@ export function GameEventModule(
                         </div>
                     </div>
 
-                    {submissions.length === 0 && !loading ? (
+                    {submissions.length === 0 ? (
                         <div className="text-center py-12">
                             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                             <h3 className="text-lg font-semibold mb-2">{t("events.submit.empty1")}</h3>
@@ -400,7 +398,7 @@ export function GameEventModule(
                                                 variant="outline"
                                                 className={`flex items-center gap-1 select-none min-w-0 px-3 py-1 rounded-full font-medium shadow-sm transition-all duration-200 ${statusColor(sub.judge_status)}`}
                                                 onClick={() => {
-                                                    copyWithResult(JSON.stringify(sub, null, 4))
+                                                    copyWithResult(JSON.stringify(sub, null, 4), t("events.submit.title"))
                                                 }}
                                             >
                                                 {statusIcon(sub.judge_status)}
@@ -418,7 +416,7 @@ export function GameEventModule(
                                                 variant="outline"
                                                 className="text-xs select-none hover:bg-primary/10 hover:border-primary/30 cursor-pointer transition-all duration-200 rounded-md px-2 py-1 font-mono"
                                                 onClick={() => {
-                                                    copyWithResult(sub.team_name || "")
+                                                    copyWithResult(sub.team_name || "", t("events.filter.team"))
                                                 }}
                                             >
                                                 #{sub.team_id}
@@ -444,7 +442,7 @@ export function GameEventModule(
                                                 variant="outline"
                                                 className="text-xs select-none hover:bg-green/10 hover:border-green/30 cursor-pointer transition-all duration-200 rounded-md p-1.5 hover:scale-105"
                                                 onClick={() => {
-                                                    copyWithResult(sub.flag_content || "")
+                                                    copyWithResult(sub.flag_content || "", t("events.submit.flag"))
                                                 }}
                                             >
                                                 <Copy className="w-3 h-3" />
@@ -672,7 +670,7 @@ export function GameEventModule(
                         <span className="text-muted-foreground text-sm select-none">{t("events.cheat.count", { count: cheatsTotal })}</span>
                     </div>
 
-                    {cheats.length === 0 && !cheatsLoading ? (
+                    {cheats.length === 0 ? (
                         <div className="text-center py-12">
                             <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                             <h3 className="text-lg font-semibold mb-2">{t("events.cheat.empty1")}</h3>
@@ -717,7 +715,7 @@ export function GameEventModule(
                                                 variant="outline"
                                                 className="text-xs select-none hover:bg-primary/10 hover:border-primary/30 cursor-pointer transition-all duration-200 rounded-md px-2 py-1 font-mono"
                                                 onClick={() => {
-                                                    copyWithResult(cheat.team_name)
+                                                    copyWithResult(cheat.team_name, t("events.filter.team"))
                                                 }}
                                             >
                                                 #{cheat.team_id}
@@ -753,7 +751,7 @@ export function GameEventModule(
                                                                     variant="outline"
                                                                     className="text-xs select-none hover:bg-orange/10 hover:border-orange/30 cursor-pointer transition-all duration-200 rounded-md px-2 py-1 font-mono"
                                                                     onClick={() => {
-                                                                        copyWithResult(extraData.relevant_teamname || "")
+                                                                        copyWithResult(extraData.relevant_teamname || "", t("events.filter.team"))
                                                                     }}
                                                                 >
                                                                     #{extraData.relevant_team}
@@ -770,7 +768,7 @@ export function GameEventModule(
                                                             variant="outline"
                                                             className="text-xs select-none hover:bg-purple/10 hover:border-purple/30 cursor-pointer transition-all duration-200 rounded-md p-1.5 hover:scale-105"
                                                             onClick={() => {
-                                                                copyWithResult(extraData || "")
+                                                                copyWithResult(extraData || "", t("events.cheat.title"))
                                                             }}
                                                         >
                                                             <Copy className="w-3 h-3" />
@@ -787,7 +785,7 @@ export function GameEventModule(
                                                     variant="outline"
                                                     className="text-xs select-none hover:bg-cyan/10 hover:border-cyan/30 cursor-pointer transition-all duration-200 rounded-md p-1.5 hover:scale-105"
                                                     onClick={() => {
-                                                        copyWithResult(cheat.submiter_ip || "")
+                                                        copyWithResult(cheat.submiter_ip || "", t("events.cheat.ip"))
                                                     }}
                                                 >
                                                     <Copy className="w-3 h-3" />
