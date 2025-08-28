@@ -22,6 +22,8 @@ import {
 import copy from "copy-to-clipboard"
 import { Switch } from "components/ui/switch"
 import { Label } from "components/ui/label"
+import { useTranslation } from "react-i18next"
+import { copyWithResult } from "utils/ToastUtil"
 
 export function GameEventModule(
     { GgameID = undefined, GchallengeID = undefined }: {
@@ -29,16 +31,17 @@ export function GameEventModule(
         GchallengeID?: number | undefined
     }
 ) {
-
-    let gameId = 0;
-
-    if (!GgameID) {
-        const { game_id } = useParams<{ game_id: string }>()
-        gameId = parseInt(game_id || '0')
-    } else {
-        gameId = GgameID
+    const getGameID = () => {
+        if (!GgameID) {
+            const { game_id } = useParams<{ game_id: string }>()
+            return parseInt(game_id || '0')
+        }
+        return GgameID
     }
 
+    const gameId = getGameID()
+    const { t } = useTranslation("game_edit")
+    const { t: commonT } = useTranslation()
     const [curChoicedType, setCurChoicedType] = useState<string>("submissions")
 
     // Helper functions for cheats
@@ -71,11 +74,11 @@ export function GameEventModule(
     const cheatTypeText = (type: string) => {
         switch (type) {
             case "SubmitSomeonesFlag":
-                return "提交他人Flag"
+                return t("events.cheat.someone")
             case "SubmitWithoutDownloadAttachments":
-                return "未下载附件"
+                return t("events.cheat.attachment")
             case "SubmitWithoutStartContainer":
-                return "未启动容器"
+                return t("events.cheat.container")
             default:
                 return type
         }
@@ -105,7 +108,7 @@ export function GameEventModule(
     const statusOptions: JudgeStatus[] = ["JudgeAC", "JudgeWA"]
 
     const [recordAutoUpdate, setRecordAutoUpdate] = useState<boolean>(true)
-    
+
     // 初始化状态管理
     const [isInitialized, setIsInitialized] = useState<boolean>(false)
     const [challengeIdsReady, setChallengeIdsReady] = useState<boolean>(false)
@@ -260,7 +263,7 @@ export function GameEventModule(
     }
 
     const gotoChallenge = (challengeId: number) => {
-        window.open(window.location.origin + `/games/${gameId}?challenge=${challengeId}`, '_blank')
+        window.open(window.location.origin + `/games/${gameId}/challenges?id=${challengeId}`, '_blank')
     }
 
     const totalPages = Math.ceil(total / pageSize) || 1
@@ -290,7 +293,7 @@ export function GameEventModule(
         <div className="flex flex-col gap-4">
             {/* Header */}
             <div className="flex items-center justify-between select-none">
-                <span className="font-bold text-2xl">比赛事件</span>
+                <span className="font-bold text-2xl">{t("events.title")}</span>
                 <div className="flex items-center overflow-hidden rounded-3xl border-1">
                     <Button
                         variant={`${curChoicedType === "submissions" ? "default" : "ghost"}`}
@@ -298,7 +301,7 @@ export function GameEventModule(
                         className="rounded-none rounded-l-3xl"
                     >
                         <Captions className="mr-1" />
-                        提交记录
+                        {t("events.submit.title")}
                     </Button>
                     <Button
                         variant={`${curChoicedType === "cheats" ? "default" : "ghost"}`}
@@ -306,7 +309,7 @@ export function GameEventModule(
                         className="rounded-none rounded-r-3xl"
                     >
                         <TriangleAlert className="mr-1" />
-                        异常记录
+                        {t("events.cheat.title")}
                     </Button>
                 </div>
             </div>
@@ -317,10 +320,10 @@ export function GameEventModule(
                     <div className="flex flex-wrap gap-1 items-center">
                         {/* Active filter chips */}
                         <div className="flex flex-wrap gap-1 select-none">
-                            {challengeNames.map((c, i) => (<Badge key={"c" + i} variant="secondary" className="gap-1">题目名:{c}<X className="w-3 h-3 cursor-pointer" onClick={() => { setChallengeNames(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
-                            {challengeIds.map((id, i) => (<Badge key={"cid" + i} variant="secondary" className="gap-1">题目ID:{id}<X className="w-3 h-3 cursor-pointer" onClick={() => { setChallengeIds(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
-                            {teamNames.map((t, i) => (<Badge key={"t" + i} variant="secondary" className="gap-1">队伍名:{t}<X className="w-3 h-3 cursor-pointer" onClick={() => { setTeamNames(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
-                            {teamIds.map((tid, i) => (<Badge key={"tid" + i} variant="secondary" className="gap-1">队伍ID:{tid}<X className="w-3 h-3 cursor-pointer" onClick={() => { setTeamIds(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
+                            {challengeNames.map((c, i) => (<Badge key={"c" + i} variant="secondary" className="gap-1">{t("events.filter.challenge")}:{c}<X className="w-3 h-3 cursor-pointer" onClick={() => { setChallengeNames(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
+                            {challengeIds.map((id, i) => (<Badge key={"cid" + i} variant="secondary" className="gap-1">{t("events.filter.chal_id")}:{id}<X className="w-3 h-3 cursor-pointer" onClick={() => { setChallengeIds(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
+                            {teamNames.map((tname, i) => (<Badge key={"t" + i} variant="secondary" className="gap-1">{t("events.filter.team")}:{tname}<X className="w-3 h-3 cursor-pointer" onClick={() => { setTeamNames(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
+                            {teamIds.map((tid, i) => (<Badge key={"tid" + i} variant="secondary" className="gap-1">{t("events.filter.team_id")}:{tid}<X className="w-3 h-3 cursor-pointer" onClick={() => { setTeamIds(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
                             {judgeStatuses.map((s, i) => (<Badge key={"s" + i} variant="secondary" className="gap-1">{s.replace('Judge', '')}<X className="w-3 h-3 cursor-pointer" onClick={() => { setJudgeStatuses(prev => prev.filter((_, idx) => idx !== i)); setCurrentPage(1) }} /></Badge>))}
                             {(startTime || endTime) && (
                                 <Badge variant="secondary" className="gap-1">{startTime ? dayjs(startTime).format('MM-DD HH:mm') : '...'}<span>-</span>{endTime ? dayjs(endTime).format('MM-DD HH:mm') : '...'}<X className="w-3 h-3 cursor-pointer" onClick={() => { setStartTime(undefined); setEndTime(undefined); setCurrentPage(1) }} /></Badge>
@@ -336,7 +339,7 @@ export function GameEventModule(
                                 setDialogOpen(true)
                             }}
                         >
-                            <Filter className="w-3 h-3 mr-1" />添加筛选条件
+                            <Filter className="w-3 h-3 mr-1" />{t("events.filter.add")}
                         </Badge>
                         <Badge variant="secondary" className="gap-[1px] select-none hover:bg-foreground/20"
                             onClick={() => {
@@ -351,7 +354,7 @@ export function GameEventModule(
                                 setCurrentPage(1)
                             }}
                         >
-                            <Trash className="w-3 h-3 mr-1" />清空筛选条件
+                            <Trash className="w-3 h-3 mr-1" />{t("events.filter.clear")}
                         </Badge>
                     </div>
 
@@ -360,31 +363,31 @@ export function GameEventModule(
                             className={`w-4 h-4 cursor-pointer ${loading ? 'animate-spin' : ''}`}
                             onClick={() => { if (!loading) { setCurrentPage(1); loadSubmissions(1) } }}
                         />
-                        <span className="text-muted-foreground text-sm select-none">共 {total} 条提交</span>
+                        <span className="text-muted-foreground text-sm select-none">{t("events.submit.count", { count: total })}</span>
                         <div className="flex-1" />
                         <div className="flex items-center space-x-2">
                             <Switch defaultChecked={recordAutoUpdate} onCheckedChange={setRecordAutoUpdate} />
-                            <Label>Auto Update</Label>
+                            <Label>{t("events.auto")}</Label>
                         </div>
                     </div>
 
                     {submissions.length === 0 && !loading ? (
                         <div className="text-center py-12">
                             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold mb-2">暂无提交记录</h3>
-                            <p className="text-muted-foreground">等待选手提交后将在此处显示</p>
+                            <h3 className="text-lg font-semibold mb-2">{t("events.submit.empty1")}</h3>
+                            <p className="text-muted-foreground">{t("events.submit.empty2")}</p>
                         </div>
                     ) : (
                         <MacScrollbar className="flex-1" skin={theme === 'dark' ? 'dark' : 'light'}>
                             <div className="flex flex-col pr-4">
                                 {/* Table Header */}
                                 <div className="flex items-center gap-4 px-4 py-3 border-b-2 bg-gradient-to-r from-muted/50 to-muted/30 text-sm font-semibold text-foreground sticky top-0 backdrop-blur-sm shadow-sm">
-                                    <div className="flex-[1] min-w-0">提交时间</div>
-                                    <div className="flex-[0.5] text-center">状态</div>
-                                    <div className="flex-[1] min-w-0">用户</div>
-                                    <div className="flex-[1] min-w-0">队伍</div>
-                                    <div className="flex-[2] min-w-0">题目</div>
-                                    <div className="flex-[3] min-w-0">Flag内容</div>
+                                    <div className="flex-[1] min-w-0">{t("events.submit.time")}</div>
+                                    <div className="flex-[0.5] text-center">{t("events.submit.status")}</div>
+                                    <div className="flex-[1] min-w-0">{t("events.submit.user")}</div>
+                                    <div className="flex-[1] min-w-0">{t("events.submit.team")}</div>
+                                    <div className="flex-[2] min-w-0">{t("events.submit.challenge")}</div>
+                                    <div className="flex-[3] min-w-0">{t("events.submit.flag")}</div>
                                 </div>
                                 {submissions.map((sub, index) => (
                                     <div key={sub.judge_id} className={`flex items-center gap-4 px-4 py-3 border-b border-border/50 hover:bg-accent/60 hover:shadow-sm transition-all duration-200 text-sm w-full ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}`}>
@@ -396,6 +399,9 @@ export function GameEventModule(
                                             <Badge
                                                 variant="outline"
                                                 className={`flex items-center gap-1 select-none min-w-0 px-3 py-1 rounded-full font-medium shadow-sm transition-all duration-200 ${statusColor(sub.judge_status)}`}
+                                                onClick={() => {
+                                                    copyWithResult(JSON.stringify(sub, null, 4))
+                                                }}
                                             >
                                                 {statusIcon(sub.judge_status)}
                                                 <span className="truncate">{sub.judge_status.replace('Judge', '')}</span>
@@ -412,8 +418,7 @@ export function GameEventModule(
                                                 variant="outline"
                                                 className="text-xs select-none hover:bg-primary/10 hover:border-primary/30 cursor-pointer transition-all duration-200 rounded-md px-2 py-1 font-mono"
                                                 onClick={() => {
-                                                    copy(sub.team_id.toString())
-                                                    toast.success('已复制队伍ID')
+                                                    copyWithResult(sub.team_name || "")
                                                 }}
                                             >
                                                 #{sub.team_id}
@@ -439,8 +444,7 @@ export function GameEventModule(
                                                 variant="outline"
                                                 className="text-xs select-none hover:bg-green/10 hover:border-green/30 cursor-pointer transition-all duration-200 rounded-md p-1.5 hover:scale-105"
                                                 onClick={() => {
-                                                    copy(sub.flag_content)
-                                                    toast.success('已复制')
+                                                    copyWithResult(sub.flag_content || "")
                                                 }}
                                             >
                                                 <Copy className="w-3 h-3" />
@@ -462,7 +466,7 @@ export function GameEventModule(
                                 onClick={() => setCurrentPage(prev => prev - 1)}
                                 className="hover:bg-primary/10 hover:border-primary/30 transition-all duration-200"
                             >
-                                上一页
+                                {t("page.prev")}
                             </Button>
                             {Array.from({ length: totalPages }).slice(0, 10).map((_, idx) => {
                                 const page = idx + 1
@@ -489,7 +493,7 @@ export function GameEventModule(
                                 onClick={() => setCurrentPage(prev => prev + 1)}
                                 className="hover:bg-primary/10 hover:border-primary/30 transition-all duration-200"
                             >
-                                下一页
+                                {t("page.next")}
                             </Button>
                         </div>
                     )}
@@ -498,22 +502,22 @@ export function GameEventModule(
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogContent className="max-w-lg">
                             <DialogHeader>
-                                <DialogTitle>筛选提交记录</DialogTitle>
+                                <DialogTitle>{t("events.filter.title1")}</DialogTitle>
                             </DialogHeader>
 
                             <div className="space-y-2 mt-4">
-                                <h4 className="font-medium">筛选条件</h4>
+                                <h4 className="font-medium">{t("events.filter.select")}</h4>
                                 <Select value={curChoicedCategory} onValueChange={(value) => setCurChoicedCategory(value)}>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="筛选条件" />
+                                        <SelectValue placeholder={t("events.filter.select")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="teamName">队伍名称</SelectItem>
-                                        <SelectItem value="challengeName">题目名称</SelectItem>
-                                        <SelectItem value="judgeStatus">评测状态</SelectItem>
-                                        <SelectItem value="timeRange">时间范围</SelectItem>
-                                        <SelectItem value="challengeId">题目ID</SelectItem>
-                                        <SelectItem value="teamId">队伍ID</SelectItem>
+                                        <SelectItem value="teamName">{t("events.filter.team")}</SelectItem>
+                                        <SelectItem value="challengeName">{t("events.filter.challenge")}</SelectItem>
+                                        <SelectItem value="judgeStatus">{t("events.filter.status")}</SelectItem>
+                                        <SelectItem value="timeRange">{t("events.filter.time")}</SelectItem>
+                                        <SelectItem value="challengeId">{t("events.filter.chal_id")}</SelectItem>
+                                        <SelectItem value="teamId">{t("events.filter.team_id")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -523,39 +527,39 @@ export function GameEventModule(
                             {/* Challenge names */}
                             {curChoicedCategory === "challengeName" && (
                                 <div className="space-y-2">
-                                    <h4 className="font-medium">题目名称关键词</h4>
-                                    <Input value={newChallengeName} onChange={(e) => setNewChallengeName(e.target.value)} placeholder="题目关键词" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.challenge")}{t("events.filter.keyword")}</h4>
+                                    <Input value={newChallengeName} onChange={(e) => setNewChallengeName(e.target.value)} placeholder={t("events.filter.placeholder")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Team names */}
                             {curChoicedCategory === "teamName" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">队伍名称关键词</h4>
-                                    <Input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} placeholder="队伍关键词" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.team")}{t("events.filter.keyword")}</h4>
+                                    <Input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} placeholder={t("events.filter.placeholder")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Challenge IDs */}
                             {curChoicedCategory === "challengeId" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">题目 ID</h4>
-                                    <Input value={newChallengeId} onChange={(e) => setNewChallengeId(e.target.value)} placeholder="题目ID" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.chal_id")}</h4>
+                                    <Input value={newChallengeId} onChange={(e) => setNewChallengeId(e.target.value)} placeholder={t("events.filter.chal_id")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Team IDs */}
                             {curChoicedCategory === "teamId" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">队伍 ID</h4>
-                                    <Input value={newTeamId} onChange={(e) => setNewTeamId(e.target.value)} placeholder="队伍ID" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.team_id")}</h4>
+                                    <Input value={newTeamId} onChange={(e) => setNewTeamId(e.target.value)} placeholder={t("events.filter.team_id")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Status select */}
                             {curChoicedCategory === "judgeStatus" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">评测状态</h4>
+                                    <h4 className="font-medium">{t("events.filter.status")}</h4>
                                     <div className="flex flex-wrap gap-2">
                                         {statusOptions.map(st => {
                                             const active = tempJudgeStatuses.includes(st)
@@ -572,7 +576,7 @@ export function GameEventModule(
                             {/* Time range */}
                             {curChoicedCategory === "timeRange" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">时间范围</h4>
+                                    <h4 className="font-medium">{t("events.filter.time")}</h4>
                                     <div className="flex items-center gap-1">
                                         <Input type="datetime-local" value={tempStartTime || ""} onChange={(e) => setTempStartTime(e.target.value || undefined)} className="h-8" />
                                         <span className="px-1">-</span>
@@ -582,7 +586,7 @@ export function GameEventModule(
                             )}
 
                             <DialogFooter className="mt-6">
-                                <Button variant="secondary" onClick={() => setDialogOpen(false)}>取消</Button>
+                                <Button variant="secondary" onClick={() => setDialogOpen(false)}>{commonT("cancel")}</Button>
                                 <Button onClick={() => {
                                     switch (curChoicedCategory) {
                                         case "challengeName":
@@ -609,7 +613,7 @@ export function GameEventModule(
                                     }
                                     setCurrentPage(1)
                                     setDialogOpen(false)
-                                }}>应用</Button>
+                                }}>{commonT("confirm")}</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
@@ -622,10 +626,10 @@ export function GameEventModule(
                     <div className="flex flex-wrap gap-1 items-center">
                         {/* Active filter chips */}
                         <div className="flex flex-wrap gap-1 select-none">
-                            {cheatsChallengeNames.map((c, i) => (<Badge key={"c" + i} variant="secondary" className="gap-1">题目名:{c}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsChallengeNames(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
-                            {cheatsChallengeIds.map((id, i) => (<Badge key={"cid" + i} variant="secondary" className="gap-1">题目ID:{id}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsChallengeIds(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
-                            {cheatsTeamNames.map((t, i) => (<Badge key={"t" + i} variant="secondary" className="gap-1">队伍名:{t}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsTeamNames(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
-                            {cheatsTeamIds.map((tid, i) => (<Badge key={"tid" + i} variant="secondary" className="gap-1">队伍ID:{tid}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsTeamIds(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
+                            {cheatsChallengeNames.map((c, i) => (<Badge key={"c" + i} variant="secondary" className="gap-1">{t("events.filter.challenge")}:{c}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsChallengeNames(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
+                            {cheatsChallengeIds.map((id, i) => (<Badge key={"cid" + i} variant="secondary" className="gap-1">{t("events.filter.chal_id")}:{id}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsChallengeIds(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
+                            {cheatsTeamNames.map((tname, i) => (<Badge key={"t" + i} variant="secondary" className="gap-1">{t("events.filter.team")}:{tname}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsTeamNames(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
+                            {cheatsTeamIds.map((tid, i) => (<Badge key={"tid" + i} variant="secondary" className="gap-1">{t("events.filter.team_id")}:{tid}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsTeamIds(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
                             {cheatTypes.map((s, i) => (<Badge key={"s" + i} variant="secondary" className="gap-1">{cheatTypeText(s)}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatTypes(prev => prev.filter((_, idx) => idx !== i)); setCheatsCurrentPage(1) }} /></Badge>))}
                             {(cheatsStartTime || cheatsEndTime) && (
                                 <Badge variant="secondary" className="gap-1">{cheatsStartTime ? dayjs(cheatsStartTime).format('MM-DD HH:mm') : '...'}<span>-</span>{cheatsEndTime ? dayjs(cheatsEndTime).format('MM-DD HH:mm') : '...'}<X className="w-3 h-3 cursor-pointer" onClick={() => { setCheatsStartTime(undefined); setCheatsEndTime(undefined); setCheatsCurrentPage(1) }} /></Badge>
@@ -641,7 +645,7 @@ export function GameEventModule(
                                 setCheatsDialogOpen(true)
                             }}
                         >
-                            <Filter className="w-3 h-3 mr-1" />添加筛选条件
+                            <Filter className="w-3 h-3 mr-1" />{t("events.filter.add")}
                         </Badge>
                         <Badge variant="secondary" className="gap-[1px] select-none hover:bg-foreground/20"
                             onClick={() => {
@@ -656,7 +660,7 @@ export function GameEventModule(
                                 setCheatsCurrentPage(1)
                             }}
                         >
-                            <Trash className="w-3 h-3 mr-1" />清空筛选条件
+                            <Trash className="w-3 h-3 mr-1" />{t("events.filter.clear")}
                         </Badge>
                     </div>
 
@@ -665,27 +669,27 @@ export function GameEventModule(
                             className={`w-4 h-4 cursor-pointer ${cheatsLoading ? 'animate-spin' : ''}`}
                             onClick={() => { if (!cheatsLoading) { setCheatsCurrentPage(1); loadCheats() } }}
                         />
-                        <span className="text-muted-foreground text-sm select-none">共 {cheatsTotal} 条异常记录</span>
+                        <span className="text-muted-foreground text-sm select-none">{t("events.cheat.count", { count: cheatsTotal })}</span>
                     </div>
 
                     {cheats.length === 0 && !cheatsLoading ? (
                         <div className="text-center py-12">
                             <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold mb-2">暂无异常记录</h3>
-                            <p className="text-muted-foreground">系统将自动检测并记录异常行为</p>
+                            <h3 className="text-lg font-semibold mb-2">{t("events.cheat.empty1")}</h3>
+                            <p className="text-muted-foreground">{t("events.cheat.empty2")}</p>
                         </div>
                     ) : (
                         <MacScrollbar className="flex-1" skin={theme === 'dark' ? 'dark' : 'light'}>
                             <div className="flex flex-col pr-4">
                                 {/* Table Header */}
                                 <div className="flex items-center gap-3 px-4 py-3 border-b-2 bg-gradient-to-r from-muted/50 to-muted/30 text-sm font-semibold text-foreground sticky top-0 backdrop-blur-sm shadow-sm">
-                                    <div className="flex-[1] min-w-0">异常时间</div>
-                                    <div className="flex-[1] text-center">异常类型</div>
-                                    <div className="flex-[1] min-w-0">用户</div>
-                                    <div className="flex-[1] min-w-0">队伍</div>
-                                    <div className="flex-[2] min-w-0">题目</div>
-                                    <div className="flex-[2] min-w-0">异常信息</div>
-                                    <div className="flex-[1] min-w-0">提交者IP</div>
+                                    <div className="flex-[1] min-w-0">{t("events.cheat.time")}</div>
+                                    <div className="flex-[1] text-center">{t("events.cheat.type")}</div>
+                                    <div className="flex-[1] min-w-0">{t("events.submit.user")}</div>
+                                    <div className="flex-[1] min-w-0">{t("events.submit.team")}</div>
+                                    <div className="flex-[2] min-w-0">{t("events.submit.challenge")}</div>
+                                    <div className="flex-[2] min-w-0">{t("events.cheat.info")}</div>
+                                    <div className="flex-[1] min-w-0">{t("events.cheat.ip")}</div>
                                 </div>
                                 {cheats.map((cheat, index) => (
                                     <div key={cheat.cheat_id} className={`flex items-center gap-3 px-4 py-3 border-b border-border/50 hover:bg-accent/60 hover:shadow-sm transition-all duration-200 text-sm w-full ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'}`}>
@@ -713,8 +717,7 @@ export function GameEventModule(
                                                 variant="outline"
                                                 className="text-xs select-none hover:bg-primary/10 hover:border-primary/30 cursor-pointer transition-all duration-200 rounded-md px-2 py-1 font-mono"
                                                 onClick={() => {
-                                                    copy(cheat.team_id.toString())
-                                                    toast.success('已复制队伍ID')
+                                                    copyWithResult(cheat.team_name)
                                                 }}
                                             >
                                                 #{cheat.team_id}
@@ -740,7 +743,7 @@ export function GameEventModule(
                                                     if (extraData.relevant_team && extraData.relevant_teamname) {
                                                         return (
                                                             <div className="flex items-center gap-1"
-                                                                data-tooltip-content="交串Flag的队伍"
+                                                                data-tooltip-content={t("events.cheat.flag")}
                                                                 data-tooltip-id="my-tooltip"
                                                                 data-tooltip-place="bottom"
                                                             >
@@ -750,8 +753,7 @@ export function GameEventModule(
                                                                     variant="outline"
                                                                     className="text-xs select-none hover:bg-orange/10 hover:border-orange/30 cursor-pointer transition-all duration-200 rounded-md px-2 py-1 font-mono"
                                                                     onClick={() => {
-                                                                        copy(extraData.relevant_team.toString())
-                                                                        toast.success('已复制队伍ID')
+                                                                        copyWithResult(extraData.relevant_teamname || "")
                                                                     }}
                                                                 >
                                                                     #{extraData.relevant_team}
@@ -760,15 +762,15 @@ export function GameEventModule(
                                                         );
                                                     }
                                                 }
+                                                const extraData = JSON.stringify(cheat.extra_data)
                                                 return (
                                                     <>
-                                                        <span className="truncate text-muted-foreground" title={JSON.stringify(cheat.extra_data)}>{JSON.stringify(cheat.extra_data)}</span>
+                                                        <span className="truncate text-muted-foreground" title={extraData}>{extraData}</span>
                                                         <Badge
                                                             variant="outline"
                                                             className="text-xs select-none hover:bg-purple/10 hover:border-purple/30 cursor-pointer transition-all duration-200 rounded-md p-1.5 hover:scale-105"
                                                             onClick={() => {
-                                                                copy(JSON.stringify(cheat.extra_data))
-                                                                toast.success('已复制异常信息')
+                                                                copyWithResult(extraData || "")
                                                             }}
                                                         >
                                                             <Copy className="w-3 h-3" />
@@ -785,8 +787,7 @@ export function GameEventModule(
                                                     variant="outline"
                                                     className="text-xs select-none hover:bg-cyan/10 hover:border-cyan/30 cursor-pointer transition-all duration-200 rounded-md p-1.5 hover:scale-105"
                                                     onClick={() => {
-                                                        copy(cheat.submiter_ip || '')
-                                                        toast.success('已复制IP')
+                                                        copyWithResult(cheat.submiter_ip || "")
                                                     }}
                                                 >
                                                     <Copy className="w-3 h-3" />
@@ -809,7 +810,7 @@ export function GameEventModule(
                                 onClick={() => setCheatsCurrentPage(prev => prev - 1)}
                                 className="hover:bg-primary/10 hover:border-primary/30 transition-all duration-200"
                             >
-                                上一页
+                                {t("page.prev")}
                             </Button>
                             {Array.from({ length: cheatsTotalPages }).slice(0, 10).map((_, idx) => {
                                 const page = idx + 1
@@ -836,7 +837,7 @@ export function GameEventModule(
                                 onClick={() => setCheatsCurrentPage(prev => prev + 1)}
                                 className="hover:bg-primary/10 hover:border-primary/30 transition-all duration-200"
                             >
-                                下一页
+                                {t("page.next")}
                             </Button>
                         </div>
                     )}
@@ -845,22 +846,22 @@ export function GameEventModule(
                     <Dialog open={cheatsDialogOpen} onOpenChange={setCheatsDialogOpen}>
                         <DialogContent className="max-w-lg">
                             <DialogHeader>
-                                <DialogTitle>筛选异常记录</DialogTitle>
+                                <DialogTitle>{t("events.filter.title2")}</DialogTitle>
                             </DialogHeader>
 
                             <div className="space-y-2 mt-4">
-                                <h4 className="font-medium">筛选条件</h4>
+                                <h4 className="font-medium">{t("events.filter.select")}</h4>
                                 <Select value={cheatsCurChoicedCategory} onValueChange={(value) => setCheatsCurChoicedCategory(value)}>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="筛选条件" />
+                                        <SelectValue placeholder={t("events.filter.select")} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="teamName">队伍名称</SelectItem>
-                                        <SelectItem value="challengeName">题目名称</SelectItem>
-                                        <SelectItem value="cheatType">异常类型</SelectItem>
-                                        <SelectItem value="timeRange">时间范围</SelectItem>
-                                        <SelectItem value="challengeId">题目ID</SelectItem>
-                                        <SelectItem value="teamId">队伍ID</SelectItem>
+                                        <SelectItem value="teamName">{t("events.filter.team")}</SelectItem>
+                                        <SelectItem value="challengeName">{t("events.filter.challenge")}</SelectItem>
+                                        <SelectItem value="cheatType">{t("events.cheat.type")}</SelectItem>
+                                        <SelectItem value="timeRange">{t("events.filter.time")}</SelectItem>
+                                        <SelectItem value="challengeId">{t("events.filter.chal_id")}</SelectItem>
+                                        <SelectItem value="teamId">{t("events.filter.team_id")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -868,39 +869,39 @@ export function GameEventModule(
                             {/* Challenge names */}
                             {cheatsCurChoicedCategory === "challengeName" && (
                                 <div className="space-y-2">
-                                    <h4 className="font-medium">题目名称关键词</h4>
-                                    <Input value={newCheatsChallengeName} onChange={(e) => setNewCheatsChallengeName(e.target.value)} placeholder="题目关键词" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.challenge")}{t("events.filter.keyword")}</h4>
+                                    <Input value={newCheatsChallengeName} onChange={(e) => setNewCheatsChallengeName(e.target.value)} placeholder={t("events.filter.placeholder")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Team names */}
                             {cheatsCurChoicedCategory === "teamName" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">队伍名称关键词</h4>
-                                    <Input value={newCheatsTeamName} onChange={(e) => setNewCheatsTeamName(e.target.value)} placeholder="队伍关键词" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.team")}{t("events.filter.keyword")}</h4>
+                                    <Input value={newCheatsTeamName} onChange={(e) => setNewCheatsTeamName(e.target.value)} placeholder={t("events.filter.placeholder")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Challenge IDs */}
                             {cheatsCurChoicedCategory === "challengeId" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">题目 ID</h4>
-                                    <Input value={newCheatsChallengeId} onChange={(e) => setNewCheatsChallengeId(e.target.value)} placeholder="题目ID" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.chal_id")}</h4>
+                                    <Input value={newCheatsChallengeId} onChange={(e) => setNewCheatsChallengeId(e.target.value)} placeholder={t("events.filter.chal_id")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Team IDs */}
                             {cheatsCurChoicedCategory === "teamId" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">队伍 ID</h4>
-                                    <Input value={newCheatsTeamId} onChange={(e) => setNewCheatsTeamId(e.target.value)} placeholder="队伍ID" className="h-8" />
+                                    <h4 className="font-medium">{t("events.filter.team_id")}</h4>
+                                    <Input value={newCheatsTeamId} onChange={(e) => setNewCheatsTeamId(e.target.value)} placeholder={t("events.filter.team_id")} className="h-8" />
                                 </div>
                             )}
 
                             {/* Cheat Type select */}
                             {cheatsCurChoicedCategory === "cheatType" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">异常类型</h4>
+                                    <h4 className="font-medium">{t("events.cheat.type")}</h4>
                                     <div className="flex flex-wrap gap-2">
                                         {cheatTypeOptions.map(ct => {
                                             const active = tempCheatTypes.includes(ct)
@@ -917,7 +918,7 @@ export function GameEventModule(
                             {/* Time range */}
                             {cheatsCurChoicedCategory === "timeRange" && (
                                 <div className="space-y-2 mt-4">
-                                    <h4 className="font-medium">时间范围</h4>
+                                    <h4 className="font-medium">{t("events.filter.time")}</h4>
                                     <div className="flex items-center gap-1">
                                         <Input type="datetime-local" value={tempCheatsStartTime || ""} onChange={(e) => setTempCheatsStartTime(e.target.value || undefined)} className="h-8" />
                                         <span className="px-1">-</span>
@@ -927,7 +928,7 @@ export function GameEventModule(
                             )}
 
                             <DialogFooter className="mt-6">
-                                <Button variant="secondary" onClick={() => setCheatsDialogOpen(false)}>取消</Button>
+                                <Button variant="secondary" onClick={() => setCheatsDialogOpen(false)}>{commonT("cancel")}</Button>
                                 <Button onClick={() => {
                                     switch (cheatsCurChoicedCategory) {
                                         case "challengeName":
@@ -954,7 +955,7 @@ export function GameEventModule(
                                     }
                                     setCheatsCurrentPage(1)
                                     setCheatsDialogOpen(false)
-                                }}>应用</Button>
+                                }}>{commonT("confirm")}</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
