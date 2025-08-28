@@ -47,5 +47,45 @@
             "keyword": "关键词",
             "placeholder": "请输入关键词"
         }
+    },
+    "basic": {
+        "title": "基本信息",
+        "name": {
+            "label": "比赛名称",
+            "description": "请填写比赛名称"
+        },
+        "start_time": {
+            "label": "开始时间",
+            "description": "请选择比赛开始时间"
+        },
+        "end_time": {
+            "label": "结束时间",
+            "description": "请选择比赛结束时间"
+        },
+        "summary": {
+            "label": "比赛简介",
+            "description": "请填写比赛简介"
+        },
+        "description": {
+            "label": "比赛详细信息",
+            "description": "请填写比赛详细信息 (支持Markdown)"
+        },
+        "practice": {
+            "label": "练习模式",
+            "description": "是否开启练习模式"
+        },
+        "wp": {
+            "label": "WriteUp",
+            "description": "是否需要提交WriteUp"
+        },
+        "visible": {
+            "label": "是否可见",
+            "description": "比赛是否可见"
+        },
+        "icon": {
+            "label": "比赛图标",
+            "dark": "深色",
+            "light": "浅色"
+        }
     }
 }

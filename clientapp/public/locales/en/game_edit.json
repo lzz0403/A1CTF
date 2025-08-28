@@ -47,5 +47,45 @@
             "keyword": " Keyword",
             "placeholder": "Please enter keyword"
         }
+    },
+    "basic": {
+        "title": "Basic Information",
+        "name": {
+            "label": "Game Name",
+            "description": "Please enter the game name"
+        },
+        "start_time": {
+            "label": "Start Time",
+            "description": "Please select the game start time"
+        },
+        "end_time": {
+            "label": "End Time",
+            "description": "Please select the game end time"
+        },
+        "summary": {
+            "label": "Game Summary",
+            "description": "Please enter the game summary"
+        },
+        "description": {
+            "label": "Game Detail",
+            "description": "Please enter detailed game information (Markdown supported)"
+        },
+        "practice": {
+            "label": "Practice Mode",
+            "description": "Enable practice mode"
+        },
+        "wp": {
+            "label": "WriteUp",
+            "description": "Require participants to submit WriteUps"
+        },
+        "visible": {
+            "label": "Visibility",
+            "description": "Whether this game is visible"
+        },
+        "icon": {
+            "label": "Game Icon",
+            "dark": "Dark",
+            "light": "Light"
+        }
     }
 }

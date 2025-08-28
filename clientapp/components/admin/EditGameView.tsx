@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from 'components/ui/button';
 import { Form } from 'components/ui/form';
+import ThemeSwitcher from "components/ToggleTheme"
 import { MacScrollbar } from 'mac-scrollbar';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'react-toastify/unstyled';
@@ -13,7 +14,6 @@ import dayjs from 'dayjs';
 import { CalendarIcon, CircleArrowLeft, Save, Settings, Users, PackageSearch, MessageSquareLock, Activity, Info, Plane } from 'lucide-react';
 import { EditGameFormSchema } from './game/EditGameSchema';
 import { api } from 'utils/ApiHelper';
-
 import { GameTimelineEditor } from './GameTimelineEditor';
 import { GameGroupManager } from './GameGroupManager';
 import { GameNoticeManager } from './GameNoticeManager';
@@ -146,10 +146,12 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
             third_blood_reward: values.third_blood_reward
         };
 
+        if (!formEdited) return
         api.admin.updateGame(game_info.game_id, finalData as any as AdminFullGameInfo).then(() => {
             toast.success(t("update_success"))
             setFormEdited(false)
             formJsonRef.current = ""
+            game_info.name = finalData.name
         })
     }
 
@@ -228,13 +230,13 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
     return (
         <Form {...form}>
             {/* Header Section */}
-            <div className="absolute top-0 z-10 backdrop-blur-sm bg-background/20 border-b px-6 w-full h-20 flex flex-col justify-center">
+            <div className="absolute top-0 z-10 backdrop-blur-sm bg-background/20 border-b px-6 w-full h-15 flex flex-col justify-center">
                 <div className="flex items-center justify-between select-none">
                     <div className="flex items-center gap-4">
-                        <span className="font-bold text-xl">{t("title")}</span>
+                        <span className="font-bold text-lg">{t("title")}</span>
                         <div className="h-8 w-px bg-border" />
                         <div className='flex gap-2 items-center'>
-                            <span className="text-xl text-muted-foreground">
+                            <span className="text-lg text-muted-foreground">
                                 {game_info.name}
                             </span>
                         </div>
@@ -254,6 +256,15 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                             {t("save")}
                         </Button>
                         <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => router(`/admin/games`)}
+                            className=""
+                        >
+                            <CircleArrowLeft className="h-4 w-4" />
+                            {t("back")}
+                        </Button>
+                        <Button
                             size="sm"
                             variant="outline"
                             className="h-9 w-9 p-0"
@@ -264,15 +275,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                         >
                             <Plane className="h-4 w-4" />
                         </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => router(`/admin/games`)}
-                            className=""
-                        >
-                            <CircleArrowLeft className="h-4 w-4" />
-                            {t("back")}
-                        </Button>
+                        <ThemeSwitcher />
                     </div>
                 </div>
             </div>
@@ -280,7 +283,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
             <div className="flex gap-6 w-full h-full overflow-hidden">
                 {/* 左侧模块导航 */}
                 <div className="w-64 flex-none border-r-1 select-none">
-                    <div className="px-6 pt-28">
+                    <div className="px-6 pt-23">
                         <h3 className="font-semibold text-lg mb-4 text-foreground/90">{t("left_title")}</h3>
                         <div className="space-y-2">
                             {modules.map((module) => (
@@ -307,7 +310,7 @@ export function EditGameView({ game_info }: { game_info: AdminFullGameInfo }) {
                         className="h-full"
                         skin={theme == "light" ? "light" : "dark"}
                     >
-                        <div className="pl-6 pr-10 pt-32 pb-8">
+                        <div className="pl-6 pr-10 pt-22 pb-8">
                             {activeModule === 'events' && (
                                 <GameEventModule />
                             )}
