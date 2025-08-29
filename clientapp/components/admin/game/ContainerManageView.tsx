@@ -11,7 +11,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 
-import { ArrowLeft, ArrowRight, ArrowUpDown, ChevronDown, MoreHorizontal, CopyIcon, ClockIcon, ClipboardList, ZapOff, RefreshCw } from "lucide-react"
+import { ArrowLeft, ArrowRight, ArrowUpDown, ChevronDown, MoreHorizontal, CopyIcon, ClockIcon, ClipboardList, ZapOff, RefreshCw, Terminal, Package } from "lucide-react"
 
 import * as React from "react"
 
@@ -60,6 +60,8 @@ import { AxiosResponse } from "axios"
 import { Label } from "components/ui/label"
 import copy from "copy-to-clipboard"
 import { copyWithResult } from "utils/ToastUtil"
+import ContainerTerminal from "components/modules/terminal/Terminal"
+import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu"
 
 export type ContainerModel = {
     ID: string,
@@ -168,6 +170,10 @@ export function ContainerManageView({
             }
         });
     };
+
+    const [isTerminalOpen, setIsTerminalOpen] = React.useState(false);
+    const [terminalPod, setTerminalPod] = React.useState<string | null>(null);
+    const [terminalContainer, setTerminalContainer] = React.useState<string | null>(null);
 
     // 处理批量停止容器
     const handleBatchDeleteContainers = () => {
@@ -395,13 +401,13 @@ export function ContainerManageView({
                                 @links
                             </Button>
                         </HoverCardTrigger>
-                        <HoverCardContent className="w-80 p-4">
+                        <HoverCardContent className="w-full p-4">
                             <div className="space-y-2">
                                 <h4 className="text-sm font-semibold">访问入口</h4>
                                 {ports ? (
                                     <div className="text-sm">
                                         {ports.map((port, index) => (
-                                            <div key={index} className="flex items-center py-1 border-b border-gray-100 last:border-0">
+                                            <div key={index} className="flex items-center py-1 gap-2 border-b border-gray-100 last:border-0">
                                                 <span>{port}</span>
                                                 <Button
                                                     variant="ghost"
@@ -445,6 +451,37 @@ export function ContainerManageView({
                             <span className="sr-only">复制Flag</span>
                             <CopyIcon className="h-4 w-4" />
                         </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 text-blue-600"
+                                    data-tooltip-id="my-tooltip"
+                                    data-tooltip-content="容器终端"
+                                    data-tooltip-place="top"
+                                >
+                                    <span className="sr-only">容器终端</span>
+                                    <Terminal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="mr-5 p-2 select-none" align="start">
+                                <DropdownMenuLabel>选择一个容器</DropdownMenuLabel>
+                                <DropdownMenuGroup>
+                                    { container.container_name_list?.map((e, _) => (
+                                        <DropdownMenuItem key={e}
+                                            onClick={() => {
+                                                setIsTerminalOpen(true)
+                                                setTerminalPod(container.pod_id ?? "")
+                                                setTerminalContainer(e)
+                                            }}
+                                        >
+                                            <Package />
+                                            {e}
+                                        </DropdownMenuItem>
+                                    )) }
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <Button
                             variant="ghost"
                             className="h-8 w-8 p-0 text-red-600"
@@ -546,6 +583,14 @@ export function ContainerManageView({
 
     return (
         <>
+            <ContainerTerminal
+                podName={terminalPod ?? ""}
+                containerName={terminalContainer ?? ""}
+                isOpen={isTerminalOpen}
+                setIsOpen={setIsTerminalOpen}
+                setTerminalPod={setTerminalPod}
+                setTerminalContainer={setTerminalContainer}
+            />
             <div className="w-full flex flex-col gap-4">
                 <div className="flex items-center justify-end space-x-2 select-none">
                     <div className="flex-1 text-sm text-muted-foreground flex items-center">

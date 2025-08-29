@@ -67,10 +67,6 @@ export default function GamePosterInfoModule(
         ),
     }
 
-    useEffect(() => {
-        console.log(teamStatus)
-    }, [teamStatus])
-
     return (
         <div className="flex flex-col w-full overflow-hidden select-none lg:gap-16 gap-6">
             <div className="relative rounded-xl overflow-hidden border-2"
@@ -94,7 +90,7 @@ export default function GamePosterInfoModule(
                                     setPosterTextPrimaryColor(brightColor)
                                 })
                                 .catch((e: any) => {
-                                    console.log(e);
+                                    
                                 });
                         }}
                     />

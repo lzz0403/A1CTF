@@ -20,10 +20,12 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation"
 
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 var clientset *kubernetes.Clientset
+var globalConfig *rest.Config
 var NodeAddressMap map[string]string = make(map[string]string)
 
 func InitNodeAddressMap() {
@@ -131,6 +133,8 @@ func GetClient() (*kubernetes.Clientset, error) {
 		return nil, fmt.Errorf("error building kubeconfig: %v", err)
 	}
 
+	globalConfig = config
+
 	clientsetLocal, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		return nil, fmt.Errorf("error creating clientset: %v", err)
@@ -139,6 +143,10 @@ func GetClient() (*kubernetes.Clientset, error) {
 	clientset = clientsetLocal
 
 	return clientsetLocal, nil
+}
+
+func GetClientConfig() *rest.Config {
+	return globalConfig
 }
 
 func ListPods() (*v1.PodList, error) {
@@ -423,13 +431,11 @@ func DeletePod(podInfo *PodInfo) error {
 	// 	return fmt.Errorf("error deleting service: %v", err)
 	// }
 
-	if !podInfo.AllowWAN {
-		// 删除 NetworkPolicy
-		_ = clientset.NetworkingV1().NetworkPolicies(namespace).Delete(context.Background(), podInfo.Name, metav1.DeleteOptions{})
-		// if err != nil {
-		// 	return fmt.Errorf("error deleting network policy: %v", err)
-		// }
-	}
+	// 删除 NetworkPolicy
+	_ = clientset.NetworkingV1().NetworkPolicies(namespace).Delete(context.Background(), podInfo.Name, metav1.DeleteOptions{})
+	// if err != nil {
+	// 	return fmt.Errorf("error deleting network policy: %v", err)
+	// }
 
 	return nil
 }

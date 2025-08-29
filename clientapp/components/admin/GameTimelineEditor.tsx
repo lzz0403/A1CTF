@@ -71,7 +71,7 @@ export function GameTimelineEditor({
             start_time: tp.startTime,
             end_time: tp.endTime,
         }));
-        console.log(stages)
+        
         form.setValue("stages", stages);
     };
 
