@@ -48,7 +48,7 @@ A1CTF is a modern CTF (Capture The Flag) competition platform, supporting large-
 - Go 1.24+
 - PostgreSQL 15+
 - Redis 7+
-- Kubernetes (可选 / Optional)
+- Kubernetes
 
 ### 🔧 安装步骤 / Installation / From prebuilt docker image
 

@@ -154,6 +154,11 @@ func main() {
 	// 初始化 db
 	db.InitDB()
 
+	// 初始化k8s命名空间
+	if err := k8stool.InitNamespace(); err != nil {
+		log.Fatalf("Failed to initialize k8s namespace: %v", err)
+	}
+
 	// 加载配置文件
 	clientconfig.LoadSystemSettings()
 
@@ -479,6 +484,9 @@ func main() {
 				"gameID": gameID,
 			})
 		})
+
+		// 容器 Exec /bin/sh
+		auth.GET("/pod/:pod_name/:container_name/exec", controllers.AdminHandleContainerExec)
 
 		containerGroup := auth.Group("/admin/container")
 		{

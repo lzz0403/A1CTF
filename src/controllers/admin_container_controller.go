@@ -127,6 +127,11 @@ func AdminListContainers(c *gin.Context) {
 
 		podID := fmt.Sprintf("cl-%d-%s", container.InGameID, container.TeamHash)
 
+		containerNameList := make([]string, 0)
+		for _, exposeInfo := range container.ContainerConfig {
+			containerNameList = append(containerNameList, exposeInfo.Name)
+		}
+
 		containerItems = append(containerItems, webmodels.AdminContainerItem{
 			ContainerID:         container.ContainerID,
 			ContainerName:       container.ChallengeName,
@@ -134,6 +139,7 @@ func AdminListContainers(c *gin.Context) {
 			ContainerExpireTime: container.ExpireTime,
 			ContainerType:       "动态容器", // 可以根据实际情况设置
 			ContainerPorts:      containerPorts,
+			ContainerNameList:   containerNameList,
 			TeamName:            teamName,
 			GameName:            gameName,
 			ChallengeName:       container.ChallengeName,

@@ -161,7 +161,7 @@ export function ChallengesView({
             if (challengeID) {
                 const challengeIDInt = parseInt(challengeID, 10)
                 api.user.userGetGameChallenge(gameID, challengeIDInt).then((response) => {
-                    // console.log(response)
+                    // 
                     curChallengeDetail.current = response.data.data
                     setCurChallenge(response.data.data)
                     // setPageSwitch(true)
@@ -218,7 +218,7 @@ export function ChallengesView({
                     socket.onopen = () => {
                         clearTimeout(connectTimeout)
                         setWsStatus("connected")
-                        console.log('WebSocket connected')
+                        
                         reconnectAttempts = 0 // 重置重连次数
                         resolve()
                     }
@@ -226,10 +226,10 @@ export function ChallengesView({
                     socket.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data)
-                            console.log(data)
+                            
                             if (data.type === 'Notice') {
                                 const message: GameNotice = data.message
-                                console.log(message)
+                                
 
                                 if (message.notice_category == NoticeCategory.NewHint) {
                                     // 将NewHint通知添加到通知列表
@@ -334,7 +334,7 @@ export function ChallengesView({
                 setWsStatus("disconnected")
                 setTimeout(() => {
                     connectWebSocket()
-                    console.log("Connect to websocket")
+                    
                 }, 1000)
             } else {
                 setWsStatus("ingore")

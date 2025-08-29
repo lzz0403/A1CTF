@@ -36,7 +36,7 @@ export default function InChallengeViewManager(
                 setChallenges((prev) => ({
                     ...prev,
                     [curChallenge.category?.toLocaleLowerCase() ?? "0"]: prev[curChallenge.category?.toLocaleLowerCase() ?? "0"].map((c) => {
-                        console.log(c)
+                        
                         if (c.challenge_id == curChallenge.challenge_id) {
                             return {
                                 ...c,

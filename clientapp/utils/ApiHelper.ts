@@ -185,7 +185,7 @@ export interface ErrorMessage {
 // 标记错误为已处理，防止全局错误处理器重复处理
 export const markErrorAsHandled = (error: any) => {
     if (error && typeof error === 'object') {
-        console.log("Marked!")
+        
         error._isHandled = true;
     }
     return error;

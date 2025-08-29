@@ -11,7 +11,7 @@ export default function A1CTFMainPage() {
 
   useEffect(() => {
     if (clientConfig.gameActivityMode) {
-      console.log("gogogo 出发咯");
+      
       window.location.href = `/games/${clientConfig.gameActivityMode}/info`;
     }
   }, [clientConfig]);

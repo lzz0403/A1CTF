@@ -85,7 +85,7 @@ export function ChangeGames() {
 
     useEffect(() => {
 
-        console.log("GameList useEffect")
+        
 
         api.user.userListGames().then((res) => {
             setCurGames(res.data.data.toSorted((a, b) => dayjs(b.start_time).unix() - dayjs(a.start_time).unix()))
@@ -187,7 +187,7 @@ export function ChangeGames() {
     }
 
     // useEffect(() => {
-    //     console.log(width)
+    //     
     // }, [width])
 
     if (!curGames) {

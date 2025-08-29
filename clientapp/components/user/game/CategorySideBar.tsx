@@ -115,7 +115,7 @@ export function CategorySidebar({
             for (const key in groupedChallenges) {
                 if (groupedChallenges.hasOwnProperty(key)) {
                     groupedChallenges[key].forEach(challenge => {
-                        // console.log(challenge.title, curChallengeRef.current.title)
+                        // 
                         if (challenge.challenge_name == curChallengeRef.current?.challenge_name) {
                             stillExists = true
                         }
@@ -226,7 +226,7 @@ export function CategorySidebar({
             if (id == curChallenge?.challenge_id) return
 
             api.user.userGetGameChallenge(gameID, id).then((response) => {
-                // console.log(response)
+                // 
                 curChallengeRef.current = response.data.data
                 setCurChallenge(response.data.data)
                 setPageSwitching(true)

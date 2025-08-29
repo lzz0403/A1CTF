@@ -29,7 +29,7 @@ export function Mdx({ source }: { source: string }) {
                 rehypePlugins={[rehypeRaw]}
                 components={{
                     code: ({ children = [], className, ...props }) => {
-                        // console.log(props)
+                        // 
                         const match = /language-(\w+)/.exec(className || '')
                         return match ? (<SyntaxHighlighter
                             language={match?.[1]}

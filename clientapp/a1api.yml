@@ -4694,6 +4694,10 @@ components:
           format: date-time
         container_type:
           type: string
+        container_name_list:
+          type: array
+          items:
+            type: string
         pod_id:
           type: string
         container_ports:

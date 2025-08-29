@@ -249,7 +249,6 @@ var PermissionMap = map[string]PermissionSetting{
 	"/api/game/:game_id/scoreboard":              {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
 	"/api/game/:game_id/container/:challenge_id": {RequestMethod: []string{"POST", "DELETE", "PATCH", "GET"}, Permissions: []models.UserRole{}},
 	"/api/game/:game_id/flag/:challenge_id":      {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/hub":                                   {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
 	"/api/game/:game_id/flag/:judge_id":          {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
 
 	"/api/admin/container/list":   {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
@@ -265,6 +264,10 @@ var PermissionMap = map[string]PermissionSetting{
 
 	"/api/admin/system/logs":       {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
 	"/api/admin/system/logs/stats": {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
+
+	// WebSocket
+	"/api/hub": {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
+	"/api/pod/:pod_name/:container_name/exec": {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
 }
 
 var RequestMethodMaskMap = map[string]uint64{
