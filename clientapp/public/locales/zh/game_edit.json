@@ -128,5 +128,37 @@
             "size": "图片大小不能超过 10 MB",
             "success": "比赛海报上传成功"
         }
+    },
+    "timeline": {
+        "invalid": {
+            "index": "无效的时间段索引",
+            "id": "找不到题目 ID"
+        },
+        "title": "比赛时间轴",
+        "name": "时间段名称",
+        "placeholder": "请输入该时间段段名称",
+        "start": "开始时间",
+        "end": "结束时间",
+        "add": {
+            "button": "添加时间段",
+            "title": "添加新的时间段"
+        },
+        "delete": {
+            "title": "确认删除",
+            "description": "删除后将无法恢复"
+        },
+        "drag": "拖拽题目到此处分配时间段",
+        "edit": "编辑时间段",
+        "global": {
+            "title": "全局题目",
+            "description": "整个比赛期间都可见的题目",
+            "empty": "暂无全局题目"
+        },
+        "timeline": {
+            "title": "时间段题目",
+            "description": "分配到特定时间段的题目",
+            "empty": "请先添加时间段",
+            "drag": "拖拽题目到上方的时间线"
+        }
     }
 }

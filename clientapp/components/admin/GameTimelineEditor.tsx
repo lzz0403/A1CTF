@@ -15,6 +15,7 @@ import { UseFormReturn, useWatch } from 'react-hook-form';
 import * as z from 'zod';
 import { DateTimePicker24h } from 'components/ui/data-time-picker';
 import AlertConformer from 'components/modules/AlertConformer';
+import { useTranslation } from 'react-i18next';
 
 interface TimePoint {
     id: string;
@@ -45,6 +46,9 @@ export function GameTimelineEditor({
     form,
 }: GameTimelineEditorProps) {
 
+    const { t } = useTranslation("game_edit")
+    const { t: commonT } = useTranslation()
+
     const gameStartTime = form.getValues("start_time") || new Date();
     const gameEndTime = form.getValues("end_time") || new Date();
 
@@ -71,7 +75,7 @@ export function GameTimelineEditor({
             start_time: tp.startTime,
             end_time: tp.endTime,
         }));
-        console.log(stages)
+
         form.setValue("stages", stages);
     };
 
@@ -96,10 +100,10 @@ export function GameTimelineEditor({
                 const stageName = currentStages[stageIndex].stage_name;
                 form.setValue(`challenges.${challengeIndex}.belong_stage`, stageName);
             } else {
-                console.error(`无效的时间段索引: ${stageIndex}`);
+                console.error(`${t("timeline.invalid.index")}: ${stageIndex}`);
             }
         } else {
-            console.error(`找不到题目 ID: ${challengeId}`);
+            console.error(`${t("timeline.invalid.id")}: ${challengeId}`);
         }
     };
 
@@ -337,34 +341,34 @@ export function GameTimelineEditor({
             <Card>
                 <CardHeader>
                     <div className="flex items-center justify-between">
-                        <CardTitle>比赛时间轴</CardTitle>
+                        <CardTitle>{t("timeline.title")}</CardTitle>
                         <Dialog open={isCreatingTimePoint} onOpenChange={setIsCreatingTimePoint}>
                             <DialogTrigger asChild>
                                 <Button variant="outline" size="sm">
                                     <Plus className="h-4 w-4 mr-2" />
-                                    添加时间段
+                                    {t("timeline.add.button")}
                                 </Button>
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>添加新时间段</DialogTitle>
+                                    <DialogTitle>{t("timeline.add.title")}</DialogTitle>
                                 </DialogHeader>
                                 <div className="space-y-4">
                                     <div>
                                         <div className='h-[30px] flex items-center'>
-                                            <Label htmlFor="stageName">时间段名称</Label>
+                                            <Label htmlFor="stageName">{t("timeline.name")}</Label>
                                         </div>
                                         <Input
                                             id="stageName"
                                             value={newTimePoint.name}
                                             onChange={(e) => setNewTimePoint(prev => ({ ...prev, name: e.target.value }))}
-                                            placeholder="输入时间段名称"
+                                            placeholder={t("timeline.placeholder")}
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <div className='h-[30px] flex items-center'>
-                                                <Label>开始时间</Label>
+                                                <Label>{t("timeline.start")}</Label>
                                             </div>
                                             <DateTimePicker24h
                                                 date={newTimePoint.startTime}
@@ -375,7 +379,7 @@ export function GameTimelineEditor({
                                         </div>
                                         <div>
                                             <div className='h-[30px] flex items-center'>
-                                                <Label>结束时间</Label>
+                                                <Label>{t("timeline.end")}</Label>
                                             </div>
                                             <DateTimePicker24h
                                                 date={newTimePoint.endTime}
@@ -387,10 +391,10 @@ export function GameTimelineEditor({
                                     </div>
                                     <div className="flex justify-end gap-2">
                                         <Button variant="outline" onClick={() => setIsCreatingTimePoint(false)}>
-                                            取消
+                                            {commonT("cancel")}
                                         </Button>
                                         <Button onClick={handleAddTimePoint} disabled={!newTimePoint.name.trim()}>
-                                            添加
+                                            {commonT("confirm")}
                                         </Button>
                                     </div>
                                 </div>
@@ -444,8 +448,8 @@ export function GameTimelineEditor({
                                                 <Edit className="h-3 w-3" />
                                             </Button>
                                             <AlertConformer
-                                                title="确认删除"
-                                                description="删除后将无法恢复"
+                                                title={t("timeline.delete.title")}
+                                                description={t("timeline.delete.description")}
                                                 type="danger"
                                                 onConfirm={() => handleDeleteTimePoint(timePoint.id)}
                                             >
@@ -466,7 +470,7 @@ export function GameTimelineEditor({
                             {/* 拖拽提示 */}
                             {timePoints.length === 0 && (
                                 <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm pointer-events-none">
-                                    拖拽题目到此处分配时间段
+                                    {t("timeline.drag")}
                                 </div>
                             )}
                         </div>
@@ -478,24 +482,24 @@ export function GameTimelineEditor({
             <Dialog open={isEditingTimePoint !== null} onOpenChange={() => setIsEditingTimePoint(null)}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>编辑时间段</DialogTitle>
+                        <DialogTitle>{t("timeline.edit")}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4">
                         <div>
                             <div className='h-[30px] flex items-center'>
-                                <Label htmlFor="editStageName">时间段名称</Label>
+                                <Label htmlFor="editStageName">{t("timeline.name")}</Label>
                             </div>
                             <Input
                                 id="editStageName"
                                 value={editingTimePoint.name}
                                 onChange={(e) => setEditingTimePoint(prev => ({ ...prev, name: e.target.value }))}
-                                placeholder="输入时间段名称"
+                                placeholder={t("timeline.placeholder")}
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <div className='h-[30px] flex items-center'>
-                                    <Label>开始时间</Label>
+                                    <Label>{t("timeline.start")}</Label>
                                 </div>
                                 <DateTimePicker24h
                                     date={editingTimePoint.startTime}
@@ -506,7 +510,7 @@ export function GameTimelineEditor({
                             </div>
                             <div>
                                 <div className='h-[30px] flex items-center'>
-                                    <Label>结束时间</Label>
+                                    <Label>{t("timeline.end")}</Label>
                                 </div>
                                 <DateTimePicker24h
                                     date={editingTimePoint.endTime}
@@ -518,10 +522,10 @@ export function GameTimelineEditor({
                         </div>
                         <div className="flex justify-end gap-2">
                             <Button variant="outline" onClick={() => setIsEditingTimePoint(null)}>
-                                取消
+                                {commonT("cancel")}
                             </Button>
                             <Button onClick={handleSaveEditTimePoint} disabled={!editingTimePoint.name.trim()}>
-                                保存
+                                {commonT("confirm")}
                             </Button>
                         </div>
                     </div>
@@ -534,8 +538,8 @@ export function GameTimelineEditor({
                 <div className="col-span-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">全局题目</CardTitle>
-                            <p className="text-sm text-muted-foreground">整个比赛期间都可见的题目</p>
+                            <CardTitle className="text-lg">{t("timeline.global.title")}</CardTitle>
+                            <p className="text-sm text-muted-foreground">{t("timeline.global.description")}</p>
                         </CardHeader>
                         <CardContent>
                             <ScrollArea className="">
@@ -558,7 +562,7 @@ export function GameTimelineEditor({
                                     ))}
                                     {groupedChallenges.global.length === 0 && (
                                         <p className="text-center text-muted-foreground text-sm py-8">
-                                            暂无全局题目
+                                            {t("timeline.global.empty")}
                                         </p>
                                     )}
                                 </div>
@@ -571,14 +575,14 @@ export function GameTimelineEditor({
                 <div className="col-span-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">时间段题目</CardTitle>
-                            <p className="text-sm text-muted-foreground">分配到特定时间段的题目</p>
+                            <CardTitle className="text-lg">{t("timeline.timeline.title")}</CardTitle>
+                            <p className="text-sm text-muted-foreground">{t("timeline.timeline.description")}</p>
                         </CardHeader>
                         <CardContent>
                             <ScrollArea className="">
                                 {timePoints.length === 0 ? (
                                     <p className="text-center text-muted-foreground text-sm py-8">
-                                        请先添加时间段
+                                        {t("timeline.timeline.empty")}
                                     </p>
                                 ) : (
                                     <div className="space-y-4">
@@ -601,8 +605,8 @@ export function GameTimelineEditor({
                                                             <Edit className="h-3 w-3" />
                                                         </Button>
                                                         <AlertConformer
-                                                            title="确认删除"
-                                                            description="删除后将无法恢复"
+                                                            title={t("timeline.delete.title")}
+                                                            description={t("timeline.delete.description")}
                                                             type="danger"
                                                             onConfirm={() => handleDeleteTimePoint(timePoint.id)}
                                                         >
@@ -636,7 +640,7 @@ export function GameTimelineEditor({
                                                     ))}
                                                     {(!groupedChallenges.staged[timePoint.id] || groupedChallenges.staged[timePoint.id].length === 0) && (
                                                         <p className="text-center text-muted-foreground text-sm py-4">
-                                                            拖拽题目到上方的时间线
+                                                            {t("timeline.timeline.drag")}
                                                         </p>
                                                     )}
                                                 </div>

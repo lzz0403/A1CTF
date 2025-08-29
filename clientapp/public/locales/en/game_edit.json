@@ -128,5 +128,37 @@
             "size": "Image size must not exceed 10 MB",
             "success": "Game poster uploaded successfully"
         }
+    },
+    "timeline": {
+        "invalid": {
+            "index": "Invalid timeline index",
+            "id": "Challenge ID not found"
+        },
+        "title": "Game Timeline",
+        "name": "Timeline Name",
+        "placeholder": "Please enter the name of this timeline",
+        "start": "Start Time",
+        "end": "End Time",
+        "add": {
+            "button": "Add Timeline",
+            "title": "Add New Timeline"
+        },
+        "delete": {
+            "title": "Confirm Deletion",
+            "description": "This action cannot be undone"
+        },
+        "drag": "Drag challenges here to assign them to this timeline",
+        "edit": "Edit Timeline",
+        "global": {
+            "title": "Global Challenges",
+            "description": "Challenges visible throughout the entire competition",
+            "empty": "No global challenges yet"
+        },
+        "timeline": {
+            "title": "Timeline Challenges",
+            "description": "Challenges assigned to a specific timeline",
+            "empty": "Please add a timeline first",
+            "drag": "Drag challenges to the timeline above"
+        }
     }
 }
