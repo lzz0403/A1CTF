@@ -87,5 +87,46 @@
             "dark": "Dark",
             "light": "Light"
         }
+    },
+    "detail": {
+        "title": "Detailed Settings",
+        "invite": {
+            "title": "Invitation Code",
+            "description": "Leave empty if not required"
+        },
+        "policy": {
+            "title": "Team Policy",
+            "placeholder": "Select a team policy",
+            "manual": "Manual approval by admin",
+            "auto": "Auto approval",
+            "description": "Please select a team policy"
+        },
+        "wp_time": {
+            "title": "WriteUp Submission Deadline",
+            "description": "Please select the deadline for WriteUp submissions"
+        },
+        "limit": {
+            "member": {
+                "title": "Team Member Limit",
+                "description": "Set the maximum number of members per team"
+            },
+            "container": {
+                "title": "Team Container Limit",
+                "description": "Set the maximum number of containers a team can run simultaneously"
+            }
+        },
+        "blood": {
+            "0": "0% means bonus disabled",
+            "1": "First Blood bonus ratio",
+            "2": "Second Blood bonus ratio",
+            "3": "Third Blood bonus ratio"
+        },
+        "upload": {
+            "title": "Upload Game Poster",
+            "description": "Click to upload a new game poster",
+            "type": "Please select an image file",
+            "size": "Image size must not exceed 10 MB",
+            "success": "Game poster uploaded successfully"
+        }
     }
 }

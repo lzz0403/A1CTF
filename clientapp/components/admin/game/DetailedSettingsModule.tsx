@@ -20,6 +20,7 @@ import { AdminFullGameInfo } from 'utils/A1API';
 import { Slider } from 'components/ui/slider';
 import { DateTimePicker24h } from 'components/ui/data-time-picker';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'components/ui/select';
+import { useTranslation } from 'react-i18next';
 
 interface DetailedSettingsModuleProps {
     form: UseFormReturn<z.infer<typeof EditGameFormSchema>>;
@@ -40,6 +41,9 @@ export function DetailedSettingsModule({
     handleTimeChange: _handleTimeChange,
     clientConfig,
 }: DetailedSettingsModuleProps) {
+
+    const { t } = useTranslation("game_edit")
+
     // 监听 poster 字段变化，用于实时预览
     const watchedPoster = useWatch({ control: form.control, name: 'poster' });
 
@@ -51,13 +55,13 @@ export function DetailedSettingsModule({
 
         // 检查文件类型
         if (!file.type.startsWith('image/')) {
-            toast.error('请选择图片文件');
+            toast.error(t("detail.upload.type"));
             return;
         }
 
         // 检查文件大小 (限制为10MB)
         if (file.size > 10 * 1024 * 1024) {
-            toast.error('图片大小不能超过10MB');
+            toast.error(t("detail.upload.size"));
             return;
         }
 
@@ -67,7 +71,7 @@ export function DetailedSettingsModule({
         api.admin.uploadGamePoster(game_info.game_id, { poster: file }).then((res) => {
             // 更新表单中的poster字段
             form.setValue('poster', res.data.poster_url);
-            toast.success('海报上传成功');
+            toast.success(t("detail.upload.success"));
         })
 
         // 清空文件输入，允许重新选择相同文件
@@ -80,7 +84,7 @@ export function DetailedSettingsModule({
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-green-500/20 to-green-600/10 flex items-center justify-center">
                     <Settings className="h-4 w-4 text-green-600" />
                 </div>
-                <h2 className="text-xl font-semibold">详细设置</h2>
+                <h2 className="text-xl font-semibold">{t("detail.title")}</h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -93,14 +97,14 @@ export function DetailedSettingsModule({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex items-center h-[20px]">
-                                    <FormLabel>邀请码</FormLabel>
+                                    <FormLabel>{t("detail.invite.title")}</FormLabel>
                                     <div className="flex-1" />
                                     <FormMessage className="text-[14px]" />
                                 </div>
                                 <FormControl>
                                     <Input {...field} />
                                 </FormControl>
-                                <FormDescription>不需要请留空</FormDescription>
+                                <FormDescription>{t("detail.invite.description")}</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -112,27 +116,27 @@ export function DetailedSettingsModule({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex items-center h-[20px]">
-                                    <FormLabel>队伍策略</FormLabel>
+                                    <FormLabel>{t("detail.policy.title")}</FormLabel>
                                     <div className="flex-1" />
                                     <FormMessage className="text-[14px]" />
                                 </div>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="选择队伍策略" />
+                                            <SelectValue placeholder={t("detail.policy.placeholder")} />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="w-full flex">
                                         <SelectItem key="Manual" value="Manual">
-                                            管理员手动审核
+                                            {t("detail.policy.manual")}
                                         </SelectItem>
                                         <SelectItem key="Auto" value="Auto">
-                                            自动审核
+                                            {t("detail.policy.auto")}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>
-                                    请选择一个队伍策略
+                                    {t("detail.policy.description")}
                                 </FormDescription>
                             </FormItem>
                         )}
@@ -144,12 +148,12 @@ export function DetailedSettingsModule({
                         name={`wp_expire_time`}
                         render={({ field }) => (
                             <FormItem className="flex flex-col">
-                                <FormLabel>WriteUP截至时间</FormLabel>
+                                <FormLabel>{t("detail.wp_time.title")}</FormLabel>
                                 <DateTimePicker24h
                                     date={field.value}
                                     setDate={field.onChange}
                                 />
-                                <FormDescription>请选择WP截止时间</FormDescription>
+                                <FormDescription>{t("detail.wp_time.description")}</FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -162,7 +166,7 @@ export function DetailedSettingsModule({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex items-center h-[20px]">
-                                    <FormLabel>队伍人数限制</FormLabel>
+                                    <FormLabel>{t("detail.limit.member.title")}</FormLabel>
                                     <div className="flex-1" />
                                     <FormMessage className="text-[14px]" />
                                 </div>
@@ -179,7 +183,7 @@ export function DetailedSettingsModule({
                                         <span className='w-10'>{field.value}</span>
                                     </div>
                                 </FormControl>
-                                <FormDescription>队伍人数限制</FormDescription>
+                                <FormDescription>{t("detail.limit.member.description")}</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -191,7 +195,7 @@ export function DetailedSettingsModule({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex items-center h-[20px]">
-                                    <FormLabel>队伍容器数量限制</FormLabel>
+                                    <FormLabel>{t("detail.limit.container.title")}</FormLabel>
                                     <div className="flex-1" />
                                     <FormMessage className="text-[14px]" />
                                 </div>
@@ -208,7 +212,7 @@ export function DetailedSettingsModule({
                                         <span className='w-10'>{field.value}</span>
                                     </div>
                                 </FormControl>
-                                <FormDescription>队伍容器数量限制</FormDescription>
+                                <FormDescription>{t("detail.limit.container.description")}</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -220,7 +224,7 @@ export function DetailedSettingsModule({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex items-center h-[20px]">
-                                    <FormLabel>一血加分比例</FormLabel>
+                                    <FormLabel>{t("detail.blood.1")}</FormLabel>
                                     <div className="flex-1" />
                                     <FormMessage className="text-[14px]" />
                                 </div>
@@ -237,7 +241,7 @@ export function DetailedSettingsModule({
                                         <span className='w-10'>{field.value}%</span>
                                     </div>
                                 </FormControl>
-                                <FormDescription>0%即为关闭</FormDescription>
+                                <FormDescription>{t("detail.blood.0")}</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -249,7 +253,7 @@ export function DetailedSettingsModule({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex items-center h-[20px]">
-                                    <FormLabel>二血加分比例</FormLabel>
+                                    <FormLabel>{t("detail.blood.2")}</FormLabel>
                                     <div className="flex-1" />
                                     <FormMessage className="text-[14px]" />
                                 </div>
@@ -266,7 +270,7 @@ export function DetailedSettingsModule({
                                         <span className='w-10'>{field.value}%</span>
                                     </div>
                                 </FormControl>
-                                <FormDescription>0%即为关闭</FormDescription>
+                                <FormDescription>{t("detail.blood.0")}</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -278,7 +282,7 @@ export function DetailedSettingsModule({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex items-center h-[20px]">
-                                    <FormLabel>三血加分比例</FormLabel>
+                                    <FormLabel>{t("detail.blood.3")}</FormLabel>
                                     <div className="flex-1" />
                                     <FormMessage className="text-[14px]" />
                                 </div>
@@ -295,7 +299,7 @@ export function DetailedSettingsModule({
                                         <span className='w-10'>{field.value}%</span>
                                     </div>
                                 </FormControl>
-                                <FormDescription>0%即为关闭</FormDescription>
+                                <FormDescription>{t("detail.blood.0")}</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -305,14 +309,14 @@ export function DetailedSettingsModule({
                 <div className="h-fit">
                     <div className="aspect-[4/3] rounded-xl border border-border/50 shadow-md relative overflow-hidden bg-gradient-to-br from-muted/20 to-muted/10 group">
                         <div
-                            className="absolute top-0 left-0 w-full h-full bg-cover bg-center z-10"
+                            className="absolute top-0 left-0 w-full h-full bg-cover bg-center z-5"
                             style={{ backgroundImage: `url(${watchedPoster || clientConfig.DefaultBGImage})` }}
                         />
-                        <div className="absolute top-0 left-0 w-full h-full opacity-0 group-hover:bg-background group-hover:opacity-85 z-20 transition-all duration-300 flex items-center justify-center cursor-pointer">
+                        <div className="absolute top-0 left-0 w-full h-full opacity-0 group-hover:bg-background group-hover:opacity-85 z-5 transition-all duration-300 flex items-center justify-center cursor-pointer">
                             <div className="flex flex-col items-center gap-3 text-muted-foreground group-hover:text-primary transition-colors duration-300 pointer-events-none">
                                 <Upload size={40} />
-                                <span className="text-lg font-medium">上传海报</span>
-                                <span className="text-sm text-center">点击上传新的比赛海报</span>
+                                <span className="text-lg font-medium">{t("detail.upload.title")}</span>
+                                <span className="text-sm text-center">{t("detail.upload.description")}</span>
                             </div>
                         </div>
                         <input

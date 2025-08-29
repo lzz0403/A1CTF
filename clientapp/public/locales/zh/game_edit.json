@@ -87,5 +87,46 @@
             "dark": "深色",
             "light": "浅色"
         }
+    },
+    "detail": {
+        "title": "详细设置",
+        "invite": {
+            "title": "邀请码",
+            "description": "不需要请留空"
+        },
+        "policy": {
+            "title": "队伍策略",
+            "placeholder": "选择队伍策略",
+            "manual": "管理员手动审核",
+            "auto": "自动通过",
+            "description": "请选择一个队伍策略"
+        },
+        "wp_time": {
+            "title": "WriteUp提交截至时间",
+            "description": "请选择WriteUp提交截至时间"
+        },
+        "limit": {
+            "member": {
+                "title": "队伍人数限制",
+                "description": "请限制队伍的最大人数"
+            },
+            "container": {
+                "title": "队伍容器数量限制",
+                "description": "请限制队伍最多同时开启的容器数量"
+            }
+        },
+        "blood": {
+            "0": "0% 表示关闭加分",
+            "1": "一血加分比例",
+            "2": "二血加分比例",
+            "3": "三血加分比例"
+        },
+        "upload": {
+            "title": "上传比赛海报",
+            "description": "点击上传新的比赛海报",
+            "type": "请选择图片文件",
+            "size": "图片大小不能超过 10 MB",
+            "success": "比赛海报上传成功"
+        }
     }
 }
