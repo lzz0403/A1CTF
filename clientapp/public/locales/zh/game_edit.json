@@ -160,5 +160,37 @@
             "empty": "请先添加时间段",
             "drag": "拖拽题目到上方的时间线"
         }
+    },
+    "group": {
+        "title": "参赛分组管理",
+        "add": {
+            "button": "新建分组",
+            "title": "创建新分组",
+            "description": "为比赛创建一个新的参赛分组",
+            "name": {
+                "label": "分组名称",
+                "placeholder": "例如: 本科组、研究生组"
+            },
+            "info": {
+                "label": "分组描述",
+                "placeholder": "描述这个分组的特点或要求"
+            },
+            "success": "分组创建成功"
+        },
+        "edit": {
+            "title": "编辑分组",
+            "description": "修改分组的名称和描述",
+            "success": "分组更新成功"
+        },
+        "delete_success": "分组删除成功",
+        "error": {
+            "empty": "分组名称不能为空",
+            "long1": "分组名称不能超过100个字符",
+            "long2": "分组描述不能超过500个字符"
+        },
+        "option": "可选",
+        "time": "创建时间",
+        "action": "操作",
+        "empty": "暂无分组，点击\"创建分组\"开始添加"
     }
 }

@@ -160,5 +160,37 @@
             "empty": "Please add a timeline first",
             "drag": "Drag challenges to the timeline above"
         }
+    },
+    "group": {
+        "title": "Participant Group Management",
+        "add": {
+            "button": "Create Group",
+            "title": "Create New Group",
+            "description": "Create a new participant group for the game",
+            "name": {
+                "label": "Group Name",
+                "placeholder": "e.g. Undergraduate, Graduate"
+            },
+            "info": {
+                "label": "Group Description",
+                "placeholder": "Describe the characteristics or requirements of this group"
+            },
+            "success": "Group created successfully"
+        },
+        "edit": {
+            "title": "Edit Group",
+            "description": "Modify the group's name and description",
+            "success": "Group updated successfully"
+        },
+        "delete_success": "Group deleted successfully",
+        "error": {
+            "empty": "Group name cannot be empty",
+            "long1": "Group name cannot exceed 100 characters",
+            "long2": "Group description cannot exceed 500 characters"
+        },
+        "option": "Optional",
+        "time": "Created At",
+        "action": "Actions",
+        "empty": "No groups yet. Click \"Create Group\" to add one"
     }
 }
