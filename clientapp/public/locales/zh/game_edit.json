@@ -192,5 +192,33 @@
         "time": "创建时间",
         "action": "操作",
         "empty": "暂无分组，点击\"创建分组\"开始添加"
+    },
+    "notice": {
+        "empty": "请填写完整的公告信息",
+        "create": {
+            "button": "创建公告",
+            "dialog": "创建一条新公告",
+            "description": "创建的公告将会立即推送给所有参赛选手",
+            "title": {
+                "label": "公告标题",
+                "placeholder": "请输入公告标题"
+            },
+            "content": "公告内容",
+            "success": "公告创建成功"
+        },
+        "list": {
+            "empty": "当前暂无公告",
+            "first": "创建第一条公告来通知参赛选手"
+        },
+        "char": "字",
+        "delete": {
+            "title": "确认删除公告",
+            "confirm": "您确定要删除公告 \"<s>{{title}}</s>\" 吗?",
+            "description": "此操作无法撤销，删除后所有参赛选手将无法再看到此公告！",
+            "success": "公告删除成功"
+        },
+        "title": "共 {{count}} 条公告",
+        "more": "查看更多",
+        "time": "发布时间"
     }
 }

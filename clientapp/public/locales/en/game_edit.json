@@ -192,5 +192,33 @@
         "time": "Created At",
         "action": "Actions",
         "empty": "No groups yet. Click \"Create Group\" to add one"
+    },
+    "notice": {
+        "empty": "Notice can't be empty",
+        "create": {
+            "button": "Create Notice",
+            "dialog": "Create New Notice",
+            "description": "The notice will be immediately pushed to all participants",
+            "title": {
+                "label": "Notice Title",
+                "placeholder": "Enter the notice title"
+            },
+            "content": "Notice Content",
+            "success": "Notice created successfully"
+        },
+        "list": {
+            "empty": "No notices available",
+            "first": "Create the first notice to inform participants"
+        },
+        "char": "characters",
+        "delete": {
+            "title": "Confirm Notice Deletion",
+            "confirm": "Are you sure you want to delete the notice \"<s>{{title}}</s>\"?",
+            "description": "This action cannot be undone. After deletion, participants will no longer see this notice!",
+            "success": "Notice deleted successfully"
+        },
+        "title": "Total {{count}} notices",
+        "more": "View More",
+        "time": "Published At"
     }
 }
