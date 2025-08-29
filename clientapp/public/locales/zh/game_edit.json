@@ -220,5 +220,57 @@
         "title": "共 {{count}} 条公告",
         "more": "查看更多",
         "time": "发布时间"
+    },
+    "team": {
+        "approve": {
+            "title": "批准队伍",
+            "name": "批准",
+            "loading": "正在批准队伍"
+        },
+        "ban": {
+            "title": "确认锁定",
+            "description": "您确定要锁定这个队伍吗？这将禁止他们参与比赛！",
+            "ban": "锁定队伍",
+            "loading": "正在锁定队伍"
+        },
+        "unban": {
+            "title": "确认解锁",
+            "description": "您确定要解锁这个队伍吗？这将允许他们继续参与比赛！",
+            "unban": "解锁队伍",
+            "loading": "正在解锁队伍"
+        },
+        "refresh": {
+            "success": "队伍状态已更新",
+            "error": "更新队伍状态失败"
+        },
+        "delete": {
+            "title": "确认删除",
+            "description": "您确定要删除这个队伍吗？此操作不可逆！",
+            "delete": "删除队伍",
+            "pending": "正在删除队伍",
+            "success": "队伍已删除",
+            "error": "删除队伍失败"
+        },
+        "status": {
+            "approved": "已审核",
+            "pending": "待审核",
+            "banned": "已禁赛",
+            "rejected": "已拒绝",
+            "accepted": "已参加",
+            "default": "未报名"
+        },
+        "score": "分数",
+        "member": "队伍成员",
+        "list": "成员列表",
+        "user_id": "用户ID",
+        "slogan": "队伍口号",
+        "menu": {
+            "title": "打开菜单",
+            "copy": "复制队伍ID"
+        },
+        "empty":"暂无队伍数据",
+        "row": "列显示",
+        "select": "{{a}} / {{b}} 行已选择",
+        "support": "支持队伍名, 队伍ID, 成员用户名, 成员用户ID, 邀请码, 队伍Hash, 队伍口号"
     }
 }
