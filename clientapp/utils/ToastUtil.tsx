@@ -76,8 +76,10 @@ export function toastNewHint({ challenges, time, openNotices: _openNotices }: { 
 
 }
 
-export const copyWithResult = (text: any) => {
-    copy(text?.toString() ?? "") ?
-        toast.success(i18n.t("toast.copy_success")) :
-        toast.error(i18n.t("toast.copy_failed"))
+export const copyWithResult = (text: any, field: string = "") => {
+    const t: string = text?.toString() ?? ""
+    if (field.length > 0) field += " "
+    t.length > 0 ? (copy(t) ?
+        toast.success(`${field}${i18n.t("toast.copy.success")}`) :
+        toast.error(`${field}${i18n.t("toast.copy.failed")}`)) : toast.error(`${field}${i18n.t("toast.copy.failed")}`)
 };

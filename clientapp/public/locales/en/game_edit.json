@@ -1,0 +1,91 @@
+{
+    "page": {
+        "prev": "Prev",
+        "next": "Next"
+    },
+    "events": {
+        "title": "Game Events",
+        "auto": "Auto Update",
+        "submit": {
+            "title": "Submission",
+            "count": "Total {{count}} submissions",
+            "empty1": "No submissions yet",
+            "empty2": "Submissions will appear here once players start submitting",
+            "time": "Time",
+            "status": "Status",
+            "user": "User",
+            "team": "Team",
+            "challenge": "Challenge",
+            "flag": "Flag"
+        },
+        "cheat": {
+            "title": "Abnormal",
+            "count": "Total {{count}} abnormal records",
+            "empty1": "No abnormal records",
+            "empty2": "The system will automatically detect and record abnormal behaviors",
+            "someone": "Submitted another team's flag",
+            "attachment": "Attachment not downloaded",
+            "container": "Container not started",
+            "time": "Time",
+            "type": "Type",
+            "info": "Info",
+            "ip": "Submitter IP",
+            "flag": "Team that submitted a leaked flag"
+        },
+        "filter": {
+            "title1": "Filter Submission Records",
+            "title2": "Filter Abnormal Records",
+            "add": "Add Filter",
+            "clear": "Clear Filters",
+            "select": "Filter Condition",
+            "team": "Team Name",
+            "challenge": "Challenge Name",
+            "status": "Evaluation Status",
+            "time": "Time Range",
+            "chal_id": "Challenge ID",
+            "team_id": "Team ID",
+            "keyword": " Keyword",
+            "placeholder": "Please enter keyword"
+        }
+    },
+    "basic": {
+        "title": "Basic Information",
+        "name": {
+            "label": "Game Name",
+            "description": "Please enter the game name"
+        },
+        "start_time": {
+            "label": "Start Time",
+            "description": "Please select the game start time"
+        },
+        "end_time": {
+            "label": "End Time",
+            "description": "Please select the game end time"
+        },
+        "summary": {
+            "label": "Game Summary",
+            "description": "Please enter the game summary"
+        },
+        "description": {
+            "label": "Game Detail",
+            "description": "Please enter detailed game information (Markdown supported)"
+        },
+        "practice": {
+            "label": "Practice Mode",
+            "description": "Enable practice mode"
+        },
+        "wp": {
+            "label": "WriteUp",
+            "description": "Require participants to submit WriteUps"
+        },
+        "visible": {
+            "label": "Visibility",
+            "description": "Whether this game is visible"
+        },
+        "icon": {
+            "label": "Game Icon",
+            "dark": "Dark",
+            "light": "Light"
+        }
+    }
+}

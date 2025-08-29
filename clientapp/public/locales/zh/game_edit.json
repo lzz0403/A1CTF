@@ -1,0 +1,91 @@
+{
+    "page": {
+        "prev": "上一页",
+        "next": "下一页"
+    },
+    "events": {
+        "title": "比赛事件",
+        "auto": "自动更新",
+        "submit": {
+            "title": "提交记录",
+            "count": "共 {{count}} 条提交记录",
+            "empty1": "暂无提交记录",
+            "empty2": "等待选手提交后将在此处显示",
+            "time": "提交时间",
+            "status": "状态",
+            "user": "用户",
+            "team": "队伍",
+            "challenge": "题目",
+            "flag": "Flag内容"
+        },
+        "cheat": {
+            "title": "异常记录",
+            "count": "共 {{count}} 条异常记录",
+            "empty1": "暂无异常记录",
+            "empty2": "系统将自动检测并记录异常行为",
+            "someone": "提交他人Flag",
+            "attachment": "未下载附件",
+            "container": "未启动容器",
+            "time": "异常时间",
+            "type": "异常类型",
+            "info": "异常信息",
+            "ip": "提交者IP",
+            "flag": "交串Flag的队伍"
+        },
+        "filter": {
+            "title1": "筛选提交记录",
+            "title2": "筛选异常记录",
+            "add": "添加筛选",
+            "clear": "清空筛选",
+            "select": "筛选条件",
+            "team": "队伍名称",
+            "challenge": "题目名称",
+            "status": "评测状态",
+            "time": "时间范围",
+            "chal_id": "题目ID",
+            "team_id": "队伍ID",
+            "keyword": "关键词",
+            "placeholder": "请输入关键词"
+        }
+    },
+    "basic": {
+        "title": "基本信息",
+        "name": {
+            "label": "比赛名称",
+            "description": "请填写比赛名称"
+        },
+        "start_time": {
+            "label": "开始时间",
+            "description": "请选择比赛开始时间"
+        },
+        "end_time": {
+            "label": "结束时间",
+            "description": "请选择比赛结束时间"
+        },
+        "summary": {
+            "label": "比赛简介",
+            "description": "请填写比赛简介"
+        },
+        "description": {
+            "label": "比赛详细信息",
+            "description": "请填写比赛详细信息 (支持Markdown)"
+        },
+        "practice": {
+            "label": "练习模式",
+            "description": "是否开启练习模式"
+        },
+        "wp": {
+            "label": "WriteUp",
+            "description": "是否需要提交WriteUp"
+        },
+        "visible": {
+            "label": "是否可见",
+            "description": "比赛是否可见"
+        },
+        "icon": {
+            "label": "比赛图标",
+            "dark": "深色",
+            "light": "浅色"
+        }
+    }
+}
