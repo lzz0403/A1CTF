@@ -20,6 +20,18 @@ import (
 	"gorm.io/gorm"
 )
 
+func getTimeLimitConfig() time.Duration {
+	var ret time.Duration
+	if config := viper.Get("game-settings.container-cooldown-time"); config == nil {
+		ret = time.Minute
+	} else {
+		ret = viper.GetDuration("game-settings.container-cooldown-time")
+	}
+	return ret
+}
+
+var timeLimit = getTimeLimitConfig()
+
 func UserCreateGameContainer(c *gin.Context) {
 	game := c.MustGet("game").(models.Game)
 	team := c.MustGet("team").(models.Team)
@@ -101,12 +113,12 @@ func UserCreateGameContainer(c *gin.Context) {
 
 	// 用户操作靶机的 60 秒 CD
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
-	locked := redistool.LockForATime(operationName, viper.GetDuration("game-settings.container-cooldown-time"))
+	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": viper.GetDuration("game-settings.container-cooldown-time").Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
@@ -198,24 +210,24 @@ func UserCloseGameContainer(c *gin.Context) {
 
 	// 用户操作靶机的 60 秒 CD
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
-	locked := redistool.LockForATime(operationName, viper.GetDuration("game-settings.container-cooldown-time"))
+	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": viper.GetDuration("game-settings.container-cooldown-time").Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
 
 	// 锁住对一个容器ID的操作
 	operationNameForContainer := fmt.Sprintf("containerLock:%s", curContainer.ContainerID)
-	lockedForContainer := redistool.LockForATime(operationNameForContainer, viper.GetDuration("game-settings.container-cooldown-time"))
+	lockedForContainer := redistool.LockForATime(operationNameForContainer, timeLimit)
 
 	if !lockedForContainer {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": viper.GetDuration("game-settings.container-cooldown-time").Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
@@ -263,12 +275,12 @@ func UserExtendGameContainer(c *gin.Context) {
 	challengeID := c.MustGet("challenge_id").(int64)
 
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
-	locked := redistool.LockForATime(operationName, viper.GetDuration("game-settings.container-cooldown-time"))
+	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": viper.GetDuration("game-settings.container-cooldown-time").Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
@@ -302,12 +314,12 @@ func UserExtendGameContainer(c *gin.Context) {
 
 	// 锁住对一个容器ID的操作
 	operationNameForContainer := fmt.Sprintf("containerLock:%s", curContainer.ContainerID)
-	lockedForContainer := redistool.LockForATime(operationNameForContainer, viper.GetDuration("game-settings.container-cooldown-time"))
+	lockedForContainer := redistool.LockForATime(operationNameForContainer, timeLimit)
 
 	if !lockedForContainer {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": viper.GetDuration("game-settings.container-cooldown-time").Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
