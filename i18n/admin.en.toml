@@ -533,3 +533,9 @@ other = "Not allow to update admin's role"
 [DeleteAdminNotAllowed]
 description = "Not allow to delete admin user"
 other = "Not allow to delete admin user"
+
+# Admin Container 错误信息
+
+[InvalidContainer]
+description = "Invalid pod name or container name"
+other = "Invalid pod name or container name"
