@@ -101,8 +101,8 @@ export default function TeamScoreDetailPage(
 
         // 获取所有可能的题目类型
         const allCategories = new Set<string>();
-        Object.values(ChallengeCategory).forEach((e) => {
-            allCategories.add(e.toString())
+        Object.keys(challenges).forEach((e) => {
+            allCategories.add(e.toString().toUpperCase())
         })
 
         const categoryCount: Record<string, number> = {};
