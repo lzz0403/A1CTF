@@ -295,12 +295,14 @@ export function TeamManageView(
                 const status = row.getValue("status") as ParticipationStatus;
                 const { color, text } = getStatusColorAndText(status);
                 return (
-                    <Badge
-                        className="capitalize w-[60px] px-[5px] flex justify-center select-none"
-                        style={{ backgroundColor: color }}
-                    >
-                        {text}
-                    </Badge>
+                    <div className="w-full flex">
+                        <Badge
+                            className="capitalize px-[10px] flex justify-center select-none"
+                            style={{ backgroundColor: color }}
+                        >
+                            {text}
+                        </Badge>
+                    </div>
                 )
             },
         },

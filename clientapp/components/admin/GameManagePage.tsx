@@ -118,7 +118,7 @@ export function AdminGameManagePage() {
                                 className="mt-4"
                             >
                                 <CirclePlus className="h-4 w-4" />
-                                t("add_game")
+                                {t("add_game")}
                             </Button>
                         )}
                     </div>

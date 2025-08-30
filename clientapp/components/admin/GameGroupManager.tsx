@@ -158,7 +158,7 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                 <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                     <DialogTrigger asChild>
                         <Button variant="outline" size="sm">
-                            <PlusCircle className="w-4 h-4 mr-2" />
+                            <PlusCircle className="w-4 h-4" />
                             {t("group.add.button")}
                         </Button>
                     </DialogTrigger>
