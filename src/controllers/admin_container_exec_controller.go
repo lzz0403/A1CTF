@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	i18ntool "a1ctf/src/utils/i18n_tool"
 	k8stool "a1ctf/src/utils/k8s_tool"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"sync"
@@ -12,6 +14,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/remotecommand"
 	"k8s.io/kubectl/pkg/scheme"
@@ -54,7 +57,7 @@ func AdminHandleContainerExec(c *gin.Context) {
 	if podName == "" || containerName == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":    400,
-			"message": "Invalid pod name or container name",
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "InvalidContainer"}),
 		})
 		return
 	}
@@ -70,8 +73,22 @@ func AdminHandleContainerExec(c *gin.Context) {
 
 	var writeMu sync.Mutex
 
+	clientset, err := k8stool.GetClient()
+	if err != nil {
+		sendErrorMessage(ws, &writeMu, fmt.Sprintf("Failed to get k8s client: %v", err))
+		return
+	}
+
+	sizeQueue := newTerminalSizeQueue(ctx)
+
+	reader := newWebSocketReader(ws, sizeQueue, ctx)
+	defer reader.close()
+
+	writer := newWebSocketWriter(ws, &writeMu)
+
 	ws.SetCloseHandler(func(code int, text string) error {
-		cancel()
+		// 兜底退出sh进程
+		reader.forceExit()
 		return nil
 	})
 
@@ -92,12 +109,6 @@ func AdminHandleContainerExec(c *gin.Context) {
 		}
 	}()
 
-	clientset, err := k8stool.GetClient()
-	if err != nil {
-		sendErrorMessage(ws, &writeMu, fmt.Sprintf("Failed to get k8s client: %v", err))
-		return
-	}
-
 	req := clientset.CoreV1().RESTClient().Post().
 		Resource("pods").
 		Name(podName).
@@ -112,18 +123,11 @@ func AdminHandleContainerExec(c *gin.Context) {
 	req.Param("tty", "true")
 	req.Param("command", "/bin/sh")
 
-	sizeQueue := newTerminalSizeQueue(ctx)
-
 	exec, err := remotecommand.NewSPDYExecutor(k8stool.GetClientConfig(), "POST", req.URL())
 	if err != nil {
 		sendErrorMessage(ws, &writeMu, fmt.Sprintf("Failed to create executor: %v", err))
 		return
 	}
-
-	reader := newWebSocketReader(ws, sizeQueue, ctx)
-	defer reader.close()
-
-	writer := newWebSocketWriter(ws, &writeMu)
 
 	streamOpts := remotecommand.StreamOptions{
 		Stdin:             reader,
@@ -146,6 +150,7 @@ type webSocketReader struct {
 	ctx       context.Context
 	inputChan chan []byte
 	cancel    context.CancelFunc
+	exitd     bool
 }
 
 func newWebSocketReader(ws *websocket.Conn, sizeQueue *TerminalSizeQueue, ctx context.Context) *webSocketReader {
@@ -156,9 +161,19 @@ func newWebSocketReader(ws *websocket.Conn, sizeQueue *TerminalSizeQueue, ctx co
 		ctx:       readerCtx,
 		inputChan: make(chan []byte, 1024),
 		cancel:    cancel,
+		exitd:     false,
 	}
 	go reader.readLoop()
 	return reader
+}
+func (r *webSocketReader) forceExit() {
+	if !r.exitd {
+		select {
+		case r.inputChan <- []byte("exit\n"):
+		default:
+		}
+	}
+	r.cancel()
 }
 
 func (r *webSocketReader) readLoop() {
@@ -170,7 +185,7 @@ func (r *webSocketReader) readLoop() {
 			return
 		default:
 			_, message, err := r.ws.ReadMessage()
-			if err != nil {
+			if err != nil && err != io.EOF {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
 					log.Printf("WebSocket read error: %v", err)
 				}
@@ -180,40 +195,44 @@ func (r *webSocketReader) readLoop() {
 			// 解析JSON消息
 			var msg map[string]interface{}
 			if err := json.Unmarshal(message, &msg); err == nil {
-				// 处理终端resize
-				if op, ok := msg["op"].(string); ok && op == "resize" {
-					if cols, ok := msg["cols"].(float64); ok {
-						if rows, ok := msg["rows"].(float64); ok {
-							size := remotecommand.TerminalSize{
-								Width:  uint16(cols),
-								Height: uint16(rows),
+				if op, ok := msg["op"].(string); ok {
+					switch op {
+					case "resize":
+						if cols, ok := msg["cols"].(float64); ok {
+							if rows, ok := msg["rows"].(float64); ok {
+								size := remotecommand.TerminalSize{
+									Width:  uint16(cols),
+									Height: uint16(rows),
+								}
+								select {
+								case r.sizeQueue.sizeChan <- size:
+								case <-r.ctx.Done():
+									return
+								case <-time.After(100 * time.Millisecond):
+								}
 							}
-							select {
-							case r.sizeQueue.sizeChan <- size:
-							case <-r.ctx.Done():
-								return
-							case <-time.After(100 * time.Millisecond):
-							}
-							continue // resize消息不传递给stdin
-						}
-					}
-				}
-
-				// 忽略心跳包
-				if op, ok := msg["op"].(string); ok && op == "ping" {
-					// 收到心跳，不转发到容器标准输入
-					continue
-				}
-
-				// 处理输入数据
-				if op, ok := msg["op"].(string); ok && op == "input" {
-					if data, ok := msg["data"].(string); ok {
-						select {
-						case r.inputChan <- []byte(data):
-						case <-r.ctx.Done():
-							return
 						}
 						continue
+
+					case "ping":
+						// 心跳包直接丢掉
+						continue
+
+					case "input":
+						if data, ok := msg["data"].(string); ok {
+							select {
+							case r.inputChan <- []byte(data):
+							case <-r.ctx.Done():
+								return
+							}
+						}
+						continue
+
+					case "exit":
+						// 手动退出sh
+						r.forceExit()
+						r.exitd = true
+						return
 					}
 				}
 			}
@@ -232,11 +251,11 @@ func (r *webSocketReader) Read(p []byte) (int, error) {
 	select {
 	case data, ok := <-r.inputChan:
 		if !ok {
-			return 0, fmt.Errorf("websocket closed")
+			return 0, io.EOF
 		}
 		return copy(p, data), nil
 	case <-r.ctx.Done():
-		return 0, r.ctx.Err()
+		return 0, io.EOF
 	}
 }
 

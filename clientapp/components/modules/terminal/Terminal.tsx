@@ -78,6 +78,8 @@ export default function ContainerTerminal(
             wsRef.current = socket
 
             socket.onopen = () => {
+                instance.writeln("\r\nConnected!\r\n")
+
                 setupDataHandlersOnce()
 
                 // 初始上报终端尺寸
@@ -150,7 +152,17 @@ export default function ContainerTerminal(
             return () => {
                 clearTimers()
                 window.removeEventListener('resize', handleResize)
-                try { wsRef.current?.close() } catch { /* noop */ }
+                try {
+                    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+                        // 先发送 exit 命令
+                        wsRef.current.send(JSON.stringify({ op: 'exit' }))
+                    }
+                } catch { /* ignore */ }
+
+                // 稍微延迟一下再关闭，确保 exit 已经发出去
+                setTimeout(() => {
+                    try { wsRef.current?.close() } catch { /* noop */ }
+                }, 200)
             }
         }, [instance, podName, containerName, isOpen])
 

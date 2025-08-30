@@ -533,3 +533,9 @@ other = "您无权更改管理员角色"
 [DeleteAdminNotAllowed]
 description = "您无权删除管理员用户"
 other = "您无权删除管理员用户"
+
+# Admin Container 错误信息
+
+[InvalidContainer]
+description = "无效的 Pod Name 或 Container Name"
+other = "无效的 Pod Name 或 Container Name"

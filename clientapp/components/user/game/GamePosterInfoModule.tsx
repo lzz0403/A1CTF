@@ -4,7 +4,7 @@ import TimerDisplay from "components/modules/TimerDisplay";
 import { useGlobalVariableContext } from "contexts/GlobalVariableContext";
 import dayjs from "dayjs";
 import { CalendarArrowDown, CalendarArrowUp, CirclePlay, ClockAlert, Dumbbell, Hourglass, Package, UsersRound } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FastAverageColor } from "fast-average-color";
 import { ParticipationStatus, UserFullGameInfo } from "utils/A1API";
 import { useTranslation } from "react-i18next";
@@ -89,8 +89,8 @@ export default function GamePosterInfoModule(
                                     const brightColor = brightness > 128 ? "white" : "black";
                                     setPosterTextPrimaryColor(brightColor)
                                 })
-                                .catch((e: any) => {
-                                    
+                                .catch((_) => {
+
                                 });
                         }}
                     />

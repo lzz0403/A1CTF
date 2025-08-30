@@ -87,5 +87,190 @@
             "dark": "Dark",
             "light": "Light"
         }
+    },
+    "detail": {
+        "title": "Detailed Settings",
+        "invite": {
+            "title": "Invitation Code",
+            "description": "Leave empty if not required"
+        },
+        "policy": {
+            "title": "Team Policy",
+            "placeholder": "Select a team policy",
+            "manual": "Manual approval by admin",
+            "auto": "Auto approval",
+            "description": "Please select a team policy"
+        },
+        "wp_time": {
+            "title": "WriteUp Submission Deadline",
+            "description": "Please select the deadline for WriteUp submissions"
+        },
+        "limit": {
+            "member": {
+                "title": "Team Member Limit",
+                "description": "Set the maximum number of members per team"
+            },
+            "container": {
+                "title": "Team Container Limit",
+                "description": "Set the maximum number of containers a team can run simultaneously"
+            }
+        },
+        "blood": {
+            "0": "0% means bonus disabled",
+            "1": "First Blood bonus ratio",
+            "2": "Second Blood bonus ratio",
+            "3": "Third Blood bonus ratio"
+        },
+        "upload": {
+            "title": "Upload Game Poster",
+            "description": "Click to upload a new game poster",
+            "type": "Please select an image file",
+            "size": "Image size must not exceed 10 MB",
+            "success": "Game poster uploaded successfully"
+        }
+    },
+    "timeline": {
+        "invalid": {
+            "index": "Invalid timeline index",
+            "id": "Challenge ID not found"
+        },
+        "title": "Game Timeline",
+        "name": "Timeline Name",
+        "placeholder": "Please enter the name of this timeline",
+        "start": "Start Time",
+        "end": "End Time",
+        "add": {
+            "button": "Add Timeline",
+            "title": "Add New Timeline"
+        },
+        "delete": {
+            "title": "Confirm Deletion",
+            "description": "This action cannot be undone"
+        },
+        "drag": "Drag challenges here to assign them to this timeline",
+        "edit": "Edit Timeline",
+        "global": {
+            "title": "Global Challenges",
+            "description": "Challenges visible throughout the entire competition",
+            "empty": "No global challenges yet"
+        },
+        "timeline": {
+            "title": "Timeline Challenges",
+            "description": "Challenges assigned to a specific timeline",
+            "empty": "Please add a timeline first",
+            "drag": "Drag challenges to the timeline above"
+        }
+    },
+    "group": {
+        "title": "Participant Group Management",
+        "add": {
+            "button": "Create Group",
+            "title": "Create New Group",
+            "description": "Create a new participant group for the game",
+            "name": {
+                "label": "Group Name",
+                "placeholder": "e.g. Undergraduate, Graduate"
+            },
+            "info": {
+                "label": "Group Description",
+                "placeholder": "Describe the characteristics or requirements of this group"
+            },
+            "success": "Group created successfully"
+        },
+        "edit": {
+            "title": "Edit Group",
+            "description": "Modify the group's name and description",
+            "success": "Group updated successfully"
+        },
+        "delete_success": "Group deleted successfully",
+        "error": {
+            "empty": "Group name cannot be empty",
+            "long1": "Group name cannot exceed 100 characters",
+            "long2": "Group description cannot exceed 500 characters"
+        },
+        "option": "Optional",
+        "time": "Created At",
+        "action": "Actions",
+        "empty": "No groups yet. Click \"Create Group\" to add one"
+    },
+    "notice": {
+        "empty": "Notice can't be empty",
+        "create": {
+            "button": "Create Notice",
+            "dialog": "Create New Notice",
+            "description": "The notice will be immediately pushed to all participants",
+            "title": {
+                "label": "Notice Title",
+                "placeholder": "Enter the notice title"
+            },
+            "content": "Notice Content",
+            "success": "Notice created successfully"
+        },
+        "list": {
+            "empty": "No notices available",
+            "first": "Create the first notice to inform participants"
+        },
+        "char": "characters",
+        "delete": {
+            "title": "Confirm Notice Deletion",
+            "confirm": "Are you sure you want to delete the notice \"<s>{{title}}</s>\"?",
+            "description": "This action cannot be undone. After deletion, participants will no longer see this notice!",
+            "success": "Notice deleted successfully"
+        },
+        "title": "Total {{count}} notices",
+        "more": "View More",
+        "time": "Published At"
+    },
+    "team": {
+        "approve": {
+            "title": "Approve Team",
+            "name": "Approve",
+            "loading": "Approving team..."
+        },
+        "ban": {
+            "title": "Confirm Ban",
+            "description": "Are you sure you want to ban this team? They will be prohibited from participating in the game!",
+            "ban": "Ban Team",
+            "loading": "Banning team..."
+        },
+        "unban": {
+            "title": "Confirm Unban",
+            "description": "Are you sure you want to unban this team? They will be allowed to continue participating in the game!",
+            "unban": "Unban Team",
+            "loading": "Unbanning team..."
+        },
+        "refresh": {
+            "success": "Team status updated",
+            "error": "Failed to update team status"
+        },
+        "delete": {
+            "title": "Confirm Deletion",
+            "description": "Are you sure you want to delete this team? This action cannot be undone!",
+            "delete": "Delete Team",
+            "pending": "Deleting team...",
+            "success": "Team deleted successfully",
+            "error": "Failed to delete team"
+        },
+        "status": {
+            "approved": "Approved",
+            "pending": "Pending",
+            "banned": "Banned",
+            "rejected": "Rejected",
+            "accepted": "Accepted",
+            "default": "Not Registered"
+        },
+        "score": "Score",
+        "member": "Team Members",
+        "list": "Member List",
+        "user_id": "User ID",
+        "slogan": "Team Slogan",
+        "menu": {
+            "title": "Open Menu",
+            "copy": "Copy Team ID"
+        },
+        "empty": "No team data available",
+        "row": "Columns",
+        "select": "{{a}} / {{b}} rows selected",
+        "support": "Supports team name, team ID, member username, member user ID, invite code, team hash, team slogan"
     }
 }
