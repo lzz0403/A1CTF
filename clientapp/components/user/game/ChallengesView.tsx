@@ -52,14 +52,16 @@ export function ChallengesView({
 
     const {
         gameInfo,
-        gameStatus, 
-        teamStatus, 
-        isLoading: isGameDataLoading 
+        gameStatus,
+        teamStatus,
+        isLoading: isGameDataLoading
     } = useGame(gameID)
 
     const { gameDescription, isLoading: isGameDescriptionLoading } = useGameDescription(gameID)
 
     const { t } = useTranslation()
+    const { t: noticesViewT } = useTranslation("notices_view")
+    const { t: gameViewT } = useTranslation("game_view")
 
     // 所有题目
     const [challenges, setChallenges] = useConditionalState<Record<string, UserSimpleGameChallenge[]>>({})
@@ -159,7 +161,7 @@ export function ChallengesView({
             if (challengeID) {
                 const challengeIDInt = parseInt(challengeID, 10)
                 api.user.userGetGameChallenge(gameID, challengeIDInt).then((response) => {
-                    // console.log(response)
+                    // 
                     curChallengeDetail.current = response.data.data
                     setCurChallenge(response.data.data)
                     // setPageSwitch(true)
@@ -216,7 +218,7 @@ export function ChallengesView({
                     socket.onopen = () => {
                         clearTimeout(connectTimeout)
                         setWsStatus("connected")
-                        console.log('WebSocket connected')
+                        
                         reconnectAttempts = 0 // 重置重连次数
                         resolve()
                     }
@@ -224,10 +226,10 @@ export function ChallengesView({
                     socket.onmessage = (event) => {
                         try {
                             const data = JSON.parse(event.data)
-                            console.log(data)
+                            
                             if (data.type === 'Notice') {
                                 const message: GameNotice = data.message
-                                console.log(message)
+                                
 
                                 if (message.notice_category == NoticeCategory.NewHint) {
                                     // 将NewHint通知添加到通知列表
@@ -283,15 +285,15 @@ export function ChallengesView({
                                     gameInfo?.team_info?.team_name?.toString().trim() == message.data[0]?.toString().trim()) {
                                     switch (message.notice_category) {
                                         case NoticeCategory.FirstBlood:
-                                            setBloodMessage(`${t("notices_view.congratulations")}${t("notices_view.blood_message_p1")} ${message.data[1]} ${t("notices_view.blood1")}`)
+                                            setBloodMessage(`${noticesViewT("congratulations")}${noticesViewT("blood_message_p1")} ${message.data[1]} ${noticesViewT("blood1")}`)
                                             setBlood("gold")
                                             break
                                         case NoticeCategory.SecondBlood:
-                                            setBloodMessage(`${t("notices_view.congratulations")}${t("notices_view.blood_message_p1")} ${message.data[1]} ${t("notices_view.blood2")}`)
+                                            setBloodMessage(`${noticesViewT("congratulations")}${noticesViewT("blood_message_p1")} ${message.data[1]} ${noticesViewT("blood2")}`)
                                             setBlood("silver")
                                             break
                                         case NoticeCategory.ThirdBlood:
-                                            setBloodMessage(`${t("notices_view.congratulations")}${t("notices_view.blood_message_p1")} ${message.data[1]} ${t("notices_view.blood3")}`)
+                                            setBloodMessage(`${noticesViewT("congratulations")}${noticesViewT("blood_message_p1")} ${message.data[1]} ${noticesViewT("blood3")}`)
                                             setBlood("copper")
                                             break
                                     }
@@ -332,7 +334,7 @@ export function ChallengesView({
                 setWsStatus("disconnected")
                 setTimeout(() => {
                     connectWebSocket()
-                    console.log("Connect to websocket")
+                    
                 }, 1000)
             } else {
                 setWsStatus("ingore")
@@ -377,7 +379,7 @@ export function ChallengesView({
     if (!([A1GameStatus.Running, A1GameStatus.PracticeMode].includes(gameStatus) || teamStatus == ParticipationStatus.Banned || isAdmin())) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <span className="text-2xl font-bold">比赛未开始</span>
+                <span className="text-2xl font-bold">{gameViewT("game_not_start")}</span>
             </div>
         )
     }
@@ -438,7 +440,7 @@ export function ChallengesView({
                                         >
                                             <div className="flex">
                                                 <Loader2 className="animate-spin" />
-                                                <span className="font-bold ml-3">Loading...</span>
+                                                <span className="font-bold ml-3">{t("loading")}</span>
                                             </div>
                                         </motion.div>
                                     ) : (null)}

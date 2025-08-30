@@ -87,10 +87,10 @@ type SystemSettings struct {
 var DefaultSettings = SystemSettings{
 	SystemName:            "A1CTF",
 	SystemSlogan:          "A Modern CTF Platform",
-	SystemFooter:          "© 2023 A1CTF Team",
-	SystemICP:             "浙ICP备2023022969号",
-	SystemOrganization:    "浙江师范大学",
-	SystemOrganizationURL: "https://www.zjnu.edu.cn",
+	SystemFooter:          "© 2025 A1CTF Team",
+	SystemICP:             "None",
+	SystemOrganization:    "A1CTF",
+	SystemOrganizationURL: "https://github.com/carbofish/A1CTF",
 	ThemeColor:            "blue",
 	DarkModeDefault:       true,
 	AllowUserTheme:        true,
@@ -109,9 +109,9 @@ var DefaultSettings = SystemSettings{
 	TrophysGold:         "/images/trophys/gold_trophy.png",
 	TrophysSilver:       "/images/trophys/silver_trophy.png",
 	TrophysBronze:       "/images/trophys/copper_trophy.png",
-	SchoolLogo:          "/images/zjnu_logo.png",
-	SchoolSmallIcon:     "/images/zjnu_small_logo.png",
-	SchoolUnionAuthText: "ZJNU Union Authserver",
+	SchoolLogo:          "/images/A1natas.svg",
+	SchoolSmallIcon:     "/images/A1natas.svg",
+	SchoolUnionAuthText: "Union Auth",
 
 	// 邮件验证模板
 	VerifyEmailTemplate: "",

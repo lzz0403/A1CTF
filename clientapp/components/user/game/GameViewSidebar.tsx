@@ -22,9 +22,10 @@ export default function GameViewSidebar(
     }
 ) {
     const { gameInfo, gameStatus, teamStatus } = useGame(gameID)
-    const { clientConfig, curProfile, isAdmin, unsetLoginStatus  } = useGlobalVariableContext()
+    const { clientConfig, curProfile, isAdmin, unsetLoginStatus } = useGlobalVariableContext()
     const { t } = useTranslation()
-    
+    const { t: gameViewT } = useTranslation("game_view")
+
     type Module = {
         id: string,
         name: string,
@@ -36,12 +37,12 @@ export default function GameViewSidebar(
     const modules: Module[] = [
         {
             id: "info",
-            name: "比赛信息",
+            name: gameViewT("game_info"),
             icon: <Info className="h-4 w-4" />,
         },
         {
             id: 'challenges',
-            name: '题目列表',
+            name: gameViewT("challenge_list"),
             icon: <BowArrow className="h-4 w-4" />,
             shouldDisable: () => {
                 return (gameStatus != A1GameStatus.Running && gameStatus != A1GameStatus.PracticeMode) || teamStatus != ParticipationStatus.Approved
@@ -49,7 +50,7 @@ export default function GameViewSidebar(
         },
         {
             id: 'scoreboard',
-            name: '排行榜',
+            name: gameViewT("scoreboard.title"),
             icon: <Cctv className="h-4 w-4" />,
             shouldDisable: () => {
                 return gameStatus == A1GameStatus.Pending || gameStatus == A1GameStatus.NoSuchGame
@@ -57,7 +58,7 @@ export default function GameViewSidebar(
         },
         {
             id: 'team',
-            name: '队伍管理',
+            name: gameViewT("team_manage"),
             icon: <UserSearch className="h-4 w-4" />,
             shouldDisable: () => {
                 return teamStatus == ParticipationStatus.UnLogin
@@ -68,7 +69,7 @@ export default function GameViewSidebar(
     if (curProfile.role == UserRole.ADMIN) {
         modules.push({
             id: 'admin',
-            name: '管理后台',
+            name: gameViewT("admin_manage"),
             icon: <Wrench className="h-4 w-4" />,
             onclick: () => {
                 navigate(`/admin/games/${gameID}/basic`)
@@ -155,7 +156,7 @@ export default function GameViewSidebar(
                         className={`w-[45px] h-[45px] [&_svg]:size-6 cursor-pointer rounded-xl`}
                         variant="ghost"
                         data-tooltip-id="my-tooltip"
-                        data-tooltip-html="切换主题"
+                        data-tooltip-html={gameViewT("switch_theme")}
                         data-tooltip-place="right"
                     >
                         <WandSparkles className="absolute h-[1.2rem] w-[1.2rem]" />
@@ -163,7 +164,7 @@ export default function GameViewSidebar(
                 </ToggleTheme>
                 <Button className="w-[45px] h-[45px] [&_svg]:size-6 cursor-pointer rounded-xl hover:bg-foreground/10" variant="ghost"
                     data-tooltip-id="my-tooltip"
-                    data-tooltip-html="退出"
+                    data-tooltip-html={gameViewT("exit")}
                     data-tooltip-place="right"
                     onClick={() => {
                         navigate("/games")

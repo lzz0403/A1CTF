@@ -1,3 +1,25 @@
+# JWT Auth 错误信息
+
+[JWTErrForbidden]
+description = "您没有此操作的权限"
+other = "您没有此操作的权限"
+
+[JWTErrInvalidSigningAlgorithm]
+description = "签名算法无效"
+other = "签名算法无效"
+
+[JWTErrMissingExpField]
+description = "缺少过期时间"
+other = "缺少过期时间"
+
+[JWTErrExpiredToken]
+description = "Token已过期"
+other = "Token已过期"
+
+[JWTErrWrongFormatOfExp]
+description = "过期时间必须是float64格式"
+other = "过期时间必须是float64格式"
+
 # Admin Challenge Controller 错误信息
 
 [InvalidChallengeID]
@@ -418,6 +440,10 @@ other = "队伍已批准"
 description = "禁赛队伍失败"
 other = "禁赛队伍失败"
 
+[CannotBanAdminTeam]
+description = "管理员队伍无法被禁赛"
+other = "管理员队伍无法被禁赛"
+
 [TeamBanned]
 description = "队伍已锁定"
 other = "队伍已锁定"
@@ -441,6 +467,10 @@ other = "删除队伍加入申请失败"
 [FailedToDeleteTeam]
 description = "删除队伍失败"
 other = "删除队伍失败"
+
+[CannotDeleteAdminTeam]
+description = "管理员队伍无法被删除"
+other = "管理员队伍无法被删除"
 
 [TransactionFailed]
 description = "事务失败"
@@ -495,3 +525,17 @@ other = "删除用户失败"
 [UserDeleted]
 description = "用户已删除"
 other = "用户已删除"
+
+[UpdateAdminRoleNotAllowed]
+description = "您无权更改管理员角色"
+other = "您无权更改管理员角色"
+
+[DeleteAdminNotAllowed]
+description = "您无权删除管理员用户"
+other = "您无权删除管理员用户"
+
+# Admin Container 错误信息
+
+[InvalidContainer]
+description = "无效的 Pod Name 或 Container Name"
+other = "无效的 Pod Name 或 Container Name"

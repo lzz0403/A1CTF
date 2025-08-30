@@ -1,3 +1,25 @@
+# JWT Auth 错误信息
+
+[JWTErrForbidden]
+description = "您没有此操作的权限"
+other = "您没有此操作的权限"
+
+[JWTErrInvalidSigningAlgorithm]
+description = "签名算法无效"
+other = "签名算法无效"
+
+[JWTErrMissingExpField]
+description = "缺少过期时间"
+other = "缺少过期时间"
+
+[JWTErrExpiredToken]
+description = "Token已过期"
+other = "Token已过期"
+
+[JWTErrWrongFormatOfExp]
+description = "过期时间必须是float64格式"
+other = "过期时间必须是float64格式"
+
 # File Controller 错误信息
 
 [NoFileUploaded]
@@ -467,3 +489,17 @@ other = "文件访问被拒绝"
 [TooManyRequests]
 description = "请求过多, 请稍后再试"
 other = "请求过多, 请稍后再试"
+
+[UserAlreadyInTeam]
+description = "用户已在其他队伍中"
+other = "用户已在其他队伍中"
+
+# Email SMTP 错误信息
+
+[SmtpConfigEmpty]
+description = "邮件SMTP配置为空，请联系管理员配置"
+other = "邮件SMTP配置为空，请联系管理员配置"
+
+[SmtpConfigError]
+description = "邮件SMTP配置错误，请联系管理员配置"
+other = "邮件SMTP配置错误，请联系管理员配置"

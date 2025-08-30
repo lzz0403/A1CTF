@@ -13,9 +13,12 @@ import { toast } from 'react-toastify/unstyled';
 import { ConfirmDialog, DialogOption } from "../dialogs/ConfirmDialog";
 import { challengeCategoryColorMap, challengeCategoryIcons } from "utils/ClientAssets";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
+import { copyWithResult } from "utils/ToastUtil";
 
 export function ChallengesManageView() {
 
+    const { t } = useTranslation("challenge_manage")
     const { theme } = useTheme()
     const router = useNavigate()
 
@@ -27,7 +30,8 @@ export function ChallengesManageView() {
     const [challenges, setChallenges] = useState<AdminChallengeSimpleInfo[]>([])
 
     useEffect(() => {
-        api.admin.listChallenge({ size: 100, offset: 0 }).then((res) => {
+        // TODO 后端新增题目分类数量和总数量的接口，前端不依赖listChallenge接口获取题目数量，前端适配分页
+        api.admin.listChallenge({ size: 1024, offset: 0 }).then((res) => {
             setChallenges(res.data.data)
         })
     }, [])
@@ -46,7 +50,7 @@ export function ChallengesManageView() {
     return (
         <div className="w-full h-full flex flex-col bg-gradient-to-br from-background to-muted/30">
             <ConfirmDialog settings={dialogOption} setSettings={setDialogOption} />
-            
+
             {/* Header Section */}
             <div className="backdrop-blur-sm bg-background/80 border-b p-5 lg:p-8 sticky top-0 z-10">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -56,69 +60,73 @@ export function ChallengesManageView() {
                                 <GalleryVerticalEnd className="h-5 w-5 text-primary" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">题目管理</h1>
-                                <p className="text-sm text-muted-foreground">管理和编辑 {challenges.length} 道题目</p>
+                                <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+                                <p className="text-sm text-muted-foreground">{t("dashboard.description", { count: challenges.length })}</p>
                             </div>
                         </div>
-                        
+
                         <div className="flex-1 max-w-md">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                    value={searchContent} 
-                                    onChange={(e) => setSearchContent(e.target.value)} 
-                                    placeholder="搜索题目标题..."
+                                <Input
+                                    value={searchContent}
+                                    onChange={(e) => setSearchContent(e.target.value)}
+                                    placeholder={t("dashboard.placeholder")}
                                     className="pl-10 bg-background/50 backdrop-blur-sm"
                                 />
                             </div>
                         </div>
                     </div>
-                    
-                    <Button 
+
+                    <Button
                         onClick={() => router(`/admin/challenges/create`)}
                         variant="outline"
                     >
                         <CirclePlus className="h-4 w-4" />
-                        添加题目
+                        {t("dashboard.add")}
                     </Button>
                 </div>
             </div>
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Categories Sidebar */}
-                <div className="w-56 flex-none bg-card/50 backdrop-blur-sm border-r p-4">
-                    <div className="sticky top-0">
-                        <h3 className="font-semibold text-lg mb-4 text-foreground/90">分类筛选</h3>
-                        <div className="space-y-1">
-                            {Object.keys(cateIcon).map((cat, index) => (
-                                <Button 
-                                    key={index} 
-                                    className={`w-full justify-start gap-3 h-11 transition-all duration-200 border ${
-                                        curChoicedCategory === cat 
-                                            ? "bg-gradient-to-r from-primary/20 to-primary/10 border-primary/30 text-primary shadow-sm" 
-                                            : "hover:bg-muted/60 hover:shadow-sm border-transparent"
-                                    }`}
-                                    variant="ghost"
-                                    onClick={() => setCurChoicedCategory(cat)}
-                                >
-                                    <div className={`p-1.5 rounded-lg flex-shrink-0 ${curChoicedCategory === cat ? "bg-primary/20" : "bg-muted/40"}`}>
-                                        {cateIcon[cat]}
-                                    </div>
-                                    <span className="font-medium flex-1 text-left truncate">
-                                        {cat === "all" ? "全部" : cat.substring(0, 1).toUpperCase() + cat.substring(1)}
-                                    </span>
-                                    <Badge 
-                                        variant="secondary" 
-                                        className={`h-6 px-2 text-xs font-semibold flex-shrink-0 ${
-                                            curChoicedCategory === cat ? "bg-primary/20 text-primary" : ""
-                                        }`}
-                                    >
-                                        {challenges.filter((res) => (cat == "all" || res.category?.toLowerCase() == cat)).length}
-                                    </Badge>
-                                </Button>
-                            ))}
+                <div className="flex-none overflow-hidden">
+                    <MacScrollbar className="h-full" skin={theme == "light" ? "light" : "dark"}
+                    >
+                        <div className="w-56 flex-none bg-card/50 backdrop-blur-sm border-r p-4">
+                            <div className="sticky top-0">
+                                <h3 className="font-semibold text-lg mb-4 text-foreground/90 text-center">{t("dashboard.filter")}</h3>
+                                <div className="space-y-1">
+                                    {Object.keys(cateIcon).map((cat, index) => (
+                                        <Button
+                                            key={index}
+                                            className={`w-full justify-start gap-3 h-11 transition-all duration-200 border ${curChoicedCategory === cat
+                                                ? "bg-gradient-to-r from-primary/20 to-primary/10 border-primary/30 text-primary shadow-sm"
+                                                : "hover:bg-muted/60 hover:shadow-sm border-transparent"
+                                                }`}
+                                            variant="ghost"
+                                            onClick={() => setCurChoicedCategory(cat)}
+                                        >
+                                            <div className={`p-1.5 rounded-lg flex-shrink-0 ${curChoicedCategory === cat ? "bg-primary/20" : "bg-muted/40"}`}>
+                                                {cateIcon[cat]}
+                                            </div>
+                                            <span className="font-medium flex-1 text-left truncate">
+                                                {cat === "all" ? t("dashboard.all") : cat.substring(0, 1).toUpperCase() + cat.substring(1)}
+                                            </span>
+                                            <Badge
+                                                variant="secondary"
+                                                className={`h-6 px-2 text-xs font-semibold flex-shrink-0 ${curChoicedCategory === cat ? "bg-primary/20 text-primary" : ""
+                                                    }`}
+                                            >
+                                                {challenges.filter((res) => (cat == "all" || res.category?.toLowerCase() == cat)).length}
+                                            </Badge>
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
+                    </MacScrollbar>
                 </div>
 
                 {/* Main Content */}
@@ -130,7 +138,7 @@ export function ChallengesManageView() {
                             <div className="p-6">
                                 <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
                                     {filtedData.map((chal, index) => (
-                                        <div 
+                                        <div
                                             key={index}
                                             className="group bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl p-5 hover:shadow-lg hover:border-primary/20 transition-all duration-300 hover:scale-[1.02] hover:bg-card/80"
                                         >
@@ -145,8 +153,8 @@ export function ChallengesManageView() {
                                                             {chal.name}
                                                         </h3>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <Badge 
-                                                                variant="outline" 
+                                                            <Badge
+                                                                variant="outline"
                                                                 className="text-xs font-medium border-muted-foreground/30"
                                                             >
                                                                 {chal.category?.toUpperCase() || "MISC"}
@@ -158,41 +166,49 @@ export function ChallengesManageView() {
 
                                             {/* Challenge Actions */}
                                             <div className="flex items-center justify-end gap-1 pt-3 border-t border-border/30">
-                                                <Button 
-                                                    variant="ghost" 
+                                                <Button
+                                                    variant="ghost"
                                                     size="sm"
                                                     className="h-8 w-8 p-0 hover:bg-primary/10 hover:text-primary transition-all duration-200"
-                                                    title="复制题目"
+                                                    onClick={() => { copyWithResult(chal?.name || "") }}
+                                                    data-tooltip-content={t("dashboard.copy")}
+                                                    data-tooltip-id="my-tooltip"
+                                                    data-tooltip-place="bottom"
                                                 >
                                                     <Copy className="h-4 w-4" />
                                                 </Button>
-                                                <Button 
-                                                    variant="ghost" 
+                                                <Button
+                                                    variant="ghost"
                                                     size="sm"
                                                     className="h-8 w-8 p-0 hover:bg-blue-500/10 hover:text-blue-600 transition-all duration-200"
                                                     onClick={() => router(`/admin/challenges/${chal.challenge_id}`)}
-                                                    title="编辑题目"
+                                                    data-tooltip-content={t("dashboard.edit")}
+                                                    data-tooltip-id="my-tooltip"
+                                                    data-tooltip-place="bottom"
                                                 >
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
-                                                <Button 
-                                                    variant="ghost" 
+                                                <Button
+                                                    variant="ghost"
                                                     size="sm"
                                                     className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                                                     onClick={() => {
                                                         setDialogOption((prev) => ({
                                                             ...prev,
                                                             isOpen: true,
-                                                            message: "你确定要删除这道题目吗?",
+                                                            title: t("dashboard.delete.title"),
+                                                            message: t("dashboard.delete.message", { name: chal.name }),
                                                             onConfirm: () => {
                                                                 api.admin.deleteChallenge(chal.challenge_id).then(() => {
-                                                                    toast.success("删除成功")
+                                                                    toast.success(t("dashboard.delete.success", { name: chal.name }))
                                                                     setChallenges(challenges.filter((res) => res.challenge_id !== chal.challenge_id))
                                                                 })
                                                             },
                                                         }))
                                                     }}
-                                                    title="删除题目"
+                                                    data-tooltip-content={t("dashboard.delete.title")}
+                                                    data-tooltip-id="my-tooltip"
+                                                    data-tooltip-place="bottom"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -207,17 +223,17 @@ export function ChallengesManageView() {
                             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-muted/40 to-muted/20 flex items-center justify-center mb-4">
                                 <Search className="h-8 w-8 text-muted-foreground" />
                             </div>
-                            <h3 className="text-xl font-semibold mb-2">没有找到题目</h3>
+                            <h3 className="text-xl font-semibold mb-2">{t("dashboard.empty.title")}</h3>
                             <p className="text-muted-foreground max-w-md">
-                                {searchContent ? `没有找到包含 "${searchContent}" 的题目` : "当前分类下没有题目"}
+                                {searchContent ? t("dashboard.empty.search", { content: searchContent }) : t("dashboard.empty.category")}
                             </p>
                             {searchContent && (
-                                <Button 
-                                    variant="ghost" 
+                                <Button
+                                    variant="ghost"
                                     onClick={() => setSearchContent("")}
                                     className="mt-4"
                                 >
-                                    清除搜索
+                                    {t("dashboard.clear")}
                                 </Button>
                             )}
                         </div>

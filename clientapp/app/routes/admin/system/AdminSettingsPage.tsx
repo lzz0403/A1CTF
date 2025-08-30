@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { api, createSkipGlobalErrorConfig } from "utils/ApiHelper";
+import { SystemSettingsPartialUpdate } from "utils/A1API"
 import { Button } from "components/ui/button";
 import { Atom, Bird, Cat, Image, Loader2, Mail, NotepadTextDashed, Save, Siren, UserLock } from "lucide-react";
 import { toast } from 'react-toastify/unstyled';
@@ -19,6 +20,7 @@ import OtherSettings from "./OtherSettings";
 import UserPolicySettings from "./UserPolicy";
 import { useTheme } from "next-themes";
 import TemplateSettings from "./TemplateSettings";
+import { useTranslation } from "react-i18next";
 
 const systemSettingsSchema = z.object({
     systemName: z.string().optional(),
@@ -64,7 +66,7 @@ const systemSettingsSchema = z.object({
     smtpPassword: z.string().optional(),
     smtpFrom: z.string().optional(),
     smtpEnabled: z.boolean().optional(),
-    
+
     // 邮件验证模板
     verifyEmailTemplate: z.string().optional(),
     verifyEmailHeader: z.string().optional(),
@@ -91,11 +93,13 @@ const systemSettingsSchema = z.object({
 export type SystemSettingsValues = z.infer<typeof systemSettingsSchema>;
 
 export const AdminSettingsPage = () => {
-    const [isLoading, setIsLoading] = useState(false);
-
-    const { action } = useParams();
+    const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(false)
+    const { action } = useParams()
     const [dataLoaded, setDataLoaded] = useState(false)
-    const [activeModule, setActiveModule] = useState(action);
+    const [activeModule, setActiveModule] = useState(action)
+    const { theme } = useTheme()
+    const { t } = useTranslation("system_settings")
 
     useEffect(() => {
         if (!modules.filter(m => m.id == action).length) {
@@ -104,8 +108,6 @@ export const AdminSettingsPage = () => {
         }
         setActiveModule(action)
     }, [action])
-
-    const navigate = useNavigate()
 
     // 创建表单
     const form = useForm<SystemSettingsValues>({
@@ -116,9 +118,9 @@ export const AdminSettingsPage = () => {
             systemSlogan: "A Modern CTF Platform",
             systemSummary: "",
             systemICP: "",
-            systemOrganization: "浙江师范大学",
-            systemOrganizationURL: "https://www.zjnu.edu.cn",
-            systemFooter: "© 2023 A1CTF Team",
+            systemOrganization: "A1CTF",
+            systemOrganizationURL: "https://github.com/carbofish/A1CTF",
+            systemFooter: "© 2025 A1CTF Team",
             systemFavicon: "",
             themeColor: "blue",
             darkModeDefault: true,
@@ -134,9 +136,9 @@ export const AdminSettingsPage = () => {
             trophysGold: "/images/trophys/gold_trophy.png",
             trophysSilver: "/images/trophys/silver_trophy.png",
             trophysBronze: "/images/trophys/copper_trophy.png",
-            schoolLogo: "/images/zjnu_logo.png",
-            schoolSmallIcon: "/images/zjnu_small_logo.png",
-            schoolUnionAuthText: "ZJNU Union Authserver",
+            schoolLogo: "/images/A1natas.svg",
+            schoolSmallIcon: "/images/A1natas.svg",
+            schoolUnionAuthText: "Union Auth",
             bgAnimation: false,
 
             // 宽度和高度
@@ -175,86 +177,81 @@ export const AdminSettingsPage = () => {
         fetchSystemSettings();
     }, []);
 
-    const fetchSystemSettings = async () => {
-        try {
-            setIsLoading(true);
-            const response = await axios.get("/api/admin/system/settings");
-            if (response.data && response.data.code === 200) {
-                const data = response.data.data;
-
-                // 更新表单值
-                form.reset(data);
+    const fetchSystemSettings = () => {
+        setIsLoading(true);
+        api.system.getSystemSettings(createSkipGlobalErrorConfig()).then((res) => {
+            const data = res?.data?.data
+            if (data) {
+                form.reset(res.data.data)
             }
-        } catch (error) {
-            console.error("获取系统设置失败:", error);
-            toast.error("获取系统设置失败，请稍后再试");
-        } finally {
-            setIsLoading(false);
+        }).catch((_) => {
+            toast.error(t("fetch_error"))
+        }).finally(() => {
+            setIsLoading(false)
             setDataLoaded(true)
-        }
+        })
     };
 
     // 保存系统设置
     const onSubmit = async (values: SystemSettingsValues) => {
+        setIsLoading(true)
         try {
-            setIsLoading(true);
-            const response = await axios.post("/api/admin/system/settings", values);
-            if (response.data && response.data.code === 200) {
-                toast.success("系统设置已成功更新");
-            }
-        } catch (error) {
-            console.error("保存系统设置失败:", error);
-            toast.error("无法保存系统设置，请稍后再试");
+            await api.system.updateSystemSettings(values as SystemSettingsPartialUpdate, createSkipGlobalErrorConfig())
+            toast.success(t("update_success"))
+        } catch (err) {
+            console.error(t("update_error"), err)
+            toast.error(t("update_error"))
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
     };
-
 
     const modules = [
         {
             id: "basic",
-            name: "基本设置",
+            name: "",
             icon: <Atom className="h-4 w-4" />
         },
         {
             id: 'resource',
-            name: '资源设置',
+            name: "",
             icon: <Image className="h-4 w-4" />
         },
         {
             id: 'mail',
-            name: '邮件设置',
+            name: "",
             icon: <Mail className="h-4 w-4" />
         },
         {
             id: 'template',
-            name: '模板设置',
+            name: "",
             icon: <NotepadTextDashed className="h-4 w-4" />
         },
         {
             id: 'security',
-            name: '安全策略',
+            name: "",
             icon: <Siren className="h-4 w-4" />
         },
         {
             id: 'account-policy',
-            name: '账户策略',
+            name: "",
             icon: <UserLock className="h-4 w-4" />
         },
         {
             id: 'others',
-            name: '其他设置',
+            name: "",
             icon: <Cat className="h-4 w-4" />
         },
         {
             id: "aboutus",
-            name: "关于设置",
+            name: "",
             icon: <Bird className="h-4 w-4" />
         },
     ];
 
-    const { theme } = useTheme()
+    modules.forEach((module) => {
+        module.name = t(`sidebar.${module.id}`)
+    })
 
     return (
         <div className="w-screen h-screen flex flex-col">
@@ -263,7 +260,7 @@ export const AdminSettingsPage = () => {
                 <div className="w-full h-full overflow-hidden gap-2 flex">
                     <div className="w-64 flex-none border-r-1 select-none h-full">
                         <div className="px-6 pt-10">
-                            <h3 className="font-semibold text-lg mb-4 text-foreground/90">管理模块</h3>
+                            <h3 className="font-semibold text-lg mb-4 text-foreground/90">{t("sidebar.title")}</h3>
                             <div className="space-y-2">
                                 {modules.map((module) => (
                                     <Button
@@ -344,7 +341,7 @@ export const AdminSettingsPage = () => {
                                                     disabled={isLoading}
                                                 >
                                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save />}
-                                                    {isLoading ? '保存中...' : '保存设置'}
+                                                    {isLoading ? t("saving") : t("save")}
                                                 </Button>
                                             </div>
                                         </>

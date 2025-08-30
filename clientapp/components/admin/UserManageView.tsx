@@ -60,6 +60,7 @@ import { useTheme } from "next-themes"
 import { AxiosResponse } from "axios"
 import { copyWithResult } from "utils/ToastUtil"
 import copy from "copy-to-clipboard"
+import { useTranslation } from "react-i18next"
 
 export type UserModel = {
     id: string,
@@ -92,6 +93,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     title,
     description
 }) => {
+    const { t } = useTranslation()
     return (
         <AlertDialog open={isOpen} onOpenChange={onClose}>
             <AlertDialogContent>
@@ -100,8 +102,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     <AlertDialogDescription>{description}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>取消</AlertDialogCancel>
-                    <AlertDialogAction onClick={onConfirm}>确认</AlertDialogAction>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                    <AlertDialogAction onClick={onConfirm}>{t("confirm")}</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
@@ -109,6 +111,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 };
 
 export function UserManageView() {
+
+    const { t } = useTranslation("user_manage")
 
     const [data, setData] = React.useState<UserModel[]>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -149,23 +153,23 @@ export function UserManageView() {
     const handleDeleteUser = (userId: string) => {
         setConfirmDialog({
             isOpen: true,
-            title: "确认删除",
-            description: "您确定要删除这个用户吗？此操作不可逆。",
+            title: t("delete.title"),
+            description: t("delete.description"),
             onConfirm: () => {
                 // 临时修复 API 类型问题
                 const deleteUserApi = api.admin as any;
                 toast.promise(
                     deleteUserApi.adminDeleteUser({ user_id: userId }),
                     {
-                        pending: '正在删除用户...',
+                        pending: t("delete.pending"),
                         success: {
                             render() {
-                                fetchUsers(); // 刷新数据
-                                setConfirmDialog(prev => ({ ...prev, isOpen: false }));
-                                return '用户已删除';
+                                fetchUsers() // 刷新数据
+                                setConfirmDialog(prev => ({ ...prev, isOpen: false }))
+                                return t("delete.success")
                             }
                         },
-                        error: '删除用户失败'
+                        error: t("delete.failed")
                     }
                 );
             }
@@ -176,23 +180,23 @@ export function UserManageView() {
     const handleResetPassword = (userId: string) => {
         setConfirmDialog({
             isOpen: true,
-            title: "确认重置密码",
-            description: "您确定要重置这个用户的密码吗？",
+            title: t("reset.title"),
+            description: t("reset.description"),
             onConfirm: () => {
                 // 临时修复 API 类型问题
                 toast.promise(
                     api.admin.adminResetUserPassword({ user_id: userId }),
                     {
-                        pending: '正在重置密码...',
+                        pending: t("reset.pending"),
                         success: {
-                            render({ data: response } : { data: AxiosResponse }) {
-                                setConfirmDialog(prev => ({ ...prev, isOpen: false }));
-                                // 显示新密码
-                                copy(response.data.new_password);
-                                return `新密码: ${response.data.new_password}，已复制到剪切板`;
+                            render({ data: response }: { data: AxiosResponse }) {
+                                setConfirmDialog(prev => ({ ...prev, isOpen: false }))
+                                // 复制新密码
+                                copy(response.data.new_password)
+                                return t("reset.success", { pwd: response.data.new_password })
                             }
                         },
-                        error: '重置密码失败'
+                        error: t("reset.error")
                     }
                 );
             }
@@ -203,13 +207,13 @@ export function UserManageView() {
     const getRoleColorAndText = (role: UserRole) => {
         switch (role) {
             case UserRole.ADMIN:
-                return { color: "#FF4D4F", text: "管理员" };
+                return { color: "#FF4D4F", text: t("role.admin") };
             case UserRole.MONITOR:
-                return { color: "#1890FF", text: "监控员" };
+                return { color: "#1890FF", text: t("role.monitor") };
             case UserRole.USER:
-                return { color: "#52C41A", text: "用户" };
+                return { color: "#52C41A", text: t("role.user") };
             default:
-                return { color: "#D9D9D9", text: "未知" };
+                return { color: "#D9D9D9", text: t("role.unknow") };
         }
     };
 
@@ -238,7 +242,7 @@ export function UserManageView() {
         },
         {
             accessorKey: "Username",
-            header: "用户名",
+            header: t("username"),
             cell: ({ row }) => {
                 const avatar_url = row.original.Avatar;
 
@@ -265,7 +269,7 @@ export function UserManageView() {
         },
         {
             accessorKey: "Role",
-            header: "角色",
+            header: t("role.title"),
             cell: ({ row }) => {
                 const role = row.getValue("Role") as UserRole;
                 const { color, text } = getRoleColorAndText(role);
@@ -287,7 +291,7 @@ export function UserManageView() {
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
-                        邮箱
+                        {t("email")}
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
@@ -296,35 +300,35 @@ export function UserManageView() {
         },
         {
             accessorKey: "RegisterIP",
-            header: "注册IP",
+            header: t("register_ip"),
             cell: ({ row }) => (
                 <div>{row.getValue("RegisterIP")}</div>
             ),
         },
         {
             accessorKey: "LastLoginIP",
-            header: "上一次登陆IP",
+            header: t("last_ip"),
             cell: ({ row }) => (
                 <div>{row.getValue("LastLoginIP")}</div>
             ),
         },
         {
             accessorKey: "RealName",
-            header: "真实姓名",
+            header: t("realname"),
             cell: ({ row }) => (
                 <div>{row.getValue("RealName")}</div>
             ),
         },
         {
             accessorKey: "StudentID",
-            header: "学号",
+            header: t("student_id"),
             cell: ({ row }) => (
                 <div>{row.getValue("StudentID")}</div>
             ),
         },
         {
             id: "actions",
-            header: "操作",
+            header: t("actions.title"),
             enableHiding: false,
             cell: ({ row }) => {
                 const user = row.original;
@@ -335,39 +339,39 @@ export function UserManageView() {
                 return (
                     <div className="flex gap-2">
                         <UserEditDialog user={userItem} updateUsers={fetchUsers}>
-                            <Button variant="ghost" className="h-8 w-8 p-0" title="编辑用户">
-                                <span className="sr-only">编辑</span>
+                            <Button variant="ghost" className="h-8 w-8 p-0" title={t("edit.title")}>
+                                <span className="sr-only">{t("actions.edit")}</span>
                                 <Pencil className="h-4 w-4" />
                             </Button>
                         </UserEditDialog>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">打开菜单</span>
+                                    <span className="sr-only">{t("actions.open")}</span>
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" >
-                                <DropdownMenuLabel>操作</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t("actions.title")}</DropdownMenuLabel>
                                 <DropdownMenuItem
                                     onClick={() => copyWithResult(user.id)}
                                 >
                                     <ClipboardList className="h-4 w-4 mr-2" />
-                                    复制用户ID
+                                    {t("actions.copy")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => handleResetPassword(user.id)}
                                     className="text-amber-600"
                                 >
                                     <KeyIcon className="h-4 w-4 mr-2" />
-                                    重置密码
+                                    {t("actions.reset")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => handleDeleteUser(user.id)}
                                     className="text-red-600"
                                 >
                                     <TrashIcon className="h-4 w-4 mr-2" />
-                                    删除用户
+                                    {t("actions.delete")}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -450,8 +454,8 @@ export function UserManageView() {
                 <div className="w-[80%]">
                     <div className="flex items-center justify-end space-x-2 select-none">
                         <div className="flex-1 text-sm text-muted-foreground flex items-center">
-                            {table.getFilteredSelectedRowModel().rows.length} / {" "}
-                            {table.getFilteredRowModel().rows.length} 行已选择
+                            {table.getFilteredSelectedRowModel().rows.length} /
+                            {" " + t("actions.choose", { count: table.getFilteredRowModel().rows.length })}
                         </div>
                         <div className="flex gap-3 items-center">
                             <Button
@@ -478,17 +482,17 @@ export function UserManageView() {
                     <div className="flex items-center py-4 gap-2">
                         <div className="flex flex-col gap-2">
                             <Input
-                                placeholder="请输入关键字"
+                                placeholder={t("search.title")}
                                 value={searchKeyword}
                                 onChange={(event) => handleSearch(event.target.value)}
                                 className="max-w-md"
                             />
-                            <span className="text-xs text-muted-foreground">支持用户名, 邮箱地址, 个人资料信息, 账号Slogan, 用户ID, 上一次登陆IP</span>
+                            <span className="text-xs text-muted-foreground">{t("search.description")}</span>
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="ml-auto">
-                                    列 <ChevronDown />
+                                    {t("search.row")} <ChevronDown />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="select-none">
@@ -558,7 +562,7 @@ export function UserManageView() {
                                             colSpan={columns.length}
                                             className="h-24 text-center"
                                         >
-                                            暂无数据
+                                            {t("search.empty")}
                                         </TableCell>
                                     </TableRow>
                                 )}

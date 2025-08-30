@@ -26,6 +26,7 @@ import LoadingModule from "components/modules/LoadingModule";
 import { useNavigate } from "react-router";
 import AddChallengeFromLibraryDialog from "components/admin/game/AddChallengeFromLibraryDialog";
 import { useGame } from "hooks/UseGame";
+import { useTranslation } from "react-i18next";
 
 export function CategorySidebar({
     gameID,
@@ -52,6 +53,7 @@ export function CategorySidebar({
 }) {
 
     const { theme } = useTheme()
+    const { t } = useTranslation("game_view")
 
     const {
         gameStatus,
@@ -113,7 +115,7 @@ export function CategorySidebar({
             for (const key in groupedChallenges) {
                 if (groupedChallenges.hasOwnProperty(key)) {
                     groupedChallenges[key].forEach(challenge => {
-                        // console.log(challenge.title, curChallengeRef.current.title)
+                        // 
                         if (challenge.challenge_name == curChallengeRef.current?.challenge_name) {
                             stillExists = true
                         }
@@ -169,7 +171,7 @@ export function CategorySidebar({
                 {
                     rootMargin: "200px 0px",
                 });
-                
+
             setTimeout(() => {
                 setChallengesLoaded(true)
             }, 200)
@@ -224,7 +226,7 @@ export function CategorySidebar({
             if (id == curChallenge?.challenge_id) return
 
             api.user.userGetGameChallenge(gameID, id).then((response) => {
-                // console.log(response)
+                // 
                 curChallengeRef.current = response.data.data
                 setCurChallenge(response.data.data)
                 setPageSwitching(true)
@@ -247,7 +249,7 @@ export function CategorySidebar({
     if (isGameDataLoading) {
         return <></>
     }
-    
+
     return (
         <>
             <AddChallengeFromLibraryDialog
@@ -264,7 +266,7 @@ export function CategorySidebar({
                             <Button variant="ghost" size="icon"
                                 className={`rounded-xl w-12 h-12 [&_svg]:size-6 bg-foreground/10 hover:hover:bg-foreground/20 cursor-pointer`}
                                 data-tooltip-id="my-tooltip"
-                                data-tooltip-html="添加分数修正"
+                                data-tooltip-html={t("score_adjustments")}
                                 data-tooltip-place="left"
                                 onClick={() => {
                                     navigate(`/admin/games/${gameID}/score-adjustments`)
@@ -275,7 +277,7 @@ export function CategorySidebar({
                             <Button variant="ghost" size="icon"
                                 className={`rounded-xl w-12 h-12 [&_svg]:size-6 bg-foreground/10 hover:hover:bg-foreground/20 cursor-pointer`}
                                 data-tooltip-id="my-tooltip"
-                                data-tooltip-html="添加题目"
+                                data-tooltip-html={t("add_challenge")}
                                 data-tooltip-place="left"
                                 onClick={() => setAddChallengeOpen(true)}
                             >
@@ -299,7 +301,7 @@ export function CategorySidebar({
                                         width={40}
                                         height={40}
                                     />
-                                    <span className="font-bold text-xl transition-colors duration-300">A1CTF Platform</span>
+                                    <span className="font-bold text-xl transition-colors duration-300">{clientConfig.systemName} Platform</span>
                                 </div>
                                 <div className="flex-1" />
                             </div>
@@ -327,9 +329,9 @@ export function CategorySidebar({
                                     <div className="w-full items-center justify-center flex flex-col gap-4 h-full">
                                         <div className="flex gap-2 items-center">
                                             <BedDouble size={28} />
-                                            <span className="text-lg">暂时没有题目哦</span>
+                                            <span className="text-lg">{t("no_challenge")}</span>
                                         </div>
-                                        <span className="text-muted-foreground line-through">该休息了</span>
+                                        <span className="text-muted-foreground line-through">{t("rest")}</span>
                                     </div>
                                 )
                             ) : (

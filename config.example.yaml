@@ -93,3 +93,6 @@ cap-settings:
 
   defaultHttpHandleLimitRPS: 10
   defaultHttpHandleLimitBurst: 50
+
+game-settings:
+  container-cooldown-time: 60s

@@ -7,6 +7,7 @@ import (
 	"a1ctf/src/tasks"
 	dbtool "a1ctf/src/utils/db_tool"
 	"a1ctf/src/utils/general"
+	i18ntool "a1ctf/src/utils/i18n_tool"
 	"a1ctf/src/utils/ristretto_tool"
 	"crypto/rand"
 	"crypto/rsa"
@@ -18,6 +19,7 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 var (
@@ -192,13 +194,11 @@ var PermissionMap = map[string]PermissionSetting{
 	"/api/user/avatar/upload":     {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
 
 	// 战队管理相关权限
-	"/api/game/:game_id/team/join":                       {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id/requests":          {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/request/:request_id/handle": {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id/transfer-captain":  {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id/member/:user_id":   {RequestMethod: []string{"DELETE"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/:team_id":                   {RequestMethod: []string{"DELETE", "PUT"}, Permissions: []models.UserRole{}},
-	"/api/game/:game_id/team/avatar/upload":              {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/join":                      {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/:team_id/transfer-captain": {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/:team_id/member/:user_id":  {RequestMethod: []string{"DELETE"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/:team_id":                  {RequestMethod: []string{"DELETE", "PUT"}, Permissions: []models.UserRole{}},
+	"/api/game/:game_id/team/avatar/upload":             {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
 
 	"/api/admin/challenge/list":          {RequestMethod: []string{"GET", "POST"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
 	"/api/admin/challenge/create":        {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
@@ -249,7 +249,6 @@ var PermissionMap = map[string]PermissionSetting{
 	"/api/game/:game_id/scoreboard":              {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
 	"/api/game/:game_id/container/:challenge_id": {RequestMethod: []string{"POST", "DELETE", "PATCH", "GET"}, Permissions: []models.UserRole{}},
 	"/api/game/:game_id/flag/:challenge_id":      {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{}},
-	"/api/hub":                                   {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
 	"/api/game/:game_id/flag/:judge_id":          {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
 
 	"/api/admin/container/list":   {RequestMethod: []string{"POST"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
@@ -265,6 +264,10 @@ var PermissionMap = map[string]PermissionSetting{
 
 	"/api/admin/system/logs":       {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
 	"/api/admin/system/logs/stats": {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
+
+	// WebSocket
+	"/api/hub": {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{}},
+	"/api/pod/:pod_name/:container_name/exec": {RequestMethod: []string{"GET"}, Permissions: []models.UserRole{models.UserRoleAdmin}},
 }
 
 var RequestMethodMaskMap = map[string]uint64{
@@ -376,6 +379,27 @@ func unauthorized() func(c *gin.Context, code int, message string) {
 	}
 }
 
+func httpStatusMessageFunc() func(e error, c *gin.Context) string {
+	return func(e error, c *gin.Context) string {
+		messageID := "JWT"
+		switch e {
+		case jwt.ErrForbidden:
+			messageID += "ErrForbidden"
+		case jwt.ErrInvalidSigningAlgorithm:
+			messageID += "ErrInvalidSigningAlgorithm"
+		case jwt.ErrMissingExpField:
+			messageID += "ErrMissingExpField"
+		case jwt.ErrExpiredToken:
+			messageID += "ErrExpiredToken"
+		case jwt.ErrWrongFormatOfExp:
+			messageID += "ErrWrongFormatOfExp"
+		default:
+			return e.Error()
+		}
+		return i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: messageID})
+	}
+}
+
 type LoginPayload struct {
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
@@ -401,11 +425,15 @@ func Login() func(c *gin.Context) (interface{}, error) {
 			return nil, jwt.ErrFailedAuthentication
 		} else {
 			if user_result.Password == general.SaltPassword(loginVals.Password, user_result.Salt) {
+				lastLoginTime := user_result.LastLoginTime
+				lastLoginIP := user_result.LastLoginIP
+				now := time.Now()
+				loginIP := c.ClientIP()
 
 				// Update last login time
 				if err := dbtool.DB().Model(&user_result).Updates(map[string]interface{}{
-					"last_login_time": time.Now().UTC(),
-					"last_login_ip":   c.ClientIP(),
+					"last_login_time": now.UTC(),
+					"last_login_ip":   loginIP,
 				}).Error; err != nil {
 					return nil, jwt.ErrFailedAuthentication
 				}
@@ -417,8 +445,11 @@ func Login() func(c *gin.Context) (interface{}, error) {
 					UserID:       &user_result.UserID,
 					Username:     &user_result.Username,
 					Details: map[string]interface{}{
-						"username":   user_result.Username,
-						"login_time": time.Now().UTC(),
+						"username":        user_result.Username,
+						"login_time":      now.UTC(),
+						"last_login_time": lastLoginTime.UTC(),
+						"login_ip":        loginIP,
+						"last_login_ip":   lastLoginIP,
 					},
 					Status: models.LogStatusSuccess,
 				})
@@ -448,18 +479,18 @@ func initParams() *jwt.GinJWTMiddleware {
 		IdentityKey:      identityKey,
 		PayloadFunc:      payloadFunc(),
 
-		SendCookie: true,
-		CookieName: "a1token",
-
-		IdentityHandler: identityHandler(),
-		Authenticator:   Login(),
-		Authorizator:    authorizator(),
-		Unauthorized:    unauthorized(),
-		TokenLookup:     "cookie:a1token",
-		// TokenLookup: "query:token",
-		// TokenLookup: "cookie:token",
+		SendCookie:    true,
+		CookieName:    "a1token",
 		TokenHeadName: "Bearer",
-		TimeFunc:      time.Now,
+
+		IdentityHandler:       identityHandler(),
+		Authenticator:         Login(),
+		Authorizator:          authorizator(),
+		Unauthorized:          unauthorized(),
+		HTTPStatusMessageFunc: httpStatusMessageFunc(),
+
+		TokenLookup: "cookie:a1token",
+		TimeFunc:    time.Now,
 	}
 }
 

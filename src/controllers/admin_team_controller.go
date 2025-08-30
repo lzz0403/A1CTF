@@ -219,6 +219,15 @@ func AdminBanTeam(c *gin.Context) {
 		return
 	}
 
+	// 管理员队伍无法被禁赛
+	if team.TeamType == models.TeamTypeAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"code":    403,
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "CannotBanAdminTeam"}),
+		})
+		return
+	}
+
 	// 更新队伍状态为禁赛
 	oldStatus := team.TeamStatus
 	if err := dbtool.DB().Model(&team).Update("team_status", models.ParticipateBanned).Error; err != nil {
@@ -347,6 +356,15 @@ func AdminDeleteTeam(c *gin.Context) {
 				Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "DatabaseError"}),
 			})
 		}
+		return
+	}
+
+	// 管理员队伍无法被删除
+	if team.TeamType == models.TeamTypeAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"code":    403,
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "CannotDeleteAdminTeam"}),
+		})
 		return
 	}
 

@@ -4,9 +4,10 @@ import TimerDisplay from "components/modules/TimerDisplay";
 import { useGlobalVariableContext } from "contexts/GlobalVariableContext";
 import dayjs from "dayjs";
 import { CalendarArrowDown, CalendarArrowUp, CirclePlay, ClockAlert, Dumbbell, Hourglass, Package, UsersRound } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FastAverageColor } from "fast-average-color";
 import { ParticipationStatus, UserFullGameInfo } from "utils/A1API";
+import { useTranslation } from "react-i18next";
 
 export default function GamePosterInfoModule(
     {
@@ -19,6 +20,7 @@ export default function GamePosterInfoModule(
         teamStatus: ParticipationStatus
     }
 ) {
+    const { t } = useTranslation("game_view")
     const { clientConfig } = useGlobalVariableContext()
 
     const [posterTextPrimaryColor, setPosterTextPrimaryColor] = useState("white")
@@ -28,20 +30,20 @@ export default function GamePosterInfoModule(
         "ended": (
             <div className="flex gap-4 items-center">
                 <ClockAlert size={36} />
-                <span className="text-2xl font-bold">比赛已结束</span>
+                <span className="text-2xl font-bold">{t("game_finished")}</span>
             </div>
         ),
         "practiceMode": (
             <div className="flex gap-4 items-center">
                 <Dumbbell size={36} />
-                <span className="text-2xl font-bold">练习模式</span>
+                <span className="text-2xl font-bold">{t("practice")}</span>
             </div>
         ),
         "running": (
             <div className="flex flex-col gap-4 items-center">
                 <div className="flex gap-4 items-center">
                     <CirclePlay size={36} />
-                    <span className="text-2xl font-bold">距离比赛结束还有</span>
+                    <span className="text-2xl font-bold">{t("time_to_finish")}</span>
                 </div>
                 <TimerDisplay
                     className="text-xl font-bold"
@@ -54,7 +56,7 @@ export default function GamePosterInfoModule(
             <div className="flex flex-col gap-4 items-center">
                 <div className="flex gap-4 items-center">
                     <Hourglass size={36} />
-                    <span className="text-2xl font-bold">距离比赛开始还有</span>
+                    <span className="text-2xl font-bold">{t("time_to_start")}</span>
                 </div>
                 <TimerDisplay
                     className="text-xl font-bold"
@@ -64,10 +66,6 @@ export default function GamePosterInfoModule(
             </div>
         ),
     }
-
-    useEffect(() => {
-        console.log(teamStatus)
-    }, [teamStatus])
 
     return (
         <div className="flex flex-col w-full overflow-hidden select-none lg:gap-16 gap-6">
@@ -91,8 +89,8 @@ export default function GamePosterInfoModule(
                                     const brightColor = brightness > 128 ? "white" : "black";
                                     setPosterTextPrimaryColor(brightColor)
                                 })
-                                .catch((e: any) => {
-                                    console.log(e);
+                                .catch((_) => {
+
                                 });
                         }}
                     />
@@ -113,7 +111,7 @@ export default function GamePosterInfoModule(
                                 }
                                 alt={gameInfo?.name ?? "A1CTF ???????"}
                             />
-                            <div className={`flex flex-col min-w-0 ${ posterTextPrimaryColor == "white" ? "text-black" : "text-white" }`}>
+                            <div className={`flex flex-col min-w-0 ${posterTextPrimaryColor == "white" ? "text-black" : "text-white"}`}>
                                 <span className="font-bold text-2xl text-nowrap pointer-events-auto overflow-ellipsis overflow-hidden whitespace-nowrap block"
                                     data-tooltip-content={gameInfo?.name}
                                     data-tooltip-id="my-tooltip"
@@ -136,19 +134,19 @@ export default function GamePosterInfoModule(
                 <div className="flex gap-4 items-center">
                     <div className="flex gap-2 rounded-full border-1 items-center bg-blue-400/60 border-blue-400 px-4 py-1 text-black/70">
                         <UsersRound size={20} />
-                        <span>人数限制: {gameInfo?.team_number_limit}</span>
+                        <span>{t("person_limit")}: {gameInfo?.team_number_limit}</span>
                     </div>
                     <div className="flex gap-2 rounded-full border-1 items-center bg-orange-400/60 border-orange-400 px-4 py-1 text-black/70">
                         <Package size={20} />
-                        <span>容器限制: {gameInfo?.container_number_limit}</span>
+                        <span>{t("contianer_limit")}: {gameInfo?.container_number_limit}</span>
                     </div>
                 </div>
                 <div className="flex gap-2 rounded-full border-1 items-center bg-green-400/60 border-green-500 px-4 py-1 text-black/70">
                     <CalendarArrowUp size={20} />
-                    <span>{ dayjs(gameInfo?.start_time).format("YYYY-MM-DD HH:mm:ss") }</span>
+                    <span>{dayjs(gameInfo?.start_time).format("YYYY-MM-DD HH:mm:ss")}</span>
                     <span>-</span>
                     <CalendarArrowDown size={20} />
-                    <span>{ dayjs(gameInfo?.end_time).format("YYYY-MM-DD HH:mm:ss") }</span>
+                    <span>{dayjs(gameInfo?.end_time).format("YYYY-MM-DD HH:mm:ss")}</span>
                 </div>
             </div>
         </div>

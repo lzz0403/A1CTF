@@ -18,6 +18,7 @@ import { api } from 'utils/ApiHelper';
 import { SystemResourceType } from 'utils/A1API';
 import { DateTimePicker24h } from 'components/ui/data-time-picker';
 import ThemedEditor from 'components/modules/ThemedEditor';
+import { useTranslation } from 'react-i18next';
 
 interface BasicInfoModuleProps {
     form: any;
@@ -29,6 +30,8 @@ interface BasicInfoModuleProps {
  * 从 EditGameView.tsx 中抽离，提升主组件可读性
  */
 export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
+
+    const { t } = useTranslation("game_edit")
 
     const handleImageUpload = (type: SystemResourceType) => {
         return (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +62,7 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10 flex items-center justify-center">
                     <FilePenLine className="h-4 w-4 text-blue-600" />
                 </div>
-                <h2 className="text-xl font-semibold">基本信息</h2>
+                <h2 className="text-xl font-semibold">{t("basic.title")}</h2>
             </div>
 
             {/* 比赛名称 / 开始结束时间 */}
@@ -71,14 +74,14 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex items-center">
-                                <FormLabel>比赛名称</FormLabel>
+                                <FormLabel>{t("basic.name.label")}</FormLabel>
                                 <div className="flex-1" />
                                 <FormMessage className="text-[14px]" />
                             </div>
                             <FormControl>
                                 <Input {...field} />
                             </FormControl>
-                            <FormDescription>请填写比赛名称</FormDescription>
+                            <FormDescription>{t("basic.name.description")}</FormDescription>
                         </FormItem>
                     )}
                 />
@@ -89,12 +92,12 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     name={`start_time`}
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
-                            <FormLabel>开始时间</FormLabel>
+                            <FormLabel>{t("basic.start_time.label")}</FormLabel>
                             <DateTimePicker24h
                                 date={field.value}
                                 setDate={field.onChange}
                             />
-                            <FormDescription>请选择比赛开始时间</FormDescription>
+                            <FormDescription>{t("basic.start_time.description")}</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -106,12 +109,12 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     name={`end_time`}
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
-                            <FormLabel>结束时间</FormLabel>
+                            <FormLabel>{t("basic.end_time.label")}</FormLabel>
                             <DateTimePicker24h
                                 date={field.value}
                                 setDate={field.onChange}
                             />
-                            <FormDescription>请选择比赛结束时间</FormDescription>
+                            <FormDescription>{t("basic.end_time.description")}</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -126,14 +129,14 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex items-center h-[20px]">
-                                <FormLabel>比赛简介</FormLabel>
+                                <FormLabel>{t("basic.summary.label")}</FormLabel>
                                 <div className="flex-1" />
                                 <FormMessage className="text-[14px]" />
                             </div>
                             <FormControl>
                                 <Textarea {...field} className="h-[100px]" />
                             </FormControl>
-                            <FormDescription>比赛简介</FormDescription>
+                            <FormDescription>{t("basic.summary.description")}</FormDescription>
                         </FormItem>
                     )}
                 />
@@ -144,7 +147,7 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     render={({ field }) => (
                         <FormItem>
                             <div className="flex items-center h-[20px]">
-                                <FormLabel>比赛详细信息</FormLabel>
+                                <FormLabel>{t("basic.description.label")}</FormLabel>
                                 <div className="flex-1" />
                                 <FormMessage className="text-[14px]" />
                             </div>
@@ -156,28 +159,10 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                                     className='h-[500px]'
                                 />
                             </FormControl>
-                            <FormDescription>比赛详细信息 (支持Markdown)</FormDescription>
+                            <FormDescription>{t("basic.description.description")}</FormDescription>
                         </FormItem>
                     )}
                 />
-
-                {/* <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex items-center h-[20px]">
-                                <FormLabel>比赛详细信息</FormLabel>
-                                <div className="flex-1" />
-                                <FormMessage className="text-[14px]" />
-                            </div>
-                            <FormControl>
-                                <Textarea {...field} className="h-[300px]" />
-                            </FormControl>
-                            <FormDescription>比赛详细信息 (支持Markdown)</FormDescription>
-                        </FormItem>
-                    )}
-                /> */}
             </div>
 
             {/* 开关设置 */}
@@ -188,8 +173,8 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/50 p-4">
                             <div className="space-y-0.5">
-                                <FormLabel>练习模式</FormLabel>
-                                <FormDescription>是否开启练习模式</FormDescription>
+                                <FormLabel>{t("basic.practice.label")}</FormLabel>
+                                <FormDescription>{t("basic.practice.description")}</FormDescription>
                             </div>
                             <FormControl>
                                 <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -204,8 +189,8 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/50 p-4">
                             <div className="space-y-0.5">
-                                <FormLabel>WriteUP</FormLabel>
-                                <FormDescription>是否需要提交 WriteUP</FormDescription>
+                                <FormLabel>{t("basic.wp.label")}</FormLabel>
+                                <FormDescription>{t("basic.wp.description")}</FormDescription>
                             </div>
                             <FormControl>
                                 <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -220,8 +205,8 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                     render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/50 p-4">
                             <div className="space-y-0.5">
-                                <FormLabel>是否可见</FormLabel>
-                                <FormDescription>比赛是否可见</FormDescription>
+                                <FormLabel>{t("basic.visible.label")}</FormLabel>
+                                <FormDescription>{t("basic.visible.description")}</FormDescription>
                             </div>
                             <FormControl>
                                 <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -235,28 +220,10 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
                 <FormField
                     control={form.control}
-                    name="game_icon_dark"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>比赛图标(深色)</FormLabel>
-                            <FormControl>
-                                <ImageUploader
-                                    src={field.value}
-                                    backgroundTheme='dark'
-                                    onChange={handleImageUpload(SystemResourceType.GameIconDark)}
-                                />
-                            </FormControl>
-                            <FormDescription>比赛图标</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
                     name="game_icon_light"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>比赛图标(浅色)</FormLabel>
+                            <FormLabel>{t("basic.icon.label")} ({t("basic.icon.light")})</FormLabel>
                             <FormControl>
                                 <ImageUploader
                                     src={field.value}
@@ -264,7 +231,25 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                                     onChange={handleImageUpload(SystemResourceType.GameIconLight)}
                                 />
                             </FormControl>
-                            <FormDescription>比赛图标</FormDescription>
+                            <FormDescription>{t("basic.icon.label")}</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="game_icon_dark"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{t("basic.icon.label")} ({t("basic.icon.dark")})</FormLabel>
+                            <FormControl>
+                                <ImageUploader
+                                    src={field.value}
+                                    backgroundTheme='dark'
+                                    onChange={handleImageUpload(SystemResourceType.GameIconDark)}
+                                />
+                            </FormControl>
+                            <FormDescription>{t("basic.icon.label")}</FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}

@@ -12,7 +12,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 	corev1 "k8s.io/api/core/v1"
-	v1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -20,10 +19,12 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation"
 
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 var clientset *kubernetes.Clientset
+var globalConfig *rest.Config
 var NodeAddressMap map[string]string = make(map[string]string)
 
 func InitNodeAddressMap() {
@@ -131,6 +132,8 @@ func GetClient() (*kubernetes.Clientset, error) {
 		return nil, fmt.Errorf("error building kubeconfig: %v", err)
 	}
 
+	globalConfig = config
+
 	clientsetLocal, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		return nil, fmt.Errorf("error creating clientset: %v", err)
@@ -141,7 +144,11 @@ func GetClient() (*kubernetes.Clientset, error) {
 	return clientsetLocal, nil
 }
 
-func ListPods() (*v1.PodList, error) {
+func GetClientConfig() *rest.Config {
+	return globalConfig
+}
+
+func ListPods() (*corev1.PodList, error) {
 	clientset, err := GetClient()
 	if err != nil {
 		return nil, err
@@ -170,7 +177,7 @@ func CreatePod(podInfo *PodInfo) error {
 		container := corev1.Container{
 			Name:  containerName,
 			Image: c.Image,
-			Env:   []v1.EnvVar{},
+			Env:   []corev1.EnvVar{},
 		}
 		if len(c.Command) > 0 {
 			container.Command = c.Command
@@ -332,15 +339,15 @@ func CreatePod(podInfo *PodInfo) error {
 				},
 				Ports: []networkingv1.NetworkPolicyPort{
 					{
-						Protocol: func() *v1.Protocol {
-							p := v1.ProtocolUDP
+						Protocol: func() *corev1.Protocol {
+							p := corev1.ProtocolUDP
 							return &p
 						}(),
 						Port: &intstr.IntOrString{IntVal: 53},
 					},
 					{
-						Protocol: func() *v1.Protocol {
-							p := v1.ProtocolTCP
+						Protocol: func() *corev1.Protocol {
+							p := corev1.ProtocolTCP
 							return &p
 						}(),
 						Port: &intstr.IntOrString{IntVal: 53},
@@ -403,38 +410,10 @@ func GetPodPorts(podInfo *PodInfo) (*PodPorts, error) {
 }
 
 func DeletePod(podInfo *PodInfo) error {
-	clientset, err := GetClient()
-	if err != nil {
-		return err
-	}
-	namespace := "a1ctf-challenges"
-
-	// 忽略所有错误，删除三个组件，防止出问题
-
-	// 删除 Pod
-	_ = clientset.CoreV1().Pods(namespace).Delete(context.Background(), podInfo.Name, metav1.DeleteOptions{})
-	// if err != nil {
-	// 	return fmt.Errorf("error deleting pod: %v", err)
-	// }
-
-	// 删除 Service
-	_ = clientset.CoreV1().Services(namespace).Delete(context.Background(), podInfo.Name, metav1.DeleteOptions{})
-	// if err != nil {
-	// 	return fmt.Errorf("error deleting service: %v", err)
-	// }
-
-	if !podInfo.AllowWAN {
-		// 删除 NetworkPolicy
-		_ = clientset.NetworkingV1().NetworkPolicies(namespace).Delete(context.Background(), podInfo.Name, metav1.DeleteOptions{})
-		// if err != nil {
-		// 	return fmt.Errorf("error deleting network policy: %v", err)
-		// }
-	}
-
-	return nil
+	return forceDeletePod(podInfo.Name)
 }
 
-func ForceDeletePod(podName string) error {
+func forceDeletePod(podName string) error {
 	clientset, err := GetClient()
 	if err != nil {
 		return err
@@ -444,7 +423,9 @@ func ForceDeletePod(podName string) error {
 	// 忽略所有错误，删除三个组件，防止出问题
 
 	// 删除 Pod
-	_ = clientset.CoreV1().Pods(namespace).Delete(context.Background(), podName, metav1.DeleteOptions{})
+	_ = clientset.CoreV1().Pods(namespace).Delete(context.Background(), podName, metav1.DeleteOptions{
+		GracePeriodSeconds: func(i int64) *int64 { return &i }(0),
+	})
 	// if err != nil {
 	// 	return fmt.Errorf("error deleting pod: %v", err)
 	// }

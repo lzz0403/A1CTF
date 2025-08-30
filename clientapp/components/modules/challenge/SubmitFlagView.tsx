@@ -10,9 +10,11 @@ import { UserDetailGameChallenge } from "utils/A1API";
 import { api } from "utils/ApiHelper";
 import { toast } from 'react-toastify/unstyled';
 import { ChallengeSolveStatus } from "components/user/game/ChallengesView";
+import { useTranslation } from "react-i18next";
 
 const SubmitFlagView = ({ curChallenge, gameID, setChallengeSolved, challengeSolveStatusList: _challengeSolveStatusList, visible, setVisible }: { curChallenge: UserDetailGameChallenge | undefined, gameID: number, setChallengeSolved: (id: number) => void, challengeSolveStatusList: Record<number, ChallengeSolveStatus>, visible: boolean, setVisible: Dispatch<SetStateAction<boolean>> }) => {
 
+    const { t } = useTranslation("challenge_view");
     const [flag, setFlag] = useState<string>("");
     const [judgeing, setJudgeing] = useState(false);
     const [borderRed, setBorderRed] = useState(false);
@@ -59,17 +61,17 @@ const SubmitFlagView = ({ curChallenge, gameID, setChallengeSolved, challengeSol
                                         }, 200)
 
                                     } else if (res2.data.data.judge_status == "JudgeWA") {
-                                        toast.error("Flag 错误, 请检查后重新尝试");
+                                        toast.error(t("flag_error"));
                                         setBorderRed(true)
                                         setJudgeing(false)
                                         clearInterval(judgeingInter)
                                     } else if (res2.data.data.judge_status == "JudgeError" || res2.data.data.judge_status == "JudgeTimeout") {
-                                        toast.error("评测错误, 请联系管理员");
+                                        toast.error(t("judge_error"));
                                         setJudgeing(false)
                                         clearInterval(judgeingInter)
                                     }
                                 } else {
-                                    toast.error("未知错误, 请联系管理员");
+                                    toast.error(t("unknow_error"));
                                     setJudgeing(false)
                                     clearInterval(judgeingInter)
                                 }
@@ -109,12 +111,12 @@ const SubmitFlagView = ({ curChallenge, gameID, setChallengeSolved, challengeSol
                             <div className="w-[50%] flex flex-col gap-6 p-10 h-[290px] bg-background/80 border-4 border-foreground/60 rounded-lg shadow-[0.5em_0.5em_0_0_#121212bb] dark:shadow-[0.5em_0.5em_0_0_#9a9a9abb]">
                                 <div className="flex gap-6 items-center">
                                     <Mail size={48} />
-                                    <span className="font-bold text-3xl">Submit your flag!</span>
+                                    <span className="font-bold text-3xl">{t("submit_flag_title")}</span>
                                 </div>
 
                                 <input
                                     className={`${borderRed ? "border-red-600 text-red-600" : ""} flex w-full bg-transparent px-3 shadow-sm transition-colors duration-300 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 h-[50px] border-foreground rounded-lg border-4 text-xl font-bold py-0 focus-visible:border-blue-400 focus-visible:text-blue-400`}
-                                    placeholder="Enter your flag here"
+                                    placeholder={t("submit_flag_placeholder")}
                                     value={flag}
                                     onFocus={() => setBorderRed(false)}
                                     onChange={(e) => setFlag(e.target.value)}
@@ -128,7 +130,7 @@ const SubmitFlagView = ({ curChallenge, gameID, setChallengeSolved, challengeSol
                                     >
                                         <div className="flex gap-4 items-center">
                                             <X />
-                                            <span className="font-bold text-xl">Close</span>
+                                            <span className="font-bold text-xl">{t("submit_flag_close")}</span>
                                         </div>
                                     </Button>
                                     <Button className="h-[50px] rounded-lg transition-all duration-300 p-0 border-4 px-4 py-4 border-blue-400 text-blue-400 bg-background hover:border-blue-400 hover:text-blue-400 hover:bg-blue-400/10 [&_svg]:size-[32px]"
@@ -138,12 +140,12 @@ const SubmitFlagView = ({ curChallenge, gameID, setChallengeSolved, challengeSol
                                         {judgeing ? (
                                             <div className="flex gap-4 items-center">
                                                 <Loader2 className="animate-spin" />
-                                                <span className="font-bold text-xl">Judgeing</span>
+                                                <span className="font-bold text-xl">{t("submit_flag_judge")}</span>
                                             </div>
                                         ) : (
                                             <div className="flex gap-4 items-center">
                                                 <SendHorizonal />
-                                                <span className="font-bold text-xl">Submit</span>
+                                                <span className="font-bold text-xl">{t("submit_flag_check")}</span>
                                             </div>
                                         )}
                                     </Button>

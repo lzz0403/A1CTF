@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from 'lib/utils';
 import { useSpring, animated } from '@react-spring/web';
+import { useTranslation } from 'react-i18next';
 
 const ImageLoader = ({
     src, // 高清图URL
@@ -11,7 +12,7 @@ const ImageLoader = ({
     primaryColor: _primaryColor = "white",
     height = 1080,
     text = true,
-    onLoad = () => {},
+    onLoad = () => { },
     style = {},
 }: {
     src: string;
@@ -24,6 +25,8 @@ const ImageLoader = ({
     onLoad?: React.ReactEventHandler<HTMLImageElement> | undefined;
     style?: React.CSSProperties;
 }) => {
+
+    const { t } = useTranslation()
     const [loaded, setLoaded] = useState(false);
     const imgRef = useRef(null);
 
@@ -61,7 +64,7 @@ const ImageLoader = ({
             }}
         >
             {/* 低分辨率模糊背景 */}
-            <animated.div 
+            <animated.div
                 className={`w-full h-full top-0 left-0 absolute flex items-center justify-center bg-background`}
                 style={{
                     opacity: fadeSpring.opacity,
@@ -71,7 +74,7 @@ const ImageLoader = ({
                 {text && (
                     <div className='flex items-center gap-3'>
                         <Loader2 className="animate-spin" />
-                        <span className="font-bold">Loading...</span>
+                        <span className="font-bold">{t("loading")}</span>
                     </div>
                 )}
             </animated.div>

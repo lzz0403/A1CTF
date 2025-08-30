@@ -34,6 +34,7 @@ import { toast } from 'react-toastify/unstyled';
 import { api } from 'utils/ApiHelper';
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import AlertConformer from 'components/modules/AlertConformer';
+import { useTranslation } from 'react-i18next';
 
 interface GameGroup {
     group_id: number;
@@ -48,19 +49,22 @@ interface GameGroupManagerProps {
     gameId: number;
 }
 
-const groupFormSchema = z.object({
-    group_name: z.string().min(1, '分组名称不能为空').max(100, '分组名称不能超过100个字符'),
-    description: z.string().max(500, '描述不能超过500个字符').optional(),
-});
-
-type GroupFormData = z.infer<typeof groupFormSchema>;
-
 export function GameGroupManager({ gameId }: GameGroupManagerProps) {
     const [groups, setGroups] = useState<GameGroup[]>([]);
     const [loading, setLoading] = useState(false);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [editingGroup, setEditingGroup] = useState<GameGroup | null>(null);
+
+    const { t } = useTranslation("game_edit")
+    const { t: commonT } = useTranslation()
+
+    const groupFormSchema = z.object({
+        group_name: z.string().min(1, t("group.error.empty")).max(100, t("group.error.long1")),
+        description: z.string().max(500, t("group.error.long2")).optional(),
+    });
+
+    type GroupFormData = z.infer<typeof groupFormSchema>;
 
     const createForm = useForm<GroupFormData>({
         resolver: zodResolver(groupFormSchema),
@@ -104,7 +108,7 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
             group_name: data.group_name,
             description: data.description || '',
         }).then(() => {
-            toast.success('分组创建成功');
+            toast.success(t("group.add.success"));
             setIsCreateDialogOpen(false);
             createForm.reset();
             loadGroups();
@@ -119,7 +123,7 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
             group_name: data.group_name,
             description: data.description || '',
         }).then(() => {
-            toast.success('分组更新成功');
+            toast.success(t("group.edit.success"));
             setIsEditDialogOpen(false);
             setEditingGroup(null);
             editForm.reset();
@@ -130,7 +134,7 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
     // 删除分组
     const handleDeleteGroup = async (groupId: number) => {
         api.admin.adminDeleteGameGroup(gameId, groupId).then(() => {
-            toast.success('分组删除成功');
+            toast.success(t("group.delete_success"));
             loadGroups();
         })
     };
@@ -150,19 +154,19 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">参赛分组管理</h3>
+                <h3 className="text-lg font-semibold">{t("group.title")}</h3>
                 <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                     <DialogTrigger asChild>
                         <Button variant="outline" size="sm">
                             <PlusCircle className="w-4 h-4 mr-2" />
-                            创建分组
+                            {t("group.add.button")}
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>创建新分组</DialogTitle>
+                            <DialogTitle>{t("group.add.title")}</DialogTitle>
                             <DialogDescription>
-                                为比赛创建一个新的参赛分组
+                                {t("group.add.description")}
                             </DialogDescription>
                         </DialogHeader>
                         <Form {...createForm}>
@@ -173,10 +177,10 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                     render={({ field }) => (
                                         <FormItem>
                                             <div className='h-[20px] flex items-center'>
-                                                <FormLabel>分组名称</FormLabel>
+                                                <FormLabel>{t("group.add.name.label")}</FormLabel>
                                             </div>
                                             <FormControl>
-                                                <Input placeholder="例如：本科组、研究生组" {...field} />
+                                                <Input placeholder={t("group.add.name.placeholder")} {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -188,11 +192,11 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                     render={({ field }) => (
                                         <FormItem>
                                             <div className='h-[20px] flex items-center'>
-                                                <FormLabel>分组描述（可选）</FormLabel>
+                                                <FormLabel>{t("group.add.info.label")} ({t("group.option")})</FormLabel>
                                             </div>
                                             <FormControl>
                                                 <Textarea
-                                                    placeholder="描述这个分组的特点或要求"
+                                                    placeholder={t("group.add.info.placeholder")}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -201,7 +205,10 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                     )}
                                 />
                                 <DialogFooter>
-                                    <Button type="submit">创建分组</Button>
+                                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                                        {commonT("cancel")}
+                                    </Button>
+                                    <Button type="submit">{commonT("confirm")}</Button>
                                 </DialogFooter>
                             </form>
                         </Form>
@@ -214,23 +221,23 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>分组名称</TableHead>
-                            <TableHead>描述</TableHead>
-                            <TableHead>创建时间</TableHead>
-                            <TableHead className="text-right">操作</TableHead>
+                            <TableHead>{t("group.add.name.label")}</TableHead>
+                            <TableHead>{t("group.add.info.label")}</TableHead>
+                            <TableHead>{t("group.time")}</TableHead>
+                            <TableHead className="text-right">{t("group.action")}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {loading ? (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center py-8">
-                                    加载中...
+                                    {commonT("loading")}
                                 </TableCell>
                             </TableRow>
                         ) : groups.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                    暂无分组，点击"创建分组"开始添加
+                                    {t("group.empty")}
                                 </TableCell>
                             </TableRow>
                         ) : (
@@ -254,8 +261,8 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                                 <Pencil className="w-4 h-4" />
                                             </Button>
                                             <AlertConformer
-                                                title="确认删除"
-                                                description="确定要删除这个分组吗？删除后无法恢复。"
+                                                title={t("group.timeline.delete.title")}
+                                                description={t("group.timeline.delete.description")}
                                                 type="danger"
                                                 onConfirm={() => handleDeleteGroup(group.group_id)}
                                             >
@@ -281,9 +288,9 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>编辑分组</DialogTitle>
+                        <DialogTitle>{t("group.edit.title")}</DialogTitle>
                         <DialogDescription>
-                            修改分组的名称和描述
+                            {t("group.edit.description")}
                         </DialogDescription>
                     </DialogHeader>
                     <Form {...editForm}>
@@ -294,10 +301,10 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <div className='h-[20px] flex items-center'>
-                                            <FormLabel>分组名称</FormLabel>
+                                            <FormLabel>{t("group.add.name.label")}</FormLabel>
                                         </div>
                                         <FormControl>
-                                            <Input placeholder="例如：本科组、研究生组" {...field} />
+                                            <Input placeholder={t("group.add.name.placeholder")} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -309,11 +316,11 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <div className='h-[20px] flex items-center'>
-                                            <FormLabel>分组描述（可选）</FormLabel>
+                                            <FormLabel>{t("group.add.info.label")} ({t("group.option")})</FormLabel>
                                         </div>
                                         <FormControl>
                                             <Textarea
-                                                placeholder="描述这个分组的特点或要求"
+                                                placeholder={t("group.add.info.placeholder")}
                                                 {...field}
                                             />
                                         </FormControl>
@@ -322,7 +329,10 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                 )}
                             />
                             <DialogFooter>
-                                <Button type="submit">保存更改</Button>
+                                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                                    {commonT("cancel")}
+                                </Button>
+                                <Button type="submit">{commonT("confirm")}</Button>
                             </DialogFooter>
                         </form>
                     </Form>

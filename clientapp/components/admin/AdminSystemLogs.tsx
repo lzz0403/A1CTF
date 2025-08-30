@@ -41,7 +41,6 @@ import { Badge } from "../ui/badge";
 import { SystemLogItem, LogCategory, SystemLogStats } from "utils/A1API";
 
 import { api } from "utils/ApiHelper";
-import { toast } from 'react-toastify/unstyled';
 import {
     Select,
     SelectContent,
@@ -52,7 +51,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { useTheme } from "next-themes"
 import EditorDialog from "components/modules/EditorDialog"
-import copy from "copy-to-clipboard"
+import { copyWithResult } from "utils/ToastUtil"
+import { useTranslation } from "react-i18next"
 
 interface LogTableRow {
     id: string;
@@ -70,6 +70,9 @@ interface LogTableRow {
 }
 
 export function AdminSystemLogs() {
+
+    const { t } = useTranslation("logs")
+
     const [data, setData] = React.useState<LogTableRow[]>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -165,21 +168,21 @@ export function AdminSystemLogs() {
                 return (
                     <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
                         <CheckCircle className="w-3 h-3 mr-1" />
-                        成功
+                        {t("success")}
                     </Badge>
                 );
             case "FAILED":
                 return (
                     <Badge variant="destructive">
                         <XCircle className="w-3 h-3 mr-1" />
-                        失败
+                        {t("failed")}
                     </Badge>
                 );
             case "WARNING":
                 return (
                     <Badge variant="outline" className="border-yellow-300 text-yellow-800">
                         <AlertTriangle className="w-3 h-3 mr-1" />
-                        警告
+                        {t("warning")}
                     </Badge>
                 );
             default:
@@ -190,12 +193,12 @@ export function AdminSystemLogs() {
     // 获取类别对应的颜色
     const getCategoryBadge = (category: LogCategory) => {
         const categoryMap = {
-            ADMIN: { color: "bg-red-100 text-red-800 border-red-300", text: "管理员" },
-            USER: { color: "bg-blue-100 text-blue-800 border-blue-300", text: "用户" },
-            SYSTEM: { color: "bg-gray-100 text-gray-800 border-gray-300", text: "系统" },
-            CONTAINER: { color: "bg-purple-100 text-purple-800 border-purple-300", text: "容器" },
-            JUDGE: { color: "bg-orange-100 text-orange-800 border-orange-300", text: "判题" },
-            SECURITY: { color: "bg-yellow-100 text-yellow-800 border-yellow-300", text: "安全" },
+            ADMIN: { color: "bg-red-100 text-red-800 border-red-300", text: t("admin") },
+            USER: { color: "bg-blue-100 text-blue-800 border-blue-300", text: t("user") },
+            SYSTEM: { color: "bg-gray-100 text-gray-800 border-gray-300", text: t("system") },
+            CONTAINER: { color: "bg-purple-100 text-purple-800 border-purple-300", text: t("container") },
+            JUDGE: { color: "bg-orange-100 text-orange-800 border-orange-300", text: t("judge") },
+            SECURITY: { color: "bg-yellow-100 text-yellow-800 border-yellow-300", text: t("security") },
         };
 
         const config = categoryMap[category] || { color: "bg-gray-100 text-gray-800", text: category };
@@ -210,21 +213,21 @@ export function AdminSystemLogs() {
     const columns: ColumnDef<LogTableRow>[] = [
         {
             accessorKey: "category",
-            header: "类别",
+            header: t("category"),
             cell: ({ row }) => getCategoryBadge(row.getValue("category")),
         },
         {
             accessorKey: "username",
-            header: "用户",
+            header: t("user"),
             cell: ({ row }) => (
                 <div className="font-medium">
-                    {row.getValue("username") || "系统"}
+                    {row.getValue("username") || t("system")}
                 </div>
             ),
         },
         {
             accessorKey: "action",
-            header: "操作",
+            header: t("action"),
             cell: ({ row }) => (
                 <div className="text-sm">
                     <span
@@ -241,7 +244,7 @@ export function AdminSystemLogs() {
         },
         {
             accessorKey: "resource_type",
-            header: "资源类型",
+            header: t("resource"),
             cell: ({ row }) => (
                 <Badge variant="outline">
                     {row.getValue("resource_type")}
@@ -250,12 +253,12 @@ export function AdminSystemLogs() {
         },
         {
             accessorKey: "status",
-            header: "状态",
+            header: t("status"),
             cell: ({ row }) => getStatusBadge(row.getValue("status")),
         },
         {
             accessorKey: "ip_address",
-            header: "IP地址",
+            header: t("ip"),
             cell: ({ row }) => (
                 <div className="font-mono text-sm text-muted-foreground">
                     {row.getValue("ip_address") || "-"}
@@ -271,7 +274,7 @@ export function AdminSystemLogs() {
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         className="h-8 p-0"
                     >
-                        时间
+                        {t("time")}
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
@@ -284,7 +287,7 @@ export function AdminSystemLogs() {
         },
         {
             id: "actions",
-            header: "操作",
+            header: t("action"),
             enableHiding: false,
             cell: ({ row }) => {
                 const log = row.original.full_data as unknown as SystemLogItem;
@@ -293,11 +296,10 @@ export function AdminSystemLogs() {
                     <>
                         <DropdownMenuItem
                             onClick={() => {
-                                navigator.clipboard.writeText(log.resource_id || '');
-                                toast.success('容器ID已复制到剪切板');
+                                copyWithResult(log.resource_id || "")
                             }}
                         >
-                            复制容器ID
+                            {t("copy.container")}
                         </DropdownMenuItem>
                     </>
                 )
@@ -307,7 +309,6 @@ export function AdminSystemLogs() {
                     const binaryString = atob(newLog.details as any)
                     const bytes = Uint8Array.from(binaryString, c => c.charCodeAt(0))
                     const decodedString = new TextDecoder('utf-8').decode(bytes)
-
                     newLog.details = JSON.parse(decodedString)
                     return JSON.stringify(newLog, null, 4)
                 }
@@ -316,16 +317,16 @@ export function AdminSystemLogs() {
                     <div className="flex gap-2 items-center">
                         <EditorDialog
                             value={getDetailedLog()}
-                            onChange={() => {}}
+                            onChange={() => { }}
                             language="json"
-                            title={`查看详细信息`}
+                            title={t("detail")}
                             options={{
                                 readOnly: true,
                                 wordWrap: "on"
                             }}
                         >
                             <Button variant="ghost" size="icon" className='cursor-pointer'
-                                title="查看详细信息"    
+                                title={t("detail")}
                             >
                                 <ScanEye />
                             </Button>
@@ -333,20 +334,19 @@ export function AdminSystemLogs() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">打开菜单</span>
+                                    <span className="sr-only">{t("menu")}</span>
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>操作</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t("action")}</DropdownMenuLabel>
                                 {log.user_id && (
                                     <DropdownMenuItem
                                         onClick={() => {
-                                            navigator.clipboard.writeText(log.user_id || '');
-                                            toast.success('用户ID已复制到剪切板');
+                                            copyWithResult(log.user_id || "")
                                         }}
                                     >
-                                        复制用户ID
+                                        {t("copy.user")}
                                     </DropdownMenuItem>
                                 )}
                                 <DropdownMenuItem
@@ -354,30 +354,28 @@ export function AdminSystemLogs() {
                                         const detailsText = atob(log.details as unknown as string);
                                         const bytes = Uint8Array.from(detailsText, c => c.charCodeAt(0))
                                         const decodedString = new TextDecoder('utf-8').decode(bytes);
-                                        copy(decodedString);
-                                        toast.success('详细信息已复制到剪切板');
+                                        const detail = JSON.stringify(JSON.parse(decodedString), null, 4);
+                                        copyWithResult(detail || "")
                                     }}
                                 >
-                                    复制详细信息
+                                    {t("copy.detail")}
                                 </DropdownMenuItem>
                                 {log.error_message && (
                                     <DropdownMenuItem
                                         onClick={() => {
-                                            navigator.clipboard.writeText(log.error_message || '');
-                                            toast.success('错误信息已复制到剪切板');
+                                            copyWithResult(log.error_message || "")
                                         }}
                                     >
-                                        复制错误信息
+                                        {t("copy.error")}
                                     </DropdownMenuItem>
                                 )}
                                 {log.resource_type == "CONTAINER" && containerOperations}
                                 <DropdownMenuItem
                                     onClick={() => {
-                                        navigator.clipboard.writeText(getDetailedLog());
-                                        toast.success('原始数据已复制到剪切板');
+                                        copyWithResult(getDetailedLog())
                                     }}
                                 >
-                                    复制Raw
+                                    {t("copy.raw")}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -416,16 +414,16 @@ export function AdminSystemLogs() {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">总日志数</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("total")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{stats.total_logs}</div>
-                                <p className="text-xs text-muted-foreground">最近24小时</p>
+                                <p className="text-xs text-muted-foreground">{t("24h")}</p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">成功</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("success")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold text-green-600">{stats.success_logs}</div>
@@ -433,7 +431,7 @@ export function AdminSystemLogs() {
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">失败</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("failed")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold text-red-600">{stats.failed_logs}</div>
@@ -441,7 +439,7 @@ export function AdminSystemLogs() {
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">管理员</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("admin")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold text-purple-600">{stats.admin_logs}</div>
@@ -449,7 +447,7 @@ export function AdminSystemLogs() {
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">用户</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("user")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold text-blue-600">{stats.user_logs}</div>
@@ -457,7 +455,7 @@ export function AdminSystemLogs() {
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">安全</CardTitle>
+                                <CardTitle className="text-sm font-medium">{t("security")}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold text-yellow-600">{stats.security_logs}</div>
@@ -471,7 +469,7 @@ export function AdminSystemLogs() {
                     <div className="flex items-center gap-4 w-[30%]">
                         <Search className="h-6 w-6 text-gray-500 flex-none" />
                         <Input
-                            placeholder="搜索日志。支持用户名, 资源ID, 资源类型, 操作"
+                            placeholder={t("search")}
                             value={searchKeyword}
                             onChange={(event) => setSearchKeyword(event.target.value)}
                             className="flex-1"
@@ -486,16 +484,16 @@ export function AdminSystemLogs() {
                         }
                     }}>
                         <SelectTrigger className="w-32">
-                            <SelectValue placeholder="类别" />
+                            <SelectValue placeholder={t("category")} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="ALL">全部类别</SelectItem>
-                            <SelectItem value="ADMIN">管理员</SelectItem>
-                            <SelectItem value="USER">用户</SelectItem>
-                            <SelectItem value="SYSTEM">系统</SelectItem>
-                            <SelectItem value="CONTAINER">容器</SelectItem>
-                            <SelectItem value="JUDGE">判题</SelectItem>
-                            <SelectItem value="SECURITY">安全</SelectItem>
+                            <SelectItem value="ALL">{t("all_category")}</SelectItem>
+                            <SelectItem value="ADMIN">{t("admin")}</SelectItem>
+                            <SelectItem value="USER">{t("user")}</SelectItem>
+                            <SelectItem value="SYSTEM">{t("system")}</SelectItem>
+                            <SelectItem value="CONTAINER">{t("container")}</SelectItem>
+                            <SelectItem value="JUDGE">{t("judge")}</SelectItem>
+                            <SelectItem value="SECURITY">{t("security")}</SelectItem>
                         </SelectContent>
                     </Select>
 
@@ -507,13 +505,13 @@ export function AdminSystemLogs() {
                         }
                     }}>
                         <SelectTrigger className="w-32">
-                            <SelectValue placeholder="状态" />
+                            <SelectValue placeholder={t("status")} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="ALL">全部状态</SelectItem>
-                            <SelectItem value="SUCCESS">成功</SelectItem>
-                            <SelectItem value="FAILED">失败</SelectItem>
-                            <SelectItem value="WARNING">警告</SelectItem>
+                            <SelectItem value="ALL">{t("all_status")}</SelectItem>
+                            <SelectItem value="SUCCESS">{t("success")}</SelectItem>
+                            <SelectItem value="FAILED">{t("failed")}</SelectItem>
+                            <SelectItem value="WARNING">{t("warning")}</SelectItem>
                         </SelectContent>
                     </Select>
 
@@ -526,7 +524,7 @@ export function AdminSystemLogs() {
                         }}
                     >
                         <Filter className="h-4 w-4 mr-2" />
-                        清除筛选
+                        {t("clear")}
                     </Button>
 
                     <Button
@@ -538,13 +536,13 @@ export function AdminSystemLogs() {
                         disabled={isLoading}
                     >
                         <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                        刷新
+                        {t("refresh")}
                     </Button>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto">
-                                列显示 <ChevronDown className="ml-2 h-4 w-4" />
+                                {t("row")} <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -623,7 +621,7 @@ export function AdminSystemLogs() {
                                         colSpan={columns.length}
                                         className="h-24 text-center"
                                     >
-                                        暂无数据
+                                        {t("empty")}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -634,7 +632,7 @@ export function AdminSystemLogs() {
                 {/* 分页 */}
                 <div className="flex items-center justify-between space-x-2 py-4">
                     <div className="text-sm text-muted-foreground">
-                        共 {totalCount} 条记录，第 {curPage + 1} / {Math.ceil(totalCount / pageSize)} 页
+                        {t("page", { count: totalCount, cur: curPage + 1, total: Math.ceil(totalCount / pageSize) })}
                     </div>
                     <div className="flex items-center space-x-2">
                         <Button
@@ -644,7 +642,7 @@ export function AdminSystemLogs() {
                             disabled={curPage === 0 || isLoading}
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            上一页
+                            {t("prev")}
                         </Button>
                         <Button
                             variant="outline"
@@ -652,7 +650,7 @@ export function AdminSystemLogs() {
                             onClick={() => setCurPage(curPage + 1)}
                             disabled={curPage >= Math.ceil(totalCount / pageSize) - 1 || isLoading}
                         >
-                            下一页
+                            {t("next")}
                             <ArrowRight className="h-4 w-4" />
                         </Button>
                     </div>

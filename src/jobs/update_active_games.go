@@ -12,6 +12,16 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+func filterValidSolves(solves []models.Solve) []models.Solve {
+	var filtered []models.Solve
+	for _, solve := range solves {
+		if solve.Team.TeamStatus == models.ParticipateApproved {
+			filtered = append(filtered, solve)
+		}
+	}
+	return filtered
+}
+
 // 往 更新解题数量, 题目当前分数, 队伍分数
 func updateActiveGameScores(game_ids []int64) {
 	if len(game_ids) == 0 {
@@ -27,10 +37,13 @@ func updateActiveGameScores(game_ids []int64) {
 
 	// 2. 查询所有正确的解题记录
 	var solves []models.Solve
-	if err := dbtool.DB().Where("game_id IN ? AND solve_status = ?", game_ids, models.SolveCorrect).Preload("Game").Find(&solves).Error; err != nil {
+	if err := dbtool.DB().Where("game_id IN ? AND solve_status = ?", game_ids, models.SolveCorrect).Preload("Game").Preload("Team").Find(&solves).Error; err != nil {
 		zaphelper.Logger.Error("Failed to load solves", zap.Error(err))
 		return
 	}
+
+	// 过滤掉被 Ban 的队伍
+	solves = filterValidSolves(solves)
 
 	// 3. 统计每道题的解题人数
 	solveCountMap := make(map[int64]int32) // ingame_id -> solve_count
@@ -253,6 +266,8 @@ func UpdateActiveGameScoreBoard() {
 			zaphelper.Logger.Error("Failed to load solves for game ", zap.Error(err), zap.Int64("game_id", gameID))
 			return
 		}
+
+		solves = filterValidSolves(solves)
 
 		// 计算每个队伍的解题信息
 		var teamMap = make(map[int64]models.ScoreBoardData)

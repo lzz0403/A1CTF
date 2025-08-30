@@ -1,3 +1,25 @@
+# JWT Auth Error Messages
+
+[JWTErrForbidden]
+description = "You don't have this permission"
+other = "You don't have this permission"
+
+[JWTErrInvalidSigningAlgorithm]
+description = "Invalid signing algorithm"
+other = "Invalid signing algorithm"
+
+[JWTErrMissingExpField]
+description = "Missing expire field"
+other = "Missing expire field"
+
+[JWTErrExpiredToken]
+description = "Token is expired"
+other = "Token is expired"
+
+[JWTErrWrongFormatOfExp]
+description = "Expire field must be float64 format"
+other = "Expire field must be float64 format"
+
 # File Controller Error Messages
 
 [NoFileUploaded]
@@ -467,3 +489,17 @@ other = "File access denied"
 [TooManyRequests]
 description = "Too many requests, please try again later"
 other = "Too many requests, please try again later"
+
+[UserAlreadyInTeam]
+description = "User is already in another team"
+other = "User is already in another team"
+
+# Email SMTP 错误信息
+
+[SmtpConfigEmpty]
+description = "Email SMTP config is empty, please contact admin"
+other = "Email SMTP config is empty, please contact admin"
+
+[SmtpConfigError]
+description = "Email SMTP conig error, please contact admin"
+other = "Email SMTP conig error, please contact admin"

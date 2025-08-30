@@ -522,7 +522,7 @@ export function EditChallengeView({ challenge_info }: { challenge_info: AdminCha
     });
 
     const env_to_string = (data: { name: string, value: string }[]) => {
-        console.log(data)
+        
         let env = ""
         data.forEach((item) => {
             env += `${item.name}=${item.value},`

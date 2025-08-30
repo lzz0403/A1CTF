@@ -250,6 +250,8 @@ func UserGameChallengeSubmitFlag(c *gin.Context) {
 			"game_id":        game.GameID,
 			"team_id":        team.TeamID,
 			"user_id":        user.UserID,
+			"ingame_id":      gameChallenge.IngameID,
+			"challenge_id":   gameChallenge.Challenge.ChallengeID,
 			"challenge_name": gameChallenge.Challenge.Name,
 			"flag_content":   payload.FlagContent,
 		}, err)
@@ -261,14 +263,17 @@ func UserGameChallengeSubmitFlag(c *gin.Context) {
 		return
 	}
 
-	// 启动一个检查作弊任务
-
-	tasks.NewFlagAntiCheatTask(newJudge)
+	if game.EndTime.After(time.Now().UTC()) {
+		// 比赛结束前启动一个检查作弊任务
+		tasks.NewFlagAntiCheatTask(newJudge)
+	}
 
 	tasks.LogUserOperation(c, models.ActionSubmitFlag, models.ResourceTypeChallenge, &challengeIDStr, map[string]interface{}{
 		"game_id":        game.GameID,
 		"team_id":        team.TeamID,
 		"user_id":        user.UserID,
+		"ingame_id":      gameChallenge.IngameID,
+		"challenge_id":   gameChallenge.Challenge.ChallengeID,
 		"challenge_name": gameChallenge.Challenge.Name,
 		"judge_id":       newJudge.JudgeID,
 		"flag_content":   payload.FlagContent, // 只记录前50个字符

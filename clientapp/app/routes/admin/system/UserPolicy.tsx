@@ -3,6 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "c
 import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "components/ui/form";
 import { SystemSettingsValues } from "./AdminSettingsPage";
+import { useTranslation } from "react-i18next";
 
 export const UserPolicySettings = (
     { form }: {
@@ -10,9 +11,13 @@ export const UserPolicySettings = (
     }
 ) => {
 
+    const { t: systemSettingsT } = useTranslation("system_settings")
+
+    const t = (key: string) => systemSettingsT(`user.${key}`)
+
     return (
         <>
-            <span className="text-2xl font-bold mb-4">用户策略</span>
+            <span className="text-2xl font-bold mb-4">{t("title")}</span>
 
             <FormField
                 control={form.control}
@@ -20,8 +25,8 @@ export const UserPolicySettings = (
                 render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                         <div className="space-y-0.5 mb-[-1px]">
-                            <FormLabel>开放注册</FormLabel>
-                            <FormDescription>是否允许新用户注册</FormDescription>
+                            <FormLabel>{t("register_enable")}</FormLabel>
+                            <FormDescription>{t("register_enable_description")}</FormDescription>
                         </div>
                         <FormControl>
                             <Switch
@@ -39,7 +44,7 @@ export const UserPolicySettings = (
                 render={({ field }) => (
                     <FormItem>
                         <div className="flex items-center h-[20px]">
-                            <FormLabel>账户激活方式</FormLabel>
+                            <FormLabel>{t("active_method")}</FormLabel>
                             <div className="flex-1" />
                             <FormMessage className="text-[14px]" />
                         </div>
@@ -49,13 +54,13 @@ export const UserPolicySettings = (
                         >
                             <FormControl>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="选择账户激活方式" />
+                                    <SelectValue placeholder={t("active_choose")} />
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value="auto">自动激活（无需验证）</SelectItem>
-                                <SelectItem value="email">邮箱验证激活</SelectItem>
-                                <SelectItem value="admin">管理员审核激活</SelectItem>
+                                <SelectItem value="auto">{t("active_auto")}</SelectItem>
+                                <SelectItem value="email">{t("active_email")}</SelectItem>
+                                <SelectItem value="admin">{t("active_admin")}</SelectItem>
                             </SelectContent>
                         </Select>
                         <FormMessage />

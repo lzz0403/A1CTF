@@ -13,14 +13,14 @@ i18n
     defaultNS: 'common',
     supportedLngs: ['en', 'zh'],
     fallbackLng: 'en',
-    
+
     detection: {
-      order: ['path', 'cookie', 'navigator'],
+      order: ['path', 'localStorage', 'navigator'],
       lookupFromPathIndex: 0,
-      caches: ['cookie'],
-      cookieExpirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+      caches: ['localStorage'],
+      lookupLocalStorage: "i18next"
     },
-    
+
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },

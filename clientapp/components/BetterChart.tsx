@@ -6,6 +6,7 @@ import { useGlobalVariableContext } from 'contexts/GlobalVariableContext';
 import { UserFullGameInfo } from 'utils/A1API';
 import { Maximize2, Minimize2, Move, X, Minus, Download } from 'lucide-react';
 import { Button } from './ui/button';
+import { useTranslation } from 'react-i18next';
 
 interface SmartUpdateChartProps {
     theme?: 'light' | 'dark';
@@ -40,6 +41,7 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
     const floatingRef = useRef<HTMLDivElement>(null);
 
     const { serialOptions } = useGlobalVariableContext()
+    const { t } = useTranslation("game_view")
 
     // 主题颜色配置
     const themeColors = {
@@ -127,7 +129,7 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!isFloating) return;
-        
+
         if (isDragging) {
             // 计算悬浮窗左上角的新绝对位置
             const newPosition = {
@@ -140,10 +142,10 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
         } else if (isResizing) {
             const deltaX = e.clientX - resizeStart.mouse.x;
             const deltaY = e.clientY - resizeStart.mouse.y;
-            
+
             let newSize = { ...resizeStart.size };
             let newPosition = { ...resizeStart.position };
-            
+
             if (resizeType.includes('right')) {
                 newSize.width = Math.max(300, resizeStart.size.width + deltaX);
             }
@@ -162,7 +164,7 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
                 newSize.height = proposedHeight;
                 newPosition.y = resizeStart.position.y - heightChange;
             }
-            
+
             // 先设置新尺寸
             setSize(newSize);
             // 然后用新尺寸约束位置
@@ -182,7 +184,7 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
         if (!isFloating || isMinimized) return;
         e.preventDefault();
         e.stopPropagation();
-        
+
         setIsResizing(true);
         setResizeType(type);
         setResizeStart({
@@ -203,15 +205,15 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
                 pixelRatio: 2,
                 backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff'
             });
-            
+
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${gameInfo?.name || 'CTF'}_积分图表_${new Date().toISOString().slice(0, 19).replace(/[:-]/g, '')}.png`;
+            link.download = `${gameInfo?.name || 'CTF'}_${t("scoreboard.png")}_${new Date().toISOString().slice(0, 19).replace(/[:-]/g, '')}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         } catch (error) {
-            console.error('保存图表失败:', error);
+            console.error(t("scoreboard.png_error"), error);
         }
     };
 
@@ -252,12 +254,6 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
             if (!chartInstance) return;
 
             let lastestTime = +dayjs(gameInfo.end_time)
-
-            serialOptions.current.forEach((serie, _index) => {
-                (serie.data as [])?.forEach((data, _) => {
-                    lastestTime = Math.max(lastestTime, data[0] as number)
-                });
-            });
 
             chartInstance.setOption({
                 xAxis: {
@@ -333,7 +329,7 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
             });
 
             // 更新完成
-            if (serialOptions.current[1]) {   
+            if (serialOptions.current[1]) {
                 lastSerData.current = JSON.stringify(serialOptions.current[1].data)
             }
         }
@@ -668,15 +664,13 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
         ],
         series: []
     };
-    
+
     return (
-        <div 
+        <div
             ref={floatingRef}
-            className={`w-full h-full ${isFullscreen ? '' : 'pr-[2%]'} ${
-                isFloating ? 'cursor-move select-none' : ''
-            } ${
-                isFloating ? 'floating-chart opacity-40 hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300' : ''
-            }`}
+            className={`w-full h-full ${isFullscreen ? '' : 'pr-[2%]'} ${isFloating ? 'cursor-move select-none' : ''
+                } ${isFloating ? 'floating-chart opacity-40 hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300' : ''
+                }`}
             style={isFloating ? {
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 width: `${size.width}px`,
@@ -684,15 +678,12 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
             } : undefined}
             tabIndex={isFloating ? 0 : undefined}
         >
-            <div className={`w-full h-full overflow-hidden backdrop-blur-md relative ${
-                isFullscreen ? 'rounded-lg' : 'rounded-2xl'
-            } ${
-                theme === 'dark' 
-                    ? 'bg-slate-900/80 border border-slate-700/50' 
+            <div className={`w-full h-full overflow-hidden backdrop-blur-md relative ${isFullscreen ? 'rounded-lg' : 'rounded-2xl'
+                } ${theme === 'dark'
+                    ? 'bg-slate-900/80 border border-slate-700/50'
                     : 'bg-slate-50/100 border border-gray-300/70'
-            } ${
-                isFloating ? 'shadow-2xl border-2' : ''
-            }`}>
+                } ${isFloating ? 'shadow-2xl border-2' : ''
+                }`}>
                 {/* 调整大小句柄 */}
                 {isFloating && !isMinimized && (
                     <>
@@ -738,15 +729,14 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
 
                 {/* 悬浮窗拖动栏 */}
                 {isFloating && (
-                    <div 
-                        className={`absolute top-0 left-0 right-0 h-8 z-20 cursor-move flex items-center justify-between px-3 ${
-                            theme === 'dark' ? 'bg-slate-800/90' : 'bg-gray-100/90'
-                        } rounded-t-2xl border-b`}
+                    <div
+                        className={`absolute top-0 left-0 right-0 h-8 z-20 cursor-move flex items-center justify-between px-3 ${theme === 'dark' ? 'bg-slate-800/90' : 'bg-gray-100/90'
+                            } rounded-t-2xl border-b`}
                         onMouseDown={handleMouseDown}
                     >
                         <div className="flex items-center gap-2">
                             <Move className="w-3 h-3 opacity-60" />
-                            <span className="text-xs font-medium opacity-75">图表</span>
+                            <span className="text-xs font-medium opacity-75">{t("scoreboard.png")}</span>
                         </div>
                         <div className="flex gap-1">
                             <Button
@@ -754,7 +744,7 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
                                 variant="ghost"
                                 onClick={handleSaveAsImage}
                                 className="p-1 h-5 w-5 rounded hover:bg-green-500/20"
-                                title="保存图片"
+                                title={t("scoreboard.save_png")}
                             >
                                 <Download className="w-3 h-3" />
                             </Button>
@@ -787,12 +777,11 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
                             size="sm"
                             variant="ghost"
                             onClick={handleSaveAsImage}
-                            className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-                                theme === 'dark'
-                                    ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
-                                    : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
-                            }`}
-                            title="保存图片"
+                            className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${theme === 'dark'
+                                ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
+                                : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
+                                }`}
+                            title={t("scoreboard.save_png")}
                         >
                             <Download className="w-4 h-4" />
                         </Button>
@@ -801,12 +790,11 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
                                 size="sm"
                                 variant="ghost"
                                 onClick={onMinimize}
-                                className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-                                    theme === 'dark'
-                                        ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
-                                        : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
-                                }`}
-                                title="最小化"
+                                className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${theme === 'dark'
+                                    ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
+                                    : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
+                                    }`}
+                                title={t("scoreboard.minimize")}
                             >
                                 <Minus className="w-4 h-4" />
                             </Button>
@@ -816,12 +804,11 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
                                 size="sm"
                                 variant="ghost"
                                 onClick={onToggleFloating}
-                                className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-                                    theme === 'dark'
-                                        ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
-                                        : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
-                                }`}
-                                title="悬浮窗模式"
+                                className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${theme === 'dark'
+                                    ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
+                                    : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
+                                    }`}
+                                title={t("scoreboard.floating")}
                             >
                                 <Move className="w-4 h-4" />
                             </Button>
@@ -831,12 +818,11 @@ const BetterChart: React.FC<SmartUpdateChartProps> = ({
                                 size="sm"
                                 variant="ghost"
                                 onClick={onToggleFullscreen}
-                                className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${
-                                    theme === 'dark'
-                                        ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
-                                        : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
-                                }`}
-                                title={isFullscreen ? "退出全屏" : "全屏显示"}
+                                className={`p-2 rounded-lg backdrop-blur-sm transition-all duration-200 hover:scale-110 ${theme === 'dark'
+                                    ? 'bg-slate-800/80 border border-slate-600/50 text-slate-200 hover:bg-slate-700/80'
+                                    : 'bg-white/80 border border-gray-300/50 text-slate-700 hover:bg-gray-50/80'
+                                    }`}
+                                title={isFullscreen ? t("scoreboard.quit_full") : t("scoreboard.enter_full")}
                             >
                                 {isFullscreen ? (
                                     <Minimize2 className="w-4 h-4" />

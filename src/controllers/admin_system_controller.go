@@ -464,7 +464,14 @@ func TestSMTPSettings(c *gin.Context) {
 		return
 	}
 
-	tasks.NewSendTestMailTask(smtpConfig.To, smtpConfig.Type)
+	// 判断邮箱SMTP是否配置成功
+	if err := tasks.NewSendTestMailTask(smtpConfig.To, smtpConfig.Type); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: err.Error()}),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,

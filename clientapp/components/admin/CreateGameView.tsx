@@ -229,7 +229,7 @@ export function CreateGameView() {
             stages: [],
             visible: values.visible,
             challenges: [],
-            team_policy: "auto"
+            team_policy: "Auto"
         };
 
         api.admin.createGame(finalData as AdminFullGameInfo).then((_res) => {

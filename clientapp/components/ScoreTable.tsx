@@ -9,6 +9,7 @@ import ReactDOMServer from 'react-dom/server';
 import { GameScoreboardData, PaginationInfo, TeamScore, UserSimpleGameChallenge } from "utils/A1API";
 import AvatarUsername from "./modules/AvatarUsername";
 import { challengeCategoryIcons } from "utils/ClientAssets";
+import { useTranslation } from "react-i18next";
 
 export function ScoreTable(
     {
@@ -39,6 +40,7 @@ export function ScoreTable(
     const [jumpPage, setJumpPage] = useState(1)
 
     const { theme } = useTheme()
+    const { t } = useTranslation("game_view")
 
     const [curPageData, setCurPageData] = useState<TeamScore[]>([])
     // const [curPage, setCurPage] = useState(1)
@@ -130,11 +132,11 @@ export function ScoreTable(
                     <span>{challenge.challenge_name}</span>
                     <span>{dayjs(targetChallenge.solve_time).format("YYYY-MM-DD HH:mm:ss")}</span>
                     <span className="text-green-300">+ {challenge.cur_score} pts</span>
-                    { (targetChallenge.rank ?? 4) <= 3 && challenge.cur_score != targetChallenge.score && (
+                    {(targetChallenge.rank ?? 4) <= 3 && challenge.cur_score != targetChallenge.score && (
                         <div className='flex overflow-hidden'>
-                            <span className='text-amber-500'> + {(targetChallenge.score ?? 0) - challenge.cur_score} pts for rank { targetChallenge.rank }</span>
+                            <span className='text-amber-500'> + {(targetChallenge.score ?? 0) - challenge.cur_score} pts for rank {targetChallenge.rank}</span>
                         </div>
-                    ) }
+                    )}
                 </div>
             )
 
@@ -194,6 +196,11 @@ export function ScoreTable(
     }
 
     return (
+        (!isLoading && curPageData && !curPageData[0]) ? 
+         <div className="w-full h-full items-center justify-center flex gap-2 pb-10">
+            <span className="font-bold text-2xl">{t("scoreboard.empty_data")}</span>
+        </div>
+         : 
         <div className="flex flex-col w-full h-full gap-4 pt-4">
             <div className="flex w-full flex-1 overflow-hidden relative">
                 {/* 加载动画 - 放在表格内容上方 */}
@@ -201,18 +208,18 @@ export function ScoreTable(
                     <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-10">
                         <div className="flex flex-col items-center gap-3 bg-background/80 p-6 rounded-lg shadow-lg">
                             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-                            <span className="text-sm font-medium text-foreground">加载中...</span>
+                            <span className="text-sm font-medium text-foreground">{t("loading")}</span>
                         </div>
                     </div>
                 )}
-                
+
                 <div id="left-container" className="min-w-[300px] max-w-[18vw] flex-none overflow-hidden">
                     <div className="flex flex-col overflow-hidden">
                         <div className={`w-full border-b-2 h-12 border-t-2 transition-[border-color] duration-300 flex items-center justify-center`}>
                             {/* <span className="font-bold">Username</span> */}
                         </div>
                         <div className={`w-full border-b-2 h-12 transition-[border-color] duration-300 flex items-center justify-center`}>
-                            <span className="font-bold">Username</span>
+                            <span className="font-bold">{t("scoreboard.participant")}</span>
                         </div>
                         {curPageData[0] && curPageData.map((item, index) => (
                             <div className={`w-full border-b-2 transition-[border-color] duration-300 h-12 flex items-center justify-center pl-6 pr-6`} key={`name-${index}`}>
@@ -303,24 +310,24 @@ export function ScoreTable(
             </div>
             <div className="flex w-full items-center justify-center gap-2 select-none mt-4 mb-2 flex-wrap">
                 {/* 上一页按钮 */}
-                <Button 
-                    size="sm" 
-                    variant="outline" 
+                <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => { handlePageChange(Math.max(1, curPage - 1)) }}
                     disabled={curPage === 1 || isLoading}
                     className="hidden sm:flex items-center gap-1"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
-                    上一页
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6" /></svg>
+                    {t("scoreboard.prev_page")}
                 </Button>
-                <Button 
-                    size="icon" 
-                    variant="outline" 
+                <Button
+                    size="icon"
+                    variant="outline"
                     onClick={() => { handlePageChange(Math.max(1, curPage - 1)) }}
                     disabled={curPage === 1 || isLoading}
                     className="sm:hidden"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6" /></svg>
                 </Button>
 
                 {/* 页码按钮 */}
@@ -375,24 +382,24 @@ export function ScoreTable(
                 </div>
 
                 {/* 下一页按钮 */}
-                <Button 
-                    size="sm" 
-                    variant="outline" 
+                <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => { handlePageChange(Math.min(totalPage, curPage + 1)) }}
                     disabled={curPage === totalPage || isLoading}
                     className="hidden sm:flex items-center gap-1"
                 >
-                    下一页
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                    {t("scoreboard.next_page")}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
                 </Button>
-                <Button 
-                    size="icon" 
-                    variant="outline" 
+                <Button
+                    size="icon"
+                    variant="outline"
                     onClick={() => { handlePageChange(Math.min(totalPage, curPage + 1)) }}
                     disabled={curPage === totalPage || isLoading}
                     className="sm:hidden"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
                 </Button>
 
                 {/* 跳转到指定页 */}
@@ -417,14 +424,14 @@ export function ScoreTable(
                             }}
                             disabled={isLoading}
                         />
-                        <Button 
-                            size="sm" 
-                            variant="outline" 
+                        <Button
+                            size="sm"
+                            variant="outline"
                             className="h-8 px-2"
                             onClick={handleJumpPage}
                             disabled={isLoading}
                         >
-                            跳转
+                            {t("scoreboard.jump_page")}
                         </Button>
                     </div>
                 )}

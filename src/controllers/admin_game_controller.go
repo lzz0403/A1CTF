@@ -115,6 +115,12 @@ func AdminCreateGame(c *gin.Context) {
 		PracticeMode:         payload.PracticeMode,
 		InviteCode:           payload.InviteCode,
 		Description:          payload.Description,
+		TeamPolicy:           payload.TeamPolicy,
+	}
+
+	// 默认自动审核
+	if game.TeamPolicy == "" {
+		game.TeamPolicy = models.TeamPolicyAuto
 	}
 
 	if err := dbtool.DB().Create(&game).Error; err != nil {
@@ -126,10 +132,10 @@ func AdminCreateGame(c *gin.Context) {
 	}
 
 	// 创建管理员默认队伍
-	newTeam := models.Team{
+	adminTeam := models.Team{
 		TeamID:          0,
 		GameID:          game.GameID,
-		TeamName:        "A1CTF",
+		TeamName:        "A1CTF-Admins",
 		TeamDescription: nil,
 		TeamAvatar:      nil,
 		TeamSlogan:      nil,
@@ -142,7 +148,7 @@ func AdminCreateGame(c *gin.Context) {
 		TeamType:        models.TeamTypeAdmin,
 	}
 
-	if err := dbtool.DB().Create(&newTeam).Error; err != nil {
+	if err := dbtool.DB().Create(&adminTeam).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    500,
 			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "FailedToCreateAdminTeam"}),
@@ -290,12 +296,11 @@ func AdminUpdateGameChallenge(c *gin.Context) {
 		existingHints := existingGameChallenge.Hints
 
 		// 将interface{}转换为Hints类型
-		var newHints *models.Hints
+		var newHints models.Hints
 		if hintsBytes, err := sonic.Marshal(hintsData); err == nil {
-			newHints = &models.Hints{}
-			if err := sonic.Unmarshal(hintsBytes, newHints); err == nil {
+			if err := sonic.Unmarshal(hintsBytes, &newHints); err == nil {
 				// 如果存在新增的可见Hint，发送通知
-				if existingHints != nil && newHints != nil {
+				if existingHints != nil {
 					existingVisibleCount := 0
 					newVisibleCount := 0
 
@@ -307,7 +312,7 @@ func AdminUpdateGameChallenge(c *gin.Context) {
 					}
 
 					// 计算新的可见Hint数量
-					for _, hint := range *newHints {
+					for _, hint := range newHints {
 						if hint.Visible {
 							newVisibleCount++
 						}

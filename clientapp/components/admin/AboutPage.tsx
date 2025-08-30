@@ -6,6 +6,7 @@ import { MacScrollbar } from 'mac-scrollbar';
 import { useTheme } from 'next-themes';
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { SystemSettingsValues } from '~/routes/admin/system/AdminSettingsPage';
 
 export default function AboutPage(
@@ -18,6 +19,8 @@ export default function AboutPage(
     const [aboutMeSource, setAboutMeSource] = useState<string>("");
     const [debouncedSource, setDebouncedSource] = useState<string>("");
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const {t} = useTranslation("system_settings")
 
     // 防抖函数
     const debouncedUpdateSource = useCallback((value: string) => {
@@ -59,12 +62,12 @@ export default function AboutPage(
     return (
         <div className='flex-1 overflow-hidden w-full flex flex-col h-full p-10'>
             <div className='w-full flex items-center justify-between mb-6'>
-                <span className='font-bold text-2xl'>关于我们 - 编辑</span>
+                <span className='font-bold text-2xl'>{t("aboutus")}</span>
                 <Button
                     onClick={form.handleSubmit(onSubmit)}
                 >
                     <Save />
-                    保存
+                    {t("save")}
                 </Button>
             </div>
             <div className='w-full h-full overflow-hidden'>
@@ -83,9 +86,7 @@ export default function AboutPage(
                         />
                     </div>
                     <div className='h-full w-1/2 border-2 rounded-md overflow-hidden relative'>
-                        <div className='absolute top-0 left-0 px-2 bg-foreground text-background rounded-br-lg select-none z-10'>
-                            <span>Preview - 1s latency</span>
-                        </div>
+                        
                         <MacScrollbar className='h-full w-full select-none'
                             skin={theme == "light" ? "light" : "dark"}
                         >

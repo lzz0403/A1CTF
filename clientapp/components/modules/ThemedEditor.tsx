@@ -3,6 +3,7 @@ import { cn } from "lib/utils"
 import { useTheme } from "next-themes"
 import type { editor } from 'monaco-editor';
 import { loader } from '@monaco-editor/react';
+import { useEffect } from "react";
 
 import * as monaco from 'monaco-editor';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
@@ -44,7 +45,17 @@ export default function ThemedEditor(
     };
 
     loader.config({ monaco });
-    
+
+    useEffect(() => {
+        return () => {
+            // 额外清除 .monaco-aria-container 元素
+            const aria = document.querySelector(".monaco-aria-container");
+            if (aria && aria.parentNode) {
+                aria.parentNode.removeChild(aria);
+            }
+        };
+    }, []);
+        
     return (
         <div className={cn(`w-full rounded-lg ${disabled ? "pointer-events-none cursor-not-allowed opacity-50" : ""} overflow-hidden shadow-xs border-1 ${theme === "dark" ? "bg-[#1e1e1e]" : "bg-[#ffffff]"}`, className)}>
             <Editor

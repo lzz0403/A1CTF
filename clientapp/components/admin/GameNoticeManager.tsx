@@ -13,12 +13,15 @@ import { AdminNoticeItem } from 'utils/A1API';
 import { PlusCircle, Trash2, MessageSquare, Calendar, AlertCircle, Eye } from 'lucide-react';
 import dayjs from 'dayjs';
 import ThemedEditor from 'components/modules/ThemedEditor';
+import { useTranslation, Trans } from 'react-i18next';
 
 interface GameNoticeManagerProps {
     gameId: number;
 }
 
 export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
+    const { t } = useTranslation("game_edit")
+    const { t: commonT } = useTranslation()
     const { theme } = useTheme();
     const [notices, setNotices] = useState<AdminNoticeItem[]>([]);
     const [loading, setLoading] = useState(false);
@@ -54,7 +57,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
     // 创建公告
     const handleCreateNotice = async () => {
         if (!createForm.title.trim() || !createForm.content.trim()) {
-            toast.error('请填写完整的公告信息');
+            toast.error(t("notice.empty"));
             return;
         }
 
@@ -62,7 +65,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
             title: createForm.title,
             content: createForm.content
         }).then(() => {
-            toast.success('公告创建成功');
+            toast.success(t("notice.create.success"));
             setCreateForm({ title: '', content: '' });
             setIsCreateDialogOpen(false);
             loadNotices();
@@ -74,7 +77,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
         api.admin.adminDeleteGameNotice({
             notice_id: noticeId
         }).then(() => {
-            toast.success('公告删除成功');
+            toast.success(t("notice.delete.success"));
             loadNotices();
         })
     };
@@ -96,7 +99,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                 <div className="flex items-center gap-2">
                     <MessageSquare className="h-5 w-5 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
-                        共 {notices.length} 条公告
+                        {t("notice.title", { count: notices.length })}
                     </span>
                 </div>
 
@@ -104,28 +107,28 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                     <DialogTrigger asChild>
                         <Button size="sm">
                             <PlusCircle className="h-4 w-4" />
-                            创建公告
+                            {t("notice.create.button")}
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[60%]">
                         <DialogHeader>
-                            <DialogTitle>创建新公告</DialogTitle>
+                            <DialogTitle>{t("notice.create.dialog")}</DialogTitle>
                             <DialogDescription>
-                                创建的公告将会立即推送给所有参赛选手
+                                {t("notice.create.description")}
                             </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 overflow-hidden px-1">
                             <div>
-                                <label className="text-sm font-medium mb-2 block">公告标题</label>
+                                <label className="text-sm font-medium mb-2 block">{t("notice.create.title.label")}</label>
                                 <Input
                                     value={createForm.title}
                                     onChange={(e) => setCreateForm(prev => ({ ...prev, title: e.target.value }))}
-                                    placeholder="请输入公告标题"
+                                    placeholder={t("notice.create.title.placeholder")}
                                     className="bg-background/50"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium mb-2 block">公告内容</label>
+                                <label className="text-sm font-medium mb-2 block">{t("notice.create.content")}</label>
                                 <ThemedEditor
                                     value={createForm.content}
                                     onChange={(value) => setCreateForm(prev => ({ ...prev, content: value ?? "" }))}
@@ -135,10 +138,10 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                             </div>
                             <div className="flex justify-end gap-2">
                                 <Button variant="outline" type='button' onClick={() => setIsCreateDialogOpen(false)}>
-                                    取消
+                                    {commonT("cancel")}
                                 </Button>
                                 <Button onClick={handleCreateNotice} type='button'>
-                                    创建公告
+                                    {commonT("confirm")}
                                 </Button>
                             </div>
                         </div>
@@ -155,8 +158,8 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                 ) : notices.length === 0 ? (
                     <div className="text-center py-12">
                         <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">暂无公告</h3>
-                        <p className="text-muted-foreground">创建第一条公告来通知参赛选手</p>
+                        <h3 className="text-lg font-semibold mb-2">{t("list.empty")}</h3>
+                        <p className="text-muted-foreground">{t("list.first")}</p>
                     </div>
                 ) : (
                     <MacScrollbar className="h-[500px]" skin={theme === "dark" ? "dark" : "light"}>
@@ -173,7 +176,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                                                     <Calendar className="h-4 w-4" />
                                                     {dayjs(notice.create_time).format('YYYY-MM-DD HH:mm:ss')}
                                                     <Badge variant="secondary" className="ml-2">
-                                                        {notice.content.length} 字
+                                                        {notice.content.length} {t("notice.char")}
                                                     </Badge>
                                                 </CardDescription>
                                             </div>
@@ -200,20 +203,26 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                                                     </AlertDialogTrigger>
                                                     <AlertDialogContent>
                                                         <AlertDialogHeader>
-                                                            <AlertDialogTitle>确认删除公告</AlertDialogTitle>
+                                                            <AlertDialogTitle>{t("notice.delete.title")}</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                您确定要删除公告 "<strong>{notice.title}</strong>" 吗？
+
+                                                                <Trans
+                                                                    ns='game_edit'
+                                                                    i18nKey="notice.delete.confirm"
+                                                                    values={{ title: notice.title }}
+                                                                    components={{ s: <strong /> }}
+                                                                />
                                                                 <br />
-                                                                此操作无法撤销，删除后所有参赛选手将无法再看到此公告。
+                                                                {t("notice.delete.description")}
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
-                                                            <AlertDialogCancel>取消</AlertDialogCancel>
+                                                            <AlertDialogCancel>{commonT("cancel")}</AlertDialogCancel>
                                                             <AlertDialogAction
                                                                 onClick={() => handleDeleteNotice(notice.notice_id)}
                                                                 className="bg-destructive hover:bg-destructive/90"
                                                             >
-                                                                确认删除
+                                                                {commonT("confirm")}
                                                             </AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>
@@ -231,7 +240,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                                                     className="p-0 h-auto text-primary text-sm ml-1"
                                                     onClick={() => handleViewNotice(notice)}
                                                 >
-                                                    查看更多
+                                                    {t("notice.more")}
                                                 </Button>
                                             )}
                                         </div>
@@ -253,9 +262,9 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                         </DialogTitle>
                         <DialogDescription className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
-                            发布时间: {selectedNotice ? dayjs(selectedNotice.create_time).format('YYYY-MM-DD HH:mm:ss') : ''}
+                            {t("notice.time")}: {selectedNotice ? dayjs(selectedNotice.create_time).format('YYYY-MM-DD HH:mm:ss') : ''}
                             <Badge variant="secondary" className="ml-2">
-                                {selectedNotice?.content.length} 字
+                                {selectedNotice?.content.length} {t("notice.char")}
                             </Badge>
                         </DialogDescription>
                     </DialogHeader>
@@ -266,7 +275,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                     </MacScrollbar>
                     <div className="flex justify-end">
                         <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
-                            关闭
+                            {commonT("close")}
                         </Button>
                     </div>
                 </DialogContent>

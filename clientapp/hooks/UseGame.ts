@@ -14,7 +14,7 @@ const fetcher = async (url: string) => {
 };
 
 export const useGame = (gameID: number) => {
-    const { data: gameInfo, error, mutate, isLoading } = useSWR<UserFullGameInfo, ErrorMessage>(`/api/game/${gameID}`, fetcher, {
+    const { data: gameInfo, error, mutate: mutateGameInfo, isLoading } = useSWR<UserFullGameInfo, ErrorMessage>(`/api/game/${gameID}`, fetcher, {
         refreshInterval: randomInt(3000, 6000)
     });
     
@@ -33,7 +33,7 @@ export const useGame = (gameID: number) => {
         mutateTeamStatus(gameInfo.team_status)
     }
     
-    return { gameInfo, error, mutate, isLoading, gameStatus, teamStatus, mutateGameStatus, mutateTeamStatus}
+    return { gameInfo, error, mutateGameInfo, isLoading, gameStatus, teamStatus, mutateGameStatus, mutateTeamStatus}
 }
 
 export const useGameDescription = (gameID: number) => {

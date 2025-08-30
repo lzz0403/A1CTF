@@ -749,6 +749,7 @@ export interface AdminContainerItem {
   /** @format date-time */
   container_expiretime: string;
   container_type: string;
+  container_name_list?: string[];
   pod_id?: string;
   container_ports: {
     port_name: string;
@@ -817,23 +818,6 @@ export interface UserProfileUpdatePayload {
 export interface TeamJoinPayload {
   /** 战队邀请码 */
   invite_code: string;
-}
-
-export interface TeamJoinRequestInfo {
-  /** @format int64 */
-  request_id: number;
-  user_id: string;
-  username: string;
-  user_avatar?: string | null;
-  status: "Pending" | "Approved" | "Rejected";
-  /** @format date-time */
-  create_time: string;
-  message?: string | null;
-}
-
-export interface HandleJoinRequestPayload {
-  /** 处理动作：approve批准，reject拒绝 */
-  action: "approve" | "reject";
 }
 
 export interface TransferCaptainPayload {
@@ -1239,7 +1223,7 @@ export interface SystemSettings {
   /**
    * 页面底部信息
    * @maxLength 500
-   * @example "© 2024 A1CTF Team"
+   * @example "© 2025 A1CTF Team"
    */
   systemFooter?: string;
   /**
@@ -1247,20 +1231,13 @@ export interface SystemSettings {
    * @example "/images/favicon.ico"
    */
   systemFavicon?: string;
-  /**
-   * ICP备案号
-   * @example "浙ICP备2023022969号"
-   */
+  /** ICP备案号 */
   systemICP?: string;
-  /**
-   * 组织名称
-   * @example "浙江师范大学"
-   */
+  /** 组织名称 */
   systemOrganization?: string;
   /**
    * 组织官网链接
    * @format uri
-   * @example "https://www.zjnu.edu.cn"
    */
   systemOrganizationURL?: string;
   /**
@@ -1318,20 +1295,11 @@ export interface SystemSettings {
    * @example "/images/trophys/copper_trophy.png"
    */
   trophysBronze?: string;
-  /**
-   * 学校logo URL
-   * @example "/images/zjnu_logo.png"
-   */
+  /** 学校logo URL */
   schoolLogo?: string;
-  /**
-   * 学校小图标 URL
-   * @example "/images/zjnu_small_logo.png"
-   */
+  /** 学校小图标 URL */
   schoolSmallIcon?: string;
-  /**
-   * 学校联合认证文本
-   * @example "ZJNU Union Authserver"
-   */
+  /** 学校联合认证文本 */
   schoolUnionAuthText?: string;
   /**
    * 是否启用背景动画
@@ -3934,64 +3902,6 @@ export class Api<
         ErrorMessage | void
       >({
         path: `/api/game/${gameId}/team/join`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description 队长获取战队的加入申请列表
-     *
-     * @tags team
-     * @name GetTeamJoinRequests
-     * @summary 获取战队加入申请列表
-     * @request GET:/api/game/{game_id}/team/{team_id}/requests
-     */
-    getTeamJoinRequests: (
-      teamId: number,
-      gameId: number,
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        {
-          /** @example 200 */
-          code: number;
-          data: TeamJoinRequestInfo[];
-        },
-        ErrorMessage | void
-      >({
-        path: `/api/game/${gameId}/team/${teamId}/requests`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description 队长批准或拒绝加入申请
-     *
-     * @tags team
-     * @name HandleTeamJoinRequest
-     * @summary 处理加入申请
-     * @request POST:/api/game/{game_id}/team/request/{request_id}/handle
-     */
-    handleTeamJoinRequest: (
-      requestId: number,
-      gameId: number,
-      data: HandleJoinRequestPayload,
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        {
-          /** @example 200 */
-          code: number;
-          /** @example "申请已处理" */
-          message: string;
-        },
-        ErrorMessage | void
-      >({
-        path: `/api/game/${gameId}/team/request/${requestId}/handle`,
         method: "POST",
         body: data,
         type: ContentType.Json,

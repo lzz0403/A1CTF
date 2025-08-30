@@ -53,7 +53,7 @@ func GameStatusMiddleware(props GameStatusMiddlewareProps) gin.HandlerFunc {
 		user, exists := c.Get("user")
 
 		// 再换一种方式获取登陆状态，给获取比赛信息接口用
-		if (c.FullPath() == "/api/game/:game_id" && c.Request.Method == "GET") || (c.FullPath() == "/api/game/:game_id/desc" && c.Request.Method == "GET") {
+		if (c.FullPath() == "/api/game/:game_id" && c.Request.Method == "GET") || (c.FullPath() == "/api/game/:game_id/desc" && c.Request.Method == "GET") || (c.FullPath() == "/api/game/:game_id/scoreboard" && c.Request.Method == "GET") {
 			claims, errFromJwt := jwtauth.GetJwtMiddleWare().GetClaimsFromJWT(c)
 			if errFromJwt == nil {
 				user_id, userIDExists := claims["UserID"]
@@ -297,21 +297,30 @@ func PayloadValidator(model interface{}) gin.HandlerFunc {
 		payload := reflect.New(reflect.TypeOf(model)).Interface()
 
 		if err := c.ShouldBindJSON(payload); err != nil {
-			errors := err.(validator.ValidationErrors)
-			errorMessages := make([]string, 0)
+			if errors, ok := err.(validator.ValidationErrors); ok {
+				errorMessages := make([]string, 0, len(errors))
+				for _, error := range errors {
+					errorMessages = append(errorMessages, error.Error())
+				}
 
-			for _, error := range errors {
-				errorMessages = append(errorMessages, error.Error())
+				errorMessage := fmt.Sprintf("[%s]", strings.Join(errorMessages, ", "))
+				c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
+					Code: 400,
+					Message: i18ntool.Translate(c, &i18n.LocalizeConfig{
+						MessageID: "InvalidRequestPayloadWithErrorMessage",
+						TemplateData: map[string]string{
+							"ErrorMessage": errorMessage,
+						},
+					}),
+				})
+			} else {
+				c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
+					Code: 400,
+					Message: i18ntool.Translate(c, &i18n.LocalizeConfig{
+						MessageID: "InvalidRequestPayload",
+					}),
+				})
 			}
-
-			errorMessage := fmt.Sprintf("[%s]", strings.Join(errorMessages, ", "))
-
-			c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
-				Code: 400,
-				Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "InvalidRequestPayloadWithErrorMessage", TemplateData: map[string]string{
-					"ErrorMessage": errorMessage,
-				}}),
-			})
 			c.Abort()
 			return
 		}

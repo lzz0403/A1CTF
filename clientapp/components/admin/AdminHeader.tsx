@@ -1,11 +1,17 @@
 import { Cable, ContactRound, Dices, Flag, Home, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 import { useLocation, useNavigate } from "react-router";
+import ThemeSwitcher from "components/ToggleTheme";
+import { useTranslation } from "react-i18next";
+import { useGlobalVariableContext } from "contexts/GlobalVariableContext";
 
 export function AdminHeader() {
 
     const path = useLocation().pathname.split("/").slice(-1)[0];
     const navigate = useNavigate()
+
+    const { clientConfig } = useGlobalVariableContext()
+    const { t } = useTranslation("admin")
 
     const get_button_style = function (name: string) {
         return path == name ? "default" : "ghost";
@@ -22,23 +28,22 @@ export function AdminHeader() {
                     onClick={() => move_to_page("")}
                 >
                     <img
-                        src={"/images/A1natas.svg"}
-                        alt={"A1CTF"}
+                        src={clientConfig?.SVGIconLight ?? "/images/A1natas.svg"}
+                        alt={clientConfig?.systemName ?? "A1CTF"}
                         width={32}
                         height={32}
                         className="dark:invert"
                     />
-                    <span className="text-lg font-bold">A1CTF Admin</span>
+                    <span className="text-lg font-bold">{clientConfig?.systemName ?? "A1CTF"} {t("title")}</span>
                 </div>
-                <Button variant={get_button_style("games")} onClick={() => move_to_page("games")} className="font-bold"><Flag />比赛管理</Button>
-                <Button variant={get_button_style("challenges")} onClick={() => move_to_page("challenges")} className="font-bold"><Dices />题目管理</Button>
-                <Button variant={get_button_style("users")} onClick={() => move_to_page("users")} className="font-bold"><ContactRound />用户管理</Button>
-                {/* <Button variant={get_button_style("teams")} onClick={() => move_to_page("teams")} className="font-bold"><UsersRound/>队伍管理</Button> */}
-                {/* <Button variant={get_button_style("containers")} onClick={() => move_to_page("containers")} className="font-bold"><Package/>容器管理</Button> */}
-                <Button variant={get_button_style("logs")} onClick={() => move_to_page("logs")} className="font-bold"><Cable />系统日志</Button>
+                <Button variant={get_button_style("games")} onClick={() => move_to_page("games")} className="font-bold"><Flag />{t("games")}</Button>
+                <Button variant={get_button_style("challenges")} onClick={() => move_to_page("challenges")} className="font-bold"><Dices />{t("challenges")}</Button>
+                <Button variant={get_button_style("users")} onClick={() => move_to_page("users")} className="font-bold"><ContactRound />{t("users")}</Button>
+                <Button variant={get_button_style("logs")} onClick={() => move_to_page("logs")} className="font-bold"><Cable />{t("logs")}</Button>
                 <div className="flex-1" />
-                <Button variant={get_button_style("system")} onClick={() => move_to_page("system/basic")} className="font-bold"><Settings />系统设置</Button>
-                <Button variant={get_button_style("system")} onClick={() => navigate("/")} className="font-bold"><Home />返回主页</Button>
+                <Button variant={get_button_style("system")} onClick={() => move_to_page("system/basic")} className="font-bold"><Settings />{t("system")}</Button>
+                <Button variant={get_button_style("system")} onClick={() => navigate("/")} className="font-bold"><Home />{t("home")}</Button>
+                <ThemeSwitcher />
             </div>
         </header>
     )

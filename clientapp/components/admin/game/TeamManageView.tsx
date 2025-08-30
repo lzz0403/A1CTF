@@ -55,6 +55,7 @@ import {
 } from "components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar"
 import { copyWithResult } from "utils/ToastUtil"
+import { useTranslation } from "react-i18next"
 
 export type TeamModel = {
     team_id: number,
@@ -85,6 +86,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     title,
     description
 }) => {
+    const { t } = useTranslation()
     return (
         <AlertDialog open={isOpen} onOpenChange={onClose}>
             <AlertDialogContent>
@@ -93,8 +95,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     <AlertDialogDescription>{description}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>取消</AlertDialogCancel>
-                    <AlertDialogAction onClick={onConfirm}>确认</AlertDialogAction>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                    <AlertDialogAction onClick={onConfirm}>{t("confirm")}</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
@@ -108,6 +110,7 @@ export function TeamManageView(
         gameId: number
     }
 ) {
+    const { t } = useTranslation("game_edit")
     const [data, setData] = React.useState<TeamModel[]>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -150,15 +153,15 @@ export function TeamManageView(
         switch (action) {
             case 'approve':
                 apiCall = api.admin.adminApproveTeam({ team_id: teamId, game_id: gameId });
-                loadingMessage = '正在批准队伍...';
+                loadingMessage = `${t("team.approve.loading")}...`
                 break;
             case 'ban':
                 apiCall = api.admin.adminBanTeam({ team_id: teamId, game_id: gameId });
-                loadingMessage = '正在锁定队伍...';
+                loadingMessage = `${t("team.ban.loading")}...`
                 break;
             case 'unban':
                 apiCall = api.admin.adminUnbanTeam({ team_id: teamId, game_id: gameId });
-                loadingMessage = '正在解锁队伍...';
+                loadingMessage = `${t("team.unban.loading")}...`
                 break;
         }
 
@@ -168,10 +171,10 @@ export function TeamManageView(
             success: {
                 render({ data: _data }) {
                     fetchTeams(); // 刷新数据
-                    return '队伍状态已更新';
+                    return t("team.refresh.success")
                 },
             },
-            error: '更新队伍状态失败'
+            error: t("team.refresh.error")
         });
     };
 
@@ -179,21 +182,21 @@ export function TeamManageView(
     const handleDeleteTeam = (teamId: number) => {
         setConfirmDialog({
             isOpen: true,
-            title: "确认删除",
-            description: "您确定要删除这个队伍吗？此操作不可逆。",
+            title: t("team.delete.title"),
+            description: t("team.delete.description"),
             onConfirm: () => {
                 toast.promise(
                     api.admin.adminDeleteTeam({ team_id: teamId, game_id: gameId }),
                     {
-                        pending: '正在删除队伍...',
+                        pending: `${t("team.delete.pending")}...`,
                         success: {
                             render({ data: _data }) {
                                 fetchTeams(); // 刷新数据
                                 setConfirmDialog(prev => ({ ...prev, isOpen: false }));
-                                return '队伍已删除';
+                                return t("team.delete.success")
                             },
                         },
-                        error: '删除队伍失败'
+                        error: t("team.delete.error")
                     }
                 );
             }
@@ -209,8 +212,8 @@ export function TeamManageView(
     const handleBanTeam = (teamId: number) => {
         setConfirmDialog({
             isOpen: true,
-            title: "确认锁定",
-            description: "您确定要锁定这个队伍吗？这将禁止他们参与比赛。",
+            title: t("team.ban.title"),
+            description: t("team.ban.description"),
             onConfirm: () => {
                 handleUpdateTeamStatus(teamId, 'ban');
                 setConfirmDialog(prev => ({ ...prev, isOpen: false }));
@@ -222,8 +225,8 @@ export function TeamManageView(
     const handleUnbanTeam = (teamId: number) => {
         setConfirmDialog({
             isOpen: true,
-            title: "确认解锁",
-            description: "您确定要解锁这个队伍吗？这将允许他们继续参与比赛。",
+            title: t("team.unban.title"),
+            description: t("team.unban.description"),
             onConfirm: () => {
                 handleUpdateTeamStatus(teamId, 'unban');
                 setConfirmDialog(prev => ({ ...prev, isOpen: false }));
@@ -235,17 +238,17 @@ export function TeamManageView(
     const getStatusColorAndText = (status: ParticipationStatus) => {
         switch (status) {
             case ParticipationStatus.Approved:
-                return { color: "#52C41A", text: "已审核" };
+                return { color: "#52C41A", text: t("team.status.approved") };
             case ParticipationStatus.Pending:
-                return { color: "#FAAD14", text: "待审核" };
+                return { color: "#FAAD14", text: t("team.status.pending") };
             case ParticipationStatus.Banned:
-                return { color: "#FF4D4F", text: "已禁赛" };
+                return { color: "#FF4D4F", text: t("team.status.banned") };
             case ParticipationStatus.Rejected:
-                return { color: "#F5222D", text: "已拒绝" };
+                return { color: "#F5222D", text: t("team.status.rejected") };
             case ParticipationStatus.Participated:
-                return { color: "#1890FF", text: "已参加" };
+                return { color: "#1890FF", text: t("team.status.accepted") };
             default:
-                return { color: "#D9D9D9", text: "未报名" };
+                return { color: "#D9D9D9", text: t("team.status.default") };
         }
     };
 
@@ -274,7 +277,7 @@ export function TeamManageView(
         },
         {
             accessorKey: "team_name",
-            header: "队伍名称",
+            header: t("events.filter.team"),
             cell: ({ row }) => {
                 const avatar_url = row.original.team_avatar;
                 return (
@@ -287,7 +290,7 @@ export function TeamManageView(
         },
         {
             accessorKey: "status",
-            header: "状态",
+            header: t("events.submit.status"),
             cell: ({ row }) => {
                 const status = row.getValue("status") as ParticipationStatus;
                 const { color, text } = getStatusColorAndText(status);
@@ -309,7 +312,7 @@ export function TeamManageView(
                         variant="ghost"
                         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     >
-                        分数
+                        {t("team.score")}
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 )
@@ -318,7 +321,7 @@ export function TeamManageView(
         },
         {
             accessorKey: "members",
-            header: "队伍成员",
+            header: t("team.member"),
             cell: ({ row }) => {
                 const members = row.original.members;
                 return (
@@ -334,7 +337,7 @@ export function TeamManageView(
                             </div>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="bg-background/5 backdrop-blur-sm px-4 py-2 flex flex-col gap-2 mt-2 select-none">
-                            <span className="text-sm">成员列表</span>
+                            <span className="text-sm">{t("team.list")}</span>
                             <div className="flex flex-col gap-2">
                                 {members.map((member) => (
                                     <div key={member.user_id} className="flex items-center gap-1">
@@ -354,7 +357,7 @@ export function TeamManageView(
                                             variant="outline"
                                             className="text-xs select-none hover:bg-blue/10 hover:border-blue/30 cursor-pointer transition-all duration-200 rounded-md px-2 py-1 font-mono"
                                             onClick={() => {
-                                                copyWithResult(member.user_id)
+                                                copyWithResult(member.user_id, t("team.user_id"))
                                             }}
                                         >
                                             #{member.user_id}
@@ -369,12 +372,12 @@ export function TeamManageView(
         },
         {
             accessorKey: "team_slogan",
-            header: "队伍口号",
-            cell: ({ row }) => <div>{row.getValue("team_slogan") || "暂无"}</div>,
+            header: t("team.slogan"),
+            cell: ({ row }) => <div>{row.getValue("team_slogan") || ""}</div>,
         },
         {
             id: "actions",
-            header: "操作",
+            header: t("group.action"),
             enableHiding: false,
             cell: ({ row }) => {
                 const team = row.original;
@@ -387,26 +390,28 @@ export function TeamManageView(
                             onClick={() => handleApproveTeam(team.team_id)}
                             disabled={team.status !== ParticipationStatus.Pending}
                             data-tooltip-id="my-tooltip"
-                            data-tooltip-content="批准队伍"
+                            data-tooltip-content={t("team.approve.title")}
                             data-tooltip-place="top"
                         >
-                            <span className="sr-only">批准</span>
+                            <span className="sr-only">{t("team.approve.name")}</span>
                             <CheckIcon className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">打开菜单</span>
+                                    <span className="sr-only">{t("team.menu.title")}</span>
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" >
-                                <DropdownMenuLabel>操作</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t("group.action")}</DropdownMenuLabel>
                                 <DropdownMenuItem
-                                    onClick={() => navigator.clipboard.writeText(team.team_id.toString())}
+                                    onClick={() => {
+                                        copyWithResult(team.team_id || '', t("events.filter.team_id"))
+                                    }}
                                 >
                                     <ClipboardList className="h-4 w-4 mr-2" />
-                                    复制队伍ID
+                                    {t("team.menu.copy")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => handleBanTeam(team.team_id)}
@@ -414,7 +419,7 @@ export function TeamManageView(
                                     className="text-amber-600"
                                 >
                                     <LockIcon className="h-4 w-4 mr-2" />
-                                    锁定队伍
+                                    {t("team.ban.ban")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => handleUnbanTeam(team.team_id)}
@@ -422,14 +427,14 @@ export function TeamManageView(
                                     className="text-green-600"
                                 >
                                     <UnlockIcon className="h-4 w-4 mr-2" />
-                                    解锁队伍
+                                    {t("team.unban.unban")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => handleDeleteTeam(team.team_id)}
                                     className="text-red-600"
                                 >
                                     <TrashIcon className="h-4 w-4 mr-2" />
-                                    删除队伍
+                                    {t("team.delete.delete")}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -505,8 +510,7 @@ export function TeamManageView(
             <div className="w-full flex flex-col gap-4">
                 <div className="flex items-center space-x-2">
                     <div className="flex-1 text-sm text-muted-foreground flex items-center">
-                        {table.getFilteredSelectedRowModel().rows.length} / {" "}
-                        {table.getFilteredRowModel().rows.length} 行已选择
+                        {t("team.select", { a: table.getFilteredSelectedRowModel().rows.length, b: table.getFilteredRowModel().rows.length })}
                     </div>
                     <div className="flex gap-3 items-center">
                         <Button
@@ -533,18 +537,18 @@ export function TeamManageView(
                 <div className="flex items-center">
                     <div className="flex flex-col gap-2">
                         <Input
-                            placeholder="请输入关键词"
+                            placeholder={t("events.filter.placeholder")}
                             value={searchKeyword}
                             onChange={(event) => handleSearch(event.target.value)}
                             className="max-w-sm"
                         />
-                        <span className="text-xs text-muted-foreground">支持队伍名, 队伍ID, 成员用户名, 成员用户ID, 邀请码, 队伍Hash, 队伍口号</span>
+                        <span className="text-xs text-muted-foreground">{t("team.support")}</span>
                     </div>
                     <div className="flex gap-2 ml-auto">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline">
-                                    列 <ChevronDown />
+                                    {t("team.row")} <ChevronDown />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="select-none">
@@ -615,7 +619,7 @@ export function TeamManageView(
                                         colSpan={columns.length}
                                         className="h-24 text-center"
                                     >
-                                        暂无数据
+                                        {t("team.empty")}
                                     </TableCell>
                                 </TableRow>
                             )}

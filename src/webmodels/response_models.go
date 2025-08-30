@@ -235,6 +235,7 @@ type AdminContainerItem struct {
 	ContainerExpireTime time.Time              `json:"container_expiretime"`
 	ContainerType       string                 `json:"container_type"`
 	ContainerPorts      models.ExposePorts     `json:"container_ports"`
+	ContainerNameList   []string               `json:"container_name_list"`
 	TeamName            string                 `json:"team_name"`
 	GameName            string                 `json:"game_name"`
 	ChallengeName       string                 `json:"challenge_name"`

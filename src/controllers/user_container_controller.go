@@ -16,8 +16,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
+
+func getTimeLimitConfig() time.Duration {
+	var ret time.Duration
+	if config := viper.Get("game-settings.container-cooldown-time"); config == nil {
+		ret = time.Minute
+	} else {
+		ret = viper.GetDuration("game-settings.container-cooldown-time")
+	}
+	return ret
+}
+
+var timeLimit = getTimeLimitConfig()
 
 func UserCreateGameContainer(c *gin.Context) {
 	game := c.MustGet("game").(models.Game)
@@ -78,6 +91,7 @@ func UserCreateGameContainer(c *gin.Context) {
 	}
 
 	clientIP := c.ClientIP()
+	now := time.Now()
 
 	// 加入数据库
 	newContainer := models.Container{
@@ -87,8 +101,8 @@ func UserCreateGameContainer(c *gin.Context) {
 		TeamID:               team.TeamID,
 		ChallengeID:          *gameChallenge.Challenge.ChallengeID,
 		InGameID:             gameChallenge.IngameID,
-		StartTime:            time.Now().UTC(),
-		ExpireTime:           time.Now().Add(time.Duration(2) * time.Hour).UTC(),
+		StartTime:            now.UTC(),
+		ExpireTime:           now.Add(time.Duration(2) * time.Hour).UTC(),
 		ContainerExposeInfos: make(models.ContainerExposeInfos, 0),
 		ContainerStatus:      models.ContainerQueueing,
 		ContainerConfig:      *gameChallenge.Challenge.ContainerConfig,
@@ -99,12 +113,12 @@ func UserCreateGameContainer(c *gin.Context) {
 
 	// 用户操作靶机的 60 秒 CD
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
-	locked := redistool.LockForATime(operationName, time.Minute)
+	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": time.Minute.Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
@@ -196,24 +210,24 @@ func UserCloseGameContainer(c *gin.Context) {
 
 	// 用户操作靶机的 60 秒 CD
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
-	locked := redistool.LockForATime(operationName, time.Minute)
+	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": time.Minute.Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
 
 	// 锁住对一个容器ID的操作
 	operationNameForContainer := fmt.Sprintf("containerLock:%s", curContainer.ContainerID)
-	lockedForContainer := redistool.LockForATime(operationNameForContainer, time.Minute)
+	lockedForContainer := redistool.LockForATime(operationNameForContainer, timeLimit)
 
 	if !lockedForContainer {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": time.Minute.Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
@@ -261,12 +275,12 @@ func UserExtendGameContainer(c *gin.Context) {
 	challengeID := c.MustGet("challenge_id").(int64)
 
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
-	locked := redistool.LockForATime(operationName, time.Minute)
+	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": time.Minute.Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
@@ -300,18 +314,18 @@ func UserExtendGameContainer(c *gin.Context) {
 
 	// 锁住对一个容器ID的操作
 	operationNameForContainer := fmt.Sprintf("containerLock:%s", curContainer.ContainerID)
-	lockedForContainer := redistool.LockForATime(operationNameForContainer, time.Minute)
+	lockedForContainer := redistool.LockForATime(operationNameForContainer, timeLimit)
 
 	if !lockedForContainer {
 		c.JSON(http.StatusTooManyRequests, webmodels.ErrorMessage{
 			Code:    429,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": time.Minute.Seconds()}}),
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RequestTooFast", TemplateData: map[string]interface{}{"Time": timeLimit.Seconds()}}),
 		})
 		return
 	}
 
-	// 到期时间大于两小时的不可延长
-	if curContainer.ExpireTime.Sub(time.Now().UTC()) < time.Minute*30 {
+	// 到期时间大于半小时的不可延长
+	if curContainer.ExpireTime.Sub(time.Now().UTC()) > time.Minute*30 {
 		c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
 			Code:    400,
 			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "ContainerExpireTimeTooShort"}),
@@ -319,6 +333,8 @@ func UserExtendGameContainer(c *gin.Context) {
 		return
 	}
 
+	// 记录旧的容器到期时间，Updates更新后会改变该值
+	oldExpireTime := curContainer.ExpireTime
 	// 延长时间为当前时间的2小时之后
 	newExpireTime := time.Now().Add(time.Duration(2) * time.Hour).UTC()
 
@@ -332,7 +348,7 @@ func UserExtendGameContainer(c *gin.Context) {
 			"challenge_id":    challengeID,
 			"challenge_name":  curContainer.ChallengeName,
 			"container_id":    curContainer.ContainerID,
-			"old_expire_time": curContainer.ExpireTime,
+			"old_expire_time": oldExpireTime,
 			"new_expire_time": newExpireTime,
 		}, err)
 
@@ -350,7 +366,7 @@ func UserExtendGameContainer(c *gin.Context) {
 		"challenge_id":    challengeID,
 		"challenge_name":  curContainer.ChallengeName,
 		"container_id":    curContainer.ContainerID,
-		"old_expire_time": curContainer.ExpireTime,
+		"old_expire_time": oldExpireTime,
 		"new_expire_time": newExpireTime,
 	})
 
