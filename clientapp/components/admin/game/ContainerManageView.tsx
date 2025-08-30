@@ -11,7 +11,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 
-import { ArrowLeft, ArrowRight, ArrowUpDown, ChevronDown, MoreHorizontal, CopyIcon, ClockIcon, ClipboardList, ZapOff, RefreshCw, Terminal, Package } from "lucide-react"
+import { ArrowLeft, ArrowRight, ArrowUpDown, ChevronDown, MoreHorizontal, CopyIcon, ClockIcon, ClipboardList, ZapOff, Terminal, Package, RefreshCw } from "lucide-react"
 
 import * as React from "react"
 
@@ -24,6 +24,7 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuTrigger,
+    DropdownMenuGroup,
 } from "components/ui/dropdown-menu"
 
 import { Input } from "components/ui/input"
@@ -55,13 +56,12 @@ import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
-} from "components/ui/hover-card"
-import { AxiosResponse } from "axios"
-import { Label } from "components/ui/label"
-import copy from "copy-to-clipboard"
-import { copyWithResult } from "utils/ToastUtil"
-import ContainerTerminal from "components/modules/terminal/Terminal"
-import { DropdownMenuGroup } from "@radix-ui/react-dropdown-menu"
+} from "components/ui/hover-card";
+import { AxiosResponse } from "axios";
+import { Label } from "components/ui/label";
+import copy from "copy-to-clipboard";
+import { copyWithResult } from "utils/ToastUtil";
+import ContainerTerminal from "components/modules/terminal/Terminal";
 
 export type ContainerModel = {
     ID: string,
@@ -72,7 +72,7 @@ export type ContainerModel = {
     ExpireTime: Date,
     Ports: string,
     PodID: string,
-}
+};
 
 interface ConfirmDialogProps {
     isOpen: boolean;
@@ -88,35 +88,33 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     onConfirm,
     title,
     description
-}) => {
-    return (
-        <AlertDialog open={isOpen} onOpenChange={onClose}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>{title}</AlertDialogTitle>
-                    <AlertDialogDescription>{description}</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>取消</AlertDialogCancel>
-                    <AlertDialogAction onClick={onConfirm}>确认</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
-};
+}) => (
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>{title}</AlertDialogTitle>
+                <AlertDialogDescription>{description}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>取消</AlertDialogCancel>
+                <AlertDialogAction onClick={onConfirm}>确认</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+);
 
 export function ContainerManageView({
     gameId,
-    challengeID = undefined
+    challengeID
 }: {
     gameId: number,
-    challengeID?: number | undefined
+    challengeID?: number
 }) {
-    const [data, setData] = React.useState<AdminContainerItem[]>([])
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-    const [rowSelection, setRowSelection] = React.useState({})
+    const [data, setData] = React.useState<AdminContainerItem[]>([]);
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+    const [rowSelection, setRowSelection] = React.useState({});
 
     const [pageSize, _setPageSize] = React.useState(30);
     const [curPage, setCurPage] = React.useState(0);
@@ -127,7 +125,6 @@ export function ContainerManageView({
     const [searchKeyword, setSearchKeyword] = React.useState("");
     const [debouncedSearchKeyword, setDebouncedSearchKeyword] = React.useState("");
 
-    // 对话框状态
     const [confirmDialog, setConfirmDialog] = React.useState({
         isOpen: false,
         title: "",
@@ -135,18 +132,25 @@ export function ContainerManageView({
         onConfirm: () => { },
     });
 
+    // 多终端数组
+    type TerminalInstance = {
+        id: string;
+        podName: string;
+        containerName: string;
+        isOpen: boolean;
+    };
+    const [terminals, setTerminals] = React.useState<TerminalInstance[]>([]);
+
     // 防抖处理搜索关键词
     React.useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearchKeyword(searchKeyword);
-            setCurPage(0); // 重置到第一页
-        }, 200); // 200ms 防抖延迟
-
+            setCurPage(0);
+        }, 200);
         return () => clearTimeout(timer);
     }, [searchKeyword]);
 
-
-    // 处理容器删除
+    // 容器操作
     const handleDeleteContainer = (containerId: string) => {
         setConfirmDialog({
             isOpen: true,
@@ -159,7 +163,7 @@ export function ContainerManageView({
                         pending: '正在停止容器...',
                         success: {
                             render({ data: _data }) {
-                                fetchContainers(); // 刷新数据
+                                fetchContainers();
                                 setConfirmDialog(prev => ({ ...prev, isOpen: false }));
                                 return '容器正在停止';
                             }
@@ -171,11 +175,6 @@ export function ContainerManageView({
         });
     };
 
-    const [isTerminalOpen, setIsTerminalOpen] = React.useState(false);
-    const [terminalPod, setTerminalPod] = React.useState<string | null>(null);
-    const [terminalContainer, setTerminalContainer] = React.useState<string | null>(null);
-
-    // 处理批量停止容器
     const handleBatchDeleteContainers = () => {
         const selectedRows = table.getFilteredSelectedRowModel().rows;
         const selectedContainerIds = selectedRows.map(row => row.original.container_id);
@@ -190,7 +189,6 @@ export function ContainerManageView({
             title: "确认批量停止",
             description: `您确定要停止选中的 ${selectedContainerIds.length} 个容器吗？`,
             onConfirm: () => {
-                // 批量停止容器
                 const promises = selectedContainerIds.map(containerId =>
                     api.admin.adminDeleteContainer({ container_id: containerId })
                 );
@@ -201,18 +199,15 @@ export function ContainerManageView({
                         pending: `正在停止 ${selectedContainerIds.length} 个容器...`,
                         success: {
                             render({ data: results }: { data: PromiseSettledResult<AxiosResponse>[] }) {
-                                const successCount = results.filter(result => result.status === 'fulfilled').length;
+                                const successCount = results.filter(r => r.status === 'fulfilled').length;
                                 const failCount = results.length - successCount;
 
-                                fetchContainers(); // 刷新数据
-                                setRowSelection({}); // 清空选择
+                                fetchContainers();
+                                setRowSelection({});
                                 setConfirmDialog(prev => ({ ...prev, isOpen: false }));
 
-                                if (failCount === 0) {
-                                    return `成功停止 ${successCount} 个容器`;
-                                } else {
-                                    return `成功停止 ${successCount} 个容器，${failCount} 个失败`;
-                                }
+                                if (failCount === 0) return `成功停止 ${successCount} 个容器`;
+                                else return `成功停止 ${successCount} 个容器，${failCount} 个失败`;
                             }
                         },
                         error: '批量停止容器失败'
@@ -222,26 +217,17 @@ export function ContainerManageView({
         });
     };
 
-    // 提交延长容器生命周期
     const submitExtendContainer = (containerId: string) => {
         toast.promise(
-            api.admin.adminExtendContainer({
-                container_id: containerId,
-            }),
+            api.admin.adminExtendContainer({ container_id: containerId }),
             {
                 pending: '正在延长容器生命周期...',
-                success: {
-                    render({ data: _data }) {
-                        fetchContainers(); // 刷新数据
-                        return '容器生命周期已延长';
-                    }
-                },
+                success: { render() { fetchContainers(); return '容器生命周期已延长'; } },
                 error: '延长容器生命周期失败'
             }
         );
     };
 
-    // 获取容器Flag
     const handleGetContainerFlag = (containerId: string) => {
         toast.promise(
             api.admin.adminGetContainerFlag({ container_id: containerId }),
@@ -250,7 +236,6 @@ export function ContainerManageView({
                 success: {
                     render({ data: response }: { data: AxiosResponse }) {
                         const flagContent = response.data.data.flag_content;
-                        // 复制到剪贴板
                         copy(flagContent);
                         return `Flag已复制到剪贴板`;
                     }
@@ -260,28 +245,20 @@ export function ContainerManageView({
         );
     };
 
-    // 获取状态对应的颜色和中文显示
     const getStatusColorAndText = (status: ContainerStatus) => {
         switch (status) {
-            case ContainerStatus.ContainerRunning:
-                return { color: "#52C41A", text: "运行中" };
-            case ContainerStatus.ContainerStopped:
-                return { color: "#8C8C8C", text: "已停止" };
-            case ContainerStatus.ContainerStarting:
-                return { color: "#1890FF", text: "启动中" };
-            case ContainerStatus.ContainerError:
-                return { color: "#FF4D4F", text: "错误" };
-            case ContainerStatus.ContainerStopping:
-                return { color: "#FAAD14", text: "停止中" };
-            case ContainerStatus.ContainerQueueing:
-                return { color: "#722ED1", text: "队列中" };
-            case ContainerStatus.NoContainer:
-                return { color: "#D9D9D9", text: "无容器" };
-            default:
-                return { color: "#D9D9D9", text: "未知" };
+            case ContainerStatus.ContainerRunning: return { color: "#52C41A", text: "运行中" };
+            case ContainerStatus.ContainerStopped: return { color: "#8C8C8C", text: "已停止" };
+            case ContainerStatus.ContainerStarting: return { color: "#1890FF", text: "启动中" };
+            case ContainerStatus.ContainerError: return { color: "#FF4D4F", text: "错误" };
+            case ContainerStatus.ContainerStopping: return { color: "#FAAD14", text: "停止中" };
+            case ContainerStatus.ContainerQueueing: return { color: "#722ED1", text: "队列中" };
+            case ContainerStatus.NoContainer: return { color: "#D9D9D9", text: "无容器" };
+            default: return { color: "#D9D9D9", text: "未知" };
         }
     };
 
+    // 表格列
     const columns: ColumnDef<AdminContainerItem>[] = [
         {
             id: "select",
@@ -467,18 +444,22 @@ export function ContainerManageView({
                             <DropdownMenuContent className="mr-5 p-2 select-none" align="start">
                                 <DropdownMenuLabel>选择一个容器</DropdownMenuLabel>
                                 <DropdownMenuGroup>
-                                    { container.container_name_list?.map((e, _) => (
-                                        <DropdownMenuItem key={e}
-                                            onClick={() => {
-                                                setIsTerminalOpen(true)
-                                                setTerminalPod(container.pod_id ?? "")
-                                                setTerminalContainer(e)
-                                            }}
-                                        >
+                                    {container.container_name_list?.map((e) => (
+                                        <DropdownMenuItem key={e} onClick={() => {
+                                            const id = `${container.pod_id}-${e}`;
+                                            setTerminals(prev => {
+                                                const existing = prev.find(t => t.id === id);
+                                                if (existing) {
+                                                    // 重新打开已存在的终端
+                                                    return prev.map(t => t.id === id ? { ...t, isOpen: true } : t);
+                                                }
+                                                return [...prev, { id, podName: container.pod_id ?? "", containerName: e, isOpen: true }];
+                                            });
+                                        }}>
                                             <Package />
                                             {e}
                                         </DropdownMenuItem>
-                                    )) }
+                                    ))}
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -531,7 +512,6 @@ export function ContainerManageView({
         },
     ]
 
-    // 获取容器列表数据
     const fetchContainers = () => {
         const payload: AdminListContainersPayload = {
             game_id: gameId,
@@ -540,22 +520,15 @@ export function ContainerManageView({
             challenge_id: challengeID ?? -1,
             show_failed: showFailedContainer
         };
-
-        // 如果有搜索关键词，添加到请求中
-        if (debouncedSearchKeyword.trim()) {
-            payload.search = debouncedSearchKeyword.trim();
-        }
+        if (debouncedSearchKeyword.trim()) payload.search = debouncedSearchKeyword.trim();
 
         api.admin.adminListContainers(payload).then((res: any) => {
             setTotalCount(res.data.total ?? 0);
             setData(res.data.data);
-        })
+        });
     };
 
-    // 处理搜索
-    const handleSearch = (value: string) => {
-        setSearchKeyword(value);
-    };
+    const handleSearch = (value: string) => setSearchKeyword(value);
 
     const table = useReactTable({
         data,
@@ -574,7 +547,7 @@ export function ContainerManageView({
             columnVisibility,
             rowSelection,
         },
-    })
+    });
 
     React.useEffect(() => {
         table.setPageSize(pageSize);
@@ -583,14 +556,21 @@ export function ContainerManageView({
 
     return (
         <>
-            <ContainerTerminal
-                podName={terminalPod ?? ""}
-                containerName={terminalContainer ?? ""}
-                isOpen={isTerminalOpen}
-                setIsOpen={setIsTerminalOpen}
-                setTerminalPod={setTerminalPod}
-                setTerminalContainer={setTerminalContainer}
-            />
+            {/* 渲染多终端 */}
+            {terminals.map(t => t.isOpen && (
+                <ContainerTerminal
+                    key={t.id}
+                    podName={t.podName}
+                    containerName={t.containerName}
+                    isOpen={t.isOpen}
+                    setIsOpen={(open) => {
+                        if (!open) setTerminals(prev => prev.map(x => x.id === t.id ? { ...x, isOpen: false } : x));
+                    }}
+                    setTerminalPod={() => { }}
+                    setTerminalContainer={() => { }}
+                />
+            ))}
+
             <div className="w-full flex flex-col gap-4">
                 <div className="flex items-center justify-end space-x-2 select-none">
                     <div className="flex-1 text-sm text-muted-foreground flex items-center">
@@ -737,7 +717,7 @@ export function ContainerManageView({
                 </div>
             </div>
 
-            {/* 确认对话框 */}
+
             <ConfirmDialog
                 isOpen={confirmDialog.isOpen}
                 onClose={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
@@ -746,5 +726,5 @@ export function ContainerManageView({
                 description={confirmDialog.description}
             />
         </>
-    )
+    );
 }
