@@ -135,6 +135,7 @@ export function ContainerManageView({
     // 多终端数组
     type TerminalInstance = {
         id: string;
+        teamName: string;
         podName: string;
         containerName: string;
         isOpen: boolean;
@@ -453,7 +454,7 @@ export function ContainerManageView({
                                                     // 重新打开已存在的终端
                                                     return prev.map(t => t.id === id ? { ...t, isOpen: true } : t);
                                                 }
-                                                return [...prev, { id, podName: container.pod_id ?? "", containerName: e, isOpen: true }];
+                                                return [...prev, { id, teamName: container?.team_name ?? "", podName: container?.pod_id ?? "", containerName: e, isOpen: true }];
                                             });
                                         }}>
                                             <Package />
@@ -560,6 +561,7 @@ export function ContainerManageView({
             {terminals.map(t => t.isOpen && (
                 <ContainerTerminal
                     key={t.id}
+                    teamName={t.teamName}
                     podName={t.podName}
                     containerName={t.containerName}
                     isOpen={t.isOpen}

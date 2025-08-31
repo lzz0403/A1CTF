@@ -1,4 +1,3 @@
-// ContainerTerminal.tsx
 import React, {
     Dispatch,
     SetStateAction,
@@ -14,6 +13,7 @@ import { useXTerm } from "react-xtermjs";
 import { FitAddon } from "@xterm/addon-fit";
 
 type Props = {
+    teamName: string
     podName: string;
     containerName: string;
     isOpen: boolean;
@@ -21,6 +21,16 @@ type Props = {
     setTerminalPod: Dispatch<SetStateAction<string | null>>;
     setTerminalContainer: Dispatch<SetStateAction<string | null>>;
 };
+
+// spinner 动画字符集
+const spinnerSets = [
+    ["|", "/", "-", "\\"],                // 经典旋转
+    [".  ", ".. ", "..."],                // 点点点
+    ["◐", "◓", "◑", "◒"],                // 圆圈四象限
+    ["←", "↖", "↑", "↗", "→", "↘", "↓", "↙"], // 箭头旋转
+    ["▁", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃"], // 上升方块
+    ["⠁", "⠂", "⠄", "⡀", "⢀", "⠠", "⠐", "⠈"], // 盲文点
+];
 
 function MyTerminal({
     podName,
@@ -35,8 +45,11 @@ function MyTerminal({
 }) {
     const { instance, ref } = useXTerm();
     const pingTimerRef = useRef<number | null>(null);
+    const spinnerTimerRef = useRef<number | null>(null);
     const dataHandlerBoundRef = useRef<boolean>(false);
     const decoderRef = useRef(new TextDecoder());
+
+
     useEffect(() => {
         if (!instance || !podName || !containerName) return;
 
@@ -48,6 +61,10 @@ function MyTerminal({
             if (pingTimerRef.current) {
                 window.clearInterval(pingTimerRef.current);
                 pingTimerRef.current = null;
+            }
+            if (spinnerTimerRef.current) {
+                window.clearInterval(spinnerTimerRef.current);
+                spinnerTimerRef.current = null;
             }
         };
 
@@ -70,8 +87,17 @@ function MyTerminal({
             });
         };
 
-        instance.writeln("Connecting....");
+        // ===== 启动 spinner 动画 =====
+        const spinnerFrames = spinnerSets[Math.floor(Math.random() * spinnerSets.length)];
+        let spinnerIndex = 0;
+        instance.write("Container Connecting"); // 初始输出
+        spinnerTimerRef.current = window.setInterval(() => {
+            const frame = spinnerFrames[spinnerIndex];
+            instance.write(`\rContainer Connecting ${frame}`);
+            spinnerIndex = (spinnerIndex + 1) % spinnerFrames.length;
+        }, 150);
 
+        // 创建 WebSocket
         const https_enabled = window.location.protocol === "https:";
         const baseURL = window.location.host;
         const socket = new WebSocket(
@@ -81,7 +107,11 @@ function MyTerminal({
         wsRef.current = socket;
 
         socket.onopen = () => {
-            instance.writeln("\r\nConnected!\r\n");
+
+            clearTimers(); // 停掉 spinner
+            instance.write("\rContainer Connected!\r\n")
+            instance.write("\r\n")
+
             setupDataHandlersOnce();
             const cols = (instance as any)?.cols;
             const rows = (instance as any)?.rows;
@@ -135,6 +165,7 @@ function MyTerminal({
         };
         socket.onerror = () => {
             instance.write("\r\nWebSocket error\r\n");
+            clearTimers();
         };
 
         const handleWindowResize = () => fitAddon.fit();
@@ -155,13 +186,13 @@ function MyTerminal({
     return (
         <div
             ref={ref as any}
-            className="w-full h-full bg-[#0f1720] p-2 rounded-b-md text-white"
-            style={{ width: '100%', height: '100%', minHeight: 120 }}
+            className="w-full h-full bg-[#0f1720] p-2 rounded-b-md box-border"
         />
     );
 }
 
 export default function ContainerTerminal({
+    teamName,
     podName,
     containerName,
     isOpen,
@@ -194,6 +225,7 @@ export default function ContainerTerminal({
         lastBoundsRef.current = { ...lastBoundsRef.current, x: d.x, y: d.y };
     };
 
+    const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const onResizeStop = (
         _event: MouseEvent | TouchEvent | PointerEvent,
         _direction: any,
@@ -207,16 +239,23 @@ export default function ContainerTerminal({
         setPos({ x: position.x, y: position.y });
         lastBoundsRef.current = { x: position.x, y: position.y, width: w, height: h };
 
-        // fit terminal 并发送 resize
-        setTimeout(() => {
+        // 清除上一次的 timeout
+        if (resizeTimeoutRef.current) {
+            clearTimeout(resizeTimeoutRef.current);
+        }
+
+        // 重新设定防抖 timeout, fit terminal 并发送 resize
+        resizeTimeoutRef.current = setTimeout(() => {
             const fitAddon = fitRef.current;
             fitAddon?.fit();
             // 用 xterm 本身实例获取 cols/rows
             const term: any = (fitAddon as any)._terminal;
             if (term && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-                wsRef.current.send(JSON.stringify({ op: 'resize', cols: term.cols, rows: term.rows }));
+                wsRef.current.send(
+                    JSON.stringify({ op: "resize", cols: term.cols, rows: term.rows })
+                );
             }
-        }, 150);
+        }, 1000); // 1s 防抖
     };
 
     const handleMinimize = () => setMinimized(true);
@@ -251,6 +290,8 @@ export default function ContainerTerminal({
         <Rnd
             ref={rndRef}
             position={{ x: pos.x, y: pos.y }}
+            minWidth={400}
+            minHeight={300}
             size={{ width: size.width, height: size.height }}
             bounds="window"
             onDragStop={onDragStop}
@@ -258,39 +299,42 @@ export default function ContainerTerminal({
             enableResizing={!maximized}
             disableDragging={maximized}
             className={cn(
-                "shadow-2xl rounded-lg flex flex-col border overflow-hidden",
+                "shadow-2xl rounded-lg flex flex-col border overflow-hidden z-50",
                 "bg-white text-black dark:bg-[#0b1220] dark:text-white",
-                "z-[9999]"
             )}
             style={{
                 display: minimized ? "none" : "block",
                 position: "fixed",
             }}
+            // 只有标题栏才能拖拽
+            dragHandleClassName="a1ctf-container-terminal-drag-handle"
         >
-            {/* 标题栏 */}
-            <div className="flex justify-between items-center px-3 py-2 border-b cursor-move bg-gray-100 dark:bg-[#0f1720] rounded-t-md select-none">
-                <div className="flex items-center gap-2">
-                    <TerminalSquare className="w-4 h-4" />
-                    <span className="text-sm font-medium">
-                        [Terminal] {podName} / {containerName}
-                    </span>
+            <div className="flex flex-col w-full h-full">
+                {/* 标题栏 */}
+                <div className="a1ctf-container-terminal-drag-handle flex-none flex justify-between items-center px-3 py-2 border-b cursor-move bg-gray-100 dark:bg-[#0f1720] rounded-t-md select-none">
+                    <div className="flex items-center gap-2">
+                        <TerminalSquare className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                            [Terminal] {containerName}({podName}) / {teamName}
+                        </span>
+                    </div>
+                    <div className="flex gap-2">
+                        <button onClick={handleMinimize} className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                            <Minus className="w-4 h-4" />
+                        </button>
+                        <button onClick={handleToggleMaximize} className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                            <Maximize2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={handleClose} className="p-1 rounded hover:bg-red-600 hover:text-white transition">
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
-                <div className="flex gap-2">
-                    <button onClick={handleMinimize} className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                        <Minus className="w-4 h-4" />
-                    </button>
-                    <button onClick={handleToggleMaximize} className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                        <Maximize2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={handleClose} className="p-1 rounded hover:bg-red-600 hover:text-white transition">
-                        <X className="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
 
-            {/* 终端容器 */}
-            <div className="w-full h-full">
-                <MyTerminal podName={podName} containerName={containerName} fitRef={fitRef} wsRef={wsRef} />
+                {/* 终端容器 */}
+                <div className="flex-1 min-h-0 overflow-hidden">
+                    <MyTerminal podName={podName} containerName={containerName} fitRef={fitRef} wsRef={wsRef} />
+                </div>
             </div>
         </Rnd>
     );
