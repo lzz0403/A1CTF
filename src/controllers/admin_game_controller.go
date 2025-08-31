@@ -410,9 +410,7 @@ func AdminUpdateGameChallenge(c *gin.Context) {
 	}
 
 	if shouldSendNotice {
-		go func() {
-			noticetool.InsertNotice(gameID, models.NoticeNewHint, noticeData)
-		}()
+		noticetool.InsertNotice(gameID, models.NoticeNewHint, noticeData)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -603,9 +601,7 @@ func AdminCreateNotice(c *gin.Context) {
 	}
 
 	// 使用 notice_tool 插入公告
-	go func() {
-		noticetool.InsertNotice(gameID, models.NoticeNewAnnounce, []string{payload.Title, payload.Content})
-	}()
+	noticetool.InsertNotice(gameID, models.NoticeNewAnnounce, []string{payload.Title, payload.Content})
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,

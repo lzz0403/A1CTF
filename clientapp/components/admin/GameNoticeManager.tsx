@@ -159,8 +159,8 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                 ) : notices.length === 0 ? (
                     <div className="text-center py-12">
                         <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">{t("list.empty")}</h3>
-                        <p className="text-muted-foreground">{t("list.first")}</p>
+                        <h3 className="text-lg font-semibold mb-2">{t("notice.list.empty")}</h3>
+                        <p className="text-muted-foreground">{t("notice.list.first")}</p>
                     </div>
                 ) : (
                     <div className="space-y-4 pr-4">
