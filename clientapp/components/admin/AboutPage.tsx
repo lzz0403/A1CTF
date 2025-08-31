@@ -20,7 +20,7 @@ export default function AboutPage(
     const [debouncedSource, setDebouncedSource] = useState<string>("");
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const {t} = useTranslation("system_settings")
+    const { t } = useTranslation("system_settings")
 
     // 防抖函数
     const debouncedUpdateSource = useCallback((value: string) => {
@@ -54,7 +54,7 @@ export default function AboutPage(
 
     useEffect(() => {
         setAboutMeSource(watchValue || "A1CTF Platform")
-        debouncedUpdateSource(watchValue || "A1CTF Platform");
+        setDebouncedSource(watchValue || "A1CTF Platform")
     }, [watchValue])
 
     const { theme } = useTheme()
@@ -86,7 +86,7 @@ export default function AboutPage(
                         />
                     </div>
                     <div className='h-full w-1/2 border-2 rounded-md overflow-hidden relative'>
-                        
+
                         <MacScrollbar className='h-full w-full select-none'
                             skin={theme == "light" ? "light" : "dark"}
                         >

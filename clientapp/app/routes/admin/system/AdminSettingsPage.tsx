@@ -280,10 +280,10 @@ export const AdminSettingsPage = () => {
                     <div className="flex flex-1 h-full overflow-hidden">
                         {activeModule == "aboutus" ? (
                             <div className="w-full h-full">
-                                <AboutPage
+                                {dataLoaded && <AboutPage
                                     form={form}
                                     onSubmit={onSubmit}
-                                />
+                                />}
                             </div>
                         ) : (
                             <MacScrollbar className="w-full h-full overflow-hidden select-none"
