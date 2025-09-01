@@ -224,7 +224,7 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                             <TableHead>{t("group.add.name.label")}</TableHead>
                             <TableHead>{t("group.add.info.label")}</TableHead>
                             <TableHead>{t("group.time")}</TableHead>
-                            <TableHead className="text-right">{t("group.action")}</TableHead>
+                            <TableHead className="text-right">{t("action")}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

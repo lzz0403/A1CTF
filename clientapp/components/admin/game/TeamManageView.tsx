@@ -379,7 +379,7 @@ export function TeamManageView(
         },
         {
             id: "actions",
-            header: t("group.action"),
+            header: t("action"),
             enableHiding: false,
             cell: ({ row }) => {
                 const team = row.original;
@@ -406,7 +406,7 @@ export function TeamManageView(
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" >
-                                <DropdownMenuLabel>{t("group.action")}</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t("action")}</DropdownMenuLabel>
                                 <DropdownMenuItem
                                     onClick={() => {
                                         copyWithResult(team.team_id || '', t("events.filter.team_id"))
