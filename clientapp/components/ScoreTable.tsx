@@ -236,6 +236,8 @@ export function ScoreTable(
                                                 setShowUserDetail(item || {})
                                             }}
                                         >{item.team_name}</a>
+                                        <span className="text-xs text-muted-foreground text-nowrap text-ellipsis overflow-hidden">
+                                        {item.group_name}</span>
                                     </div>
                                     <div className="justify-end gap-1 hidden lg:flex">
                                         <span>{item.score}</span>
