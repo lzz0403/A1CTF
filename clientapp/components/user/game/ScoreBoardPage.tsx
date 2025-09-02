@@ -29,7 +29,6 @@ import {
     SelectValue,
 } from "components/ui/select"
 import TeamScoreDetailPage from './TeamScoreDetailPage';
-import { useTranslation } from 'react-i18next';
 
 export default function ScoreBoardPage(
     { gmid }
@@ -37,7 +36,6 @@ export default function ScoreBoardPage(
         { gmid: number }
 ) {
     const { theme } = useTheme();
-    const { t } = useTranslation("game_view")
 
     const [gameInfo, setGameInfo] = useState<UserFullGameInfo | undefined>(undefined)
     const [challenges, setChallenges] = useState<Record<string, UserSimpleGameChallenge[]>>({})
@@ -129,20 +127,20 @@ export default function ScoreBoardPage(
             const data = response.data.data as GameScoreboardData;
 
             if (!data?.teams || !data?.challenges) {
-                throw new Error(`${t('scoreboard.filename').trim()}${t('scoreboard.data_error')}`);
+                throw new Error('积分榜数据不完整');
             }
 
             // 创建XLSX工作簿
             const workbook = generateScoreboardXLSX(data);
 
             // 生成文件并下载
-            const groupSuffix = selectedGroupId && data.current_group ? `_${data.current_group.group_name}${t('group')}` : '';
-            const filename = `${gameInfo.name}${groupSuffix}_${t('scoreboard.filename').trim()}_${dayjs().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`;
+            const groupSuffix = selectedGroupId && data.current_group ? `_${data.current_group.group_name}组` : '';
+            const filename = `${gameInfo.name}${groupSuffix}_积分榜_${dayjs().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`;
 
             XLSX.writeFile(workbook, filename);
 
             // 成功提示
-            toast.success(`${t('scoreboard.title')}${t('scoreboard.download_success')} ${filename}`);
+            toast.success(`积分榜下载成功！文件已保存为: ${filename}`);
         }).finally(() => {
             setIsDownloading(false);
         })
@@ -162,7 +160,7 @@ export default function ScoreBoardPage(
         setCurrentPage(1); // 重置到第一页
 
         if (pagination && pagination.current_page > 1) {
-            toast.info(t("scoreboard.resize_success"));
+            toast.info('页面大小已更改, 已重置到第一页');
         }
     }, [pagination]);
 
@@ -182,7 +180,7 @@ export default function ScoreBoardPage(
         });
 
         // 创建表头
-        const headers = t("scoreboard.excel_headers", { returnObjects: true }) as string[]
+        const headers = ['排名', '队伍名称','分组', '总分'];
 
         // 添加题目列（按类别分组）
         Object.keys(challengesByCategory).sort().forEach(category => {
@@ -269,9 +267,24 @@ export default function ScoreBoardPage(
             }
             row.push({ v: team.team_name || '', t: 's', s: nameStyle });
 
+            // 分组列
+            let idStyle: any = {
+                alignment: { horizontal: "center", vertical: "center" },
+                border: {
+                    top: { style: "thin", color: { rgb: "E5E7EB" } },
+                    bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                    left: { style: "thin", color: { rgb: "E5E7EB" } },
+                    right: { style: "thin", color: { rgb: "E5E7EB" } }
+                }
+            };
+            if (teamIndex % 2 === 0 && rank > 3) {
+                idStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
+            }
+            row.push({ v: team.group_id || '', t: 's', s: idStyle });
+
             // 总分列
             let scoreStyle: any = {
-                alignment: { horizontal: "center", vertical: "center" },
+                alignment: { horizontal: "right", vertical: "center" },
                 border: {
                     top: { style: "thin", color: { rgb: "E5E7EB" } },
                     bottom: { style: "thin", color: { rgb: "E5E7EB" } },
@@ -324,6 +337,7 @@ export default function ScoreBoardPage(
         const colWidths = [
             { wch: 8 },  // 排名
             { wch: 20 }, // 队伍名称
+            { wch: 20 }, // 分组
             { wch: 10 }, // 总分
         ];
 
@@ -338,13 +352,13 @@ export default function ScoreBoardPage(
 
         // 创建工作簿
         const workbook = XLSX.utils.book_new();
-        const sheetName = `${t('scoreboard.filename').trim()}_${dayjs().format('MM-DD_HH-mm')}`;
+        const sheetName = `积分榜_${dayjs().format('MM-DD_HH-mm')}`;
         XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
 
         // 设置工作簿属性
         workbook.Props = {
-            Title: `${gameInfo?.name || 'CTF'} ${t('scoreboard.filename').trim()}`,
-            Subject: `${t('scoreboard.subject')}${t('scoreboard.filename')}`,
+            Title: `${gameInfo?.name || 'CTF'} 积分榜`,
+            Subject: "CTF竞赛积分榜",
             Author: "A1CTF System",
             CreatedDate: new Date()
         };
@@ -403,64 +417,50 @@ export default function ScoreBoardPage(
                 setChallenges(groupedChallenges)
 
                 const current = dayjs()
-                let end = dayjs(gameInfo.end_time).diff(current) > 0 ? current : dayjs(gameInfo.end_time)
+                const end = dayjs(gameInfo.end_time).diff(current) > 0 ? current : dayjs(gameInfo.end_time)
 
                 const curTimeLine = JSON.stringify(res.data.data?.top10_timelines)
 
-                lastTimeLine.current = curTimeLine
+                if (curTimeLine != lastTimeLine.current || true) {
+                    lastTimeLine.current = curTimeLine
 
-                serialOptions.current = [
-                    {
-                        type: 'line',
-                        step: 'end',
-                        data: [],
-                        markLine:
-                            dayjs(gameInfo.end_time).diff(dayjs(), 's') < 0
-                                ? undefined
-                                : {
-                                    symbol: 'none',
-                                    data: [
-                                        {
-                                            xAxis: +end.toDate(),
-                                            // lineStyle: {
-                                            //     color: colorScheme === 'dark' ? "#FFFFFF" : "#000000",
-                                            //     wight: 2,
-                                            // },
-                                            label: {
-                                                textBorderWidth: 0,
-                                                fontWeight: 500,
-                                                color: theme === 'dark' ? '#94a3b8' : '#64748b',
-                                                formatter: (time: any) => dayjs(time.value).format('YYYY-MM-DD HH:mm'),
+                    serialOptions.current = [
+                        {
+                            type: 'line',
+                            step: 'end',
+                            data: [],
+                            markLine:
+                                dayjs(gameInfo.end_time).diff(dayjs(), 's') < 0
+                                    ? undefined
+                                    : {
+                                        symbol: 'none',
+                                        data: [
+                                            {
+                                                xAxis: +end.toDate(),
+                                                // lineStyle: {
+                                                //     color: colorScheme === 'dark' ? "#FFFFFF" : "#000000",
+                                                //     wight: 2,
+                                                // },
+                                                label: {
+                                                    textBorderWidth: 0,
+                                                    fontWeight: 500,
+                                                    color: theme === 'dark' ? '#94a3b8' : '#64748b',
+                                                    formatter: (time: any) => dayjs(time.value).format('YYYY-MM-DD HH:mm'),
+                                                },
                                             },
-                                        },
-                                    ],
-                                },
-                    },
-                    ...(res.data.data?.top10_timelines?.map((team, index) => {
-
-                        const lastRecordTime = team.scores?.[team.scores?.length - 1]?.record_time;
-                        const lastScore = team.scores?.[team.scores?.length - 1]?.score || 0;
-
-                        const shouldAddEnd = lastRecordTime && dayjs(lastRecordTime).isBefore(end);
-
-                        let data = [
-                            [+dayjs(gameInfo.start_time).toDate(), 0],
-                            ...(team.scores?.map((item) => [
-                                +(item.record_time ? dayjs(item.record_time).toDate() : 0),
-                                item.score || 0
-                            ]) || []),
-                        ];
-
-                        if (shouldAddEnd) {
-                            data.push([+end.toDate(), lastScore]);
-                        }
-
-                        return {
+                                        ],
+                                    },
+                        },
+                        ...(res.data.data?.top10_timelines?.map((team, index) => ({
                             name: team.team_name,
                             type: 'line',
                             showSymbol: false,
                             step: 'end',
-                            data: data,
+                            data: [
+                                [+new Date(dayjs(gameInfo.start_time).toDate()), 0],
+                                ...(team.scores?.map((item) => [item.record_time || 0, item.score || 0]) || []),
+                                [+end.toDate(), (team.scores && team.scores[team.scores.length - 1]?.score) || 0]
+                            ],
                             lineStyle: {
                                 width: 4
                             },
@@ -495,10 +495,9 @@ export default function ScoreBoardPage(
                                 }
                             },
                             smooth: true,
-                        }
-                    }) || [])
-                ] as echarts.SeriesOption[]
-
+                        }) as echarts.SeriesOption) || [])
+                    ] as echarts.SeriesOption[]
+                }
                 // 结束加载状态
                 setTimeout(() => setPageLoading(false), 200)
             }).catch((_error) => {
@@ -537,7 +536,7 @@ export default function ScoreBoardPage(
                 >
                     <div className='w-full flex flex-col relative gap-2 py-10'>
                         <div id='scoreHeader' className='w-full h-[60px] flex items-center px-10 mb-6 '>
-                            <span className='text-3xl font-bold [text-shadow:_hsl(var(--foreground))_1px_1px_20px] select-none'>{t("scoreboard.title")}</span>
+                            <span className='text-3xl font-bold [text-shadow:_hsl(var(--foreground))_1px_1px_20px] select-none'>ScoreBoard</span>
                             <div className='flex-1' />
                             {/* 下载积分榜按钮 */}
                             {gameInfo && (
@@ -550,7 +549,7 @@ export default function ScoreBoardPage(
                                     size="sm"
                                 >
                                     <Download size={18} className={`mr-2 ${isDownloading ? 'animate-spin' : ''}`} />
-                                    {isDownloading ? t("scoreboard.downloading") : t("scoreboard.download")}
+                                    {isDownloading ? '下载中...' : '下载Excel表格'}
                                 </Button>
                             )}
                         </div>
@@ -560,7 +559,7 @@ export default function ScoreBoardPage(
                                 {!isChartFloating && !isNormalChartMinimized && (
                                     <div className={`mx-auto transition-all duration-300 ${isChartFullscreen
                                         ? 'absolute top-0 left-0 w-full h-screen z-50 px-4 py-4'
-                                        : 'container px-10 aspect-[16/7] min-h-[450px]'
+                                        : 'container px-10 h-[50vh] min-h-[450px]'
                                         }`}>
                                         <BetterChart
                                             theme={theme == "dark" ? "dark" : "light"}
@@ -600,10 +599,10 @@ export default function ScoreBoardPage(
                                                 ? 'bg-slate-800/90 border border-slate-600/50 text-slate-200 hover:bg-slate-700/90'
                                                 : 'bg-white/90 border border-gray-300/50 text-slate-700 hover:bg-gray-50/90'
                                                 }`}
-                                            title={t("scoreboard.show")}
+                                            title="显示图表"
                                         >
                                             <ChartArea className="w-5 h-5" />
-                                            <span className="text-sm">{t("scoreboard.show")}</span>
+                                            <span className="text-sm">显示图表</span>
                                         </Button>
                                     </div>
                                 )}
@@ -617,10 +616,10 @@ export default function ScoreBoardPage(
                                                 ? 'bg-slate-800/90 border border-slate-600/50 text-slate-200 hover:bg-slate-700/90'
                                                 : 'bg-white/90 border border-gray-300/50 text-slate-700 hover:bg-gray-50/90'
                                                 }`}
-                                            title={t("scoreboard.show")}
+                                            title="显示图表"
                                         >
                                             <ChartArea className="w-5 h-5" />
-                                            <span className="text-sm">{t("scoreboard.show")}</span>
+                                            <span className="text-sm">显示图表</span>
                                         </Button>
                                     </div>
                                 )}
@@ -635,16 +634,16 @@ export default function ScoreBoardPage(
                                                     {/* 分组选择器 */}
                                                     {groups.length > 0 && (
                                                         <div className='flex items-center gap-2'>
-                                                            <span className='text-sm font-medium'>{t("scoreboard.groups")}:</span>
+                                                            <span className='text-sm font-medium'>分组筛选:</span>
                                                             <Select value={selectedGroupId?.toString() || "all"} onValueChange={handleGroupChange} disabled={pageLoading}>
                                                                 <SelectTrigger className="w-[180px]">
-                                                                    <SelectValue placeholder={t("scoreboard.select_groups")} />
+                                                                    <SelectValue placeholder="选择分组" />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
-                                                                    <SelectItem value="all">{t("scoreboard.all_groups")}</SelectItem>
+                                                                    <SelectItem value="all">全部队伍</SelectItem>
                                                                     {groups.map((group) => (
                                                                         <SelectItem key={group.group_id} value={group.group_id.toString()}>
-                                                                            {group.group_name} ({group.team_count}{t("team")})
+                                                                            {group.group_name} ({group.team_count}队)
                                                                         </SelectItem>
                                                                     ))}
                                                                 </SelectContent>
@@ -655,11 +654,11 @@ export default function ScoreBoardPage(
                                                     {/* 页面大小选择器 */}
                                                     {pagination && (
                                                         <div className='flex items-center gap-2'>
-                                                            <span className='text-sm font-medium hidden sm:inline'>{t("scoreboard.pages")}:</span>
-                                                            <span className='text-sm font-medium sm:hidden'>{t("scoreboard.per_page")}:</span>
+                                                            <span className='text-sm font-medium hidden sm:inline'>每页显示:</span>
+                                                            <span className='text-sm font-medium sm:hidden'>每页:</span>
                                                             <Select value={pageSize.toString()} onValueChange={handlePageSizeChange} disabled={pageLoading}>
                                                                 <SelectTrigger className="w-[70px] h-8 text-xs sm:text-sm">
-                                                                    <SelectValue placeholder={t("scoreboard.page_count")} />
+                                                                    <SelectValue placeholder="页面大小" />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     <SelectItem value="10">10</SelectItem>
@@ -677,7 +676,7 @@ export default function ScoreBoardPage(
                                                 {pagination && (
                                                     <div className='flex items-center'>
                                                         <span className='text-xs sm:text-sm text-muted-foreground'>
-                                                            {t("scoreboard.page_info", { count: pagination.total_count, cur_page: pagination.current_page, pages: pagination.total_pages })}
+                                                            共 {pagination.total_count} 支队伍，第 {pagination.current_page} / {pagination.total_pages} 页
                                                         </span>
                                                     </div>
                                                 )}
