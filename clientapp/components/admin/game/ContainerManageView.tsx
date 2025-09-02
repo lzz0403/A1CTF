@@ -37,7 +37,7 @@ import {
     TableRow,
 } from "components/ui/table"
 
-import { api } from "utils/ApiHelper";
+import { api, createSkipGlobalErrorConfig } from "utils/ApiHelper";
 import { Badge } from "components/ui/badge";
 import {
     AlertDialog,
@@ -225,7 +225,7 @@ export function ContainerManageView({
 
     const submitExtendContainer = (containerId: string) => {
         toast.promise(
-            api.admin.adminExtendContainer({ container_id: containerId }),
+            api.admin.adminExtendContainer({ container_id: containerId }, createSkipGlobalErrorConfig()),
             {
                 pending: t("container.extend.pending"),
                 success: { render() { fetchContainers(); return t("container.extend.success"); } },
@@ -437,6 +437,7 @@ export function ContainerManageView({
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
+                                    disabled={container.container_status !== ContainerStatus.ContainerRunning}
                                     variant="ghost"
                                     className="h-8 w-8 p-0 text-blue-600"
                                     data-tooltip-id="my-tooltip"
@@ -504,6 +505,7 @@ export function ContainerManageView({
                                     {t("container.terminal.copy.pod")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
+                                    disabled={container.container_status !== ContainerStatus.ContainerRunning}
                                     onClick={() => submitExtendContainer(container.container_id)}
                                     className="text-blue-600"
                                 >

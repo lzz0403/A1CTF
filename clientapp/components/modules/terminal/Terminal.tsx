@@ -186,7 +186,7 @@ function MyTerminal({
     return (
         <div
             ref={ref as any}
-            className="w-full h-full bg-[#0f1720] p-2 rounded-b-md box-border"
+            className="w-full h-full bg-[#0f1720] p-2 rounded-b-md"
         />
     );
 }
