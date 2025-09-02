@@ -135,6 +135,11 @@ func UpdateLivingContainers() {
 		log.Fatalf("Failed to find queued containers: %v\n", err)
 	}
 
+	// 没有容器信息就跳过，减少 k8s 请求
+	if len(containers) == 0 {
+		return
+	}
+
 	podList, err := k8stool.ListPods()
 	if err != nil {
 		zaphelper.Logger.Error("Failed to list pods", zap.Error(err))
@@ -215,16 +220,6 @@ func UpdateLivingContainers() {
 			tasks.NewContainerStartTask(container)
 		}
 
-		// 处理要求关闭的容器
-		if container.ContainerStatus == models.ContainerStopping {
-			if err := dbtool.DB().Model(&container).Update("container_status", models.ContainerStopped).Error; err != nil {
-				zaphelper.Logger.Error("failed to update container status", zap.Error(err), zap.Any("container", container))
-				continue
-			}
-			zaphelper.Logger.Info("Stopping container", zap.Any("container", container))
-			tasks.NewContainerStopTask(container)
-		}
-
 		// 到期容器处理
 		if time.Now().UTC().After(container.ExpireTime) &&
 			container.ContainerStatus != models.ContainerStopping {
@@ -232,6 +227,8 @@ func UpdateLivingContainers() {
 			if err := dbtool.DB().Model(&container).Update("container_status", models.ContainerStopping).Error; err != nil {
 				zaphelper.Logger.Error("failed to update container status", zap.Error(err), zap.Any("container", container))
 				continue
+			} else {
+				container.ContainerStatus = models.ContainerStopping
 			}
 		}
 
@@ -242,7 +239,20 @@ func UpdateLivingContainers() {
 			if err := dbtool.DB().Model(&container).Update("container_status", models.ContainerStopping).Error; err != nil {
 				zaphelper.Logger.Error("failed to update container status", zap.Error(err), zap.Any("container", container))
 				continue
+			} else {
+				container.ContainerStatus = models.ContainerStopping
 			}
+		}
+
+		// 上面更新了一次 到期/超时容器 的状态，在一次for循环中直接关闭该容器
+		// 处理要求关闭的容器
+		if container.ContainerStatus == models.ContainerStopping {
+			if err := dbtool.DB().Model(&container).Update("container_status", models.ContainerStopped).Error; err != nil {
+				zaphelper.Logger.Error("failed to update container status", zap.Error(err), zap.Any("container", container))
+				continue
+			}
+			zaphelper.Logger.Info("Stopping container", zap.Any("container", container))
+			tasks.NewContainerStopTask(container)
 		}
 	}
 }
