@@ -284,6 +284,7 @@ export default function ScoreBoardPage(
             }
             row.push({ v: team.score || 0, t: 'n', s: scoreStyle });
 
+
             // 分组分列
             let groupStyle: any = {
                 alignment: { horizontal: "center", vertical: "center" },
@@ -339,7 +340,7 @@ export default function ScoreBoardPage(
         const colWidths = [
             { wch: 8 },  // 排名
             { wch: 20 }, // 队伍名称
-            { wch: 20 }, // 分列
+            { wch: 20 }, // 分组
             { wch: 10 }, // 总分
         ];
 
@@ -482,6 +483,7 @@ export default function ScoreBoardPage(
                             },
                             endLabel: {
                                 show: true,
+
                                 formatter: `${team.team_name} - ${team.group_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
                                 color: theme === 'dark' ? '#f1f5f9' : '#0f172a',
                                 fontWeight: 'bold',
