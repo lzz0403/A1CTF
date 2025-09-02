@@ -231,13 +231,18 @@ export function ScoreTable(
                                         <AvatarUsername avatar_url={item.team_avatar} username={item.team_name ?? ""} size={32} fontSize={14} />
                                     </div>
                                     <div className="flex-1 overflow-hidden select-none">
-                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${item.score} pts</div>`}
-                                            onClick={() => {
-                                                setShowUserDetail(item || {})
-                                            }}
-                                        >{item.team_name}</a>
-                                        <span className="text-xs text-muted-foreground text-nowrap text-ellipsis overflow-hidden">
-                                        {item.group_name}</span>
+                                        <div className="flex items-center gap-2">
+                                            <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${item.score} pts${item.group_name ? ` - ${item.group_name}` : ''}</div>`}
+                                                onClick={() => {
+                                                    setShowUserDetail(item || {})
+                                                }}
+                                            >{item.team_name}</a>
+                                            {item.group_name && (
+                                                <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded-md">
+                                                    {item.group_name}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="justify-end gap-1 hidden lg:flex">
                                         <span>{item.score}</span>
@@ -332,7 +337,7 @@ export function ScoreTable(
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6" /></svg>
                 </Button>
 
-                {/* 页码按钮 */}
+                {/* 页码按钮 */
                 <div className="flex items-center gap-1">
                     {totalPage > 7 ? (
                         <>
