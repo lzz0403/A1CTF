@@ -236,12 +236,7 @@ export function ScoreTable(
                                                 onClick={() => {
                                                     setShowUserDetail(item || {})
                                                 }}
-                                            >{item.team_name}</a>
-                                            {item.group_name && (
-                                                <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded-md">
-                                                    {item.group_name}
-                                                </span>
-                                            )}
+                                            >{item.group_name}</a>
                                         </div>
                                     </div>
                                     <div className="justify-end gap-1 hidden lg:flex">
