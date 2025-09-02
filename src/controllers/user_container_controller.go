@@ -113,6 +113,7 @@ func UserCreateGameContainer(c *gin.Context) {
 
 	// 用户操作靶机的 60 秒 CD
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
+	timeLimit = getTimeLimitConfig()
 	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
@@ -158,6 +159,9 @@ func UserCreateGameContainer(c *gin.Context) {
 		"challenge_name": gameChallenge.Challenge.Name,
 		"expire_time":    newContainer.ExpireTime,
 	})
+
+	// 异步开启k8s的pod任务
+	tasks.NewContainerStartTask(newContainer)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
@@ -210,6 +214,7 @@ func UserCloseGameContainer(c *gin.Context) {
 
 	// 用户操作靶机的 60 秒 CD
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
+	timeLimit = getTimeLimitConfig()
 	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
@@ -262,6 +267,9 @@ func UserCloseGameContainer(c *gin.Context) {
 		"container_id":   curContainer.ContainerID,
 	})
 
+	// 异步调用k8s删除pod任务
+	tasks.NewContainerStopTask(curContainer)
+
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "OK",
@@ -275,6 +283,7 @@ func UserExtendGameContainer(c *gin.Context) {
 	challengeID := c.MustGet("challenge_id").(int64)
 
 	operationName := fmt.Sprintf("%s:containerOperation", user.UserID)
+	timeLimit = getTimeLimitConfig()
 	locked := redistool.LockForATime(operationName, timeLimit)
 
 	if !locked {
