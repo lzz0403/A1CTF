@@ -271,7 +271,7 @@ export default function ScoreBoardPage(
 
             // 总分列
             let scoreStyle: any = {
-                alignment: { horizontal: "center", vertical: "center" },
+                alignment: { horizontal: "right", vertical: "center" },
                 border: {
                     top: { style: "thin", color: { rgb: "E5E7EB" } },
                     bottom: { style: "thin", color: { rgb: "E5E7EB" } },
@@ -283,6 +283,21 @@ export default function ScoreBoardPage(
                 scoreStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
             }
             row.push({ v: team.score || 0, t: 'n', s: scoreStyle });
+
+            // 分组分列
+            let groupStyle: any = {
+                alignment: { horizontal: "center", vertical: "center" },
+                border: {
+                    top: { style: "thin", color: { rgb: "E5E7EB" } },
+                    bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                    left: { style: "thin", color: { rgb: "E5E7EB" } },
+                    right: { style: "thin", color: { rgb: "E5E7EB" } }
+                }
+            };
+            if (teamIndex % 2 === 0 && rank > 3) {
+                groupStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
+            }
+            row.push({ v: team.group_name || 0, t: 'n', s: groupStyle });
 
             // 题目分数列
             Object.keys(challengesByCategory).sort().forEach(category => {
@@ -324,6 +339,7 @@ export default function ScoreBoardPage(
         const colWidths = [
             { wch: 8 },  // 排名
             { wch: 20 }, // 队伍名称
+            { wch: 20 }, // 分列
             { wch: 10 }, // 总分
         ];
 
@@ -466,7 +482,7 @@ export default function ScoreBoardPage(
                             },
                             endLabel: {
                                 show: true,
-                                formatter: `${team.team_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
+                                formatter: `${team.team_name} - ${team.group_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
                                 color: theme === 'dark' ? '#f1f5f9' : '#0f172a',
                                 fontWeight: 'bold',
                                 fontSize: 12, // 稍微减小字体避免重叠
