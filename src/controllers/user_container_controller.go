@@ -150,6 +150,13 @@ func UserCreateGameContainer(c *gin.Context) {
 		return
 	}
 
+	// k8s 开启 pod 需要 Challenge的AllowWAN/AllowDNS 和 TeamFlag的FlagContent 的信息
+	newContainer.Challenge = gameChallenge.Challenge
+	newContainer.TeamFlag = flag
+
+	// 异步开启k8s的pod任务
+	tasks.NewContainerStartTask(newContainer)
+
 	// 记录创建容器请求
 	tasks.LogUserOperation(c, models.ActionStartContainer, models.ResourceTypeContainer, &newContainer.ContainerID, map[string]interface{}{
 		"game_id":        game.GameID,
@@ -158,10 +165,8 @@ func UserCreateGameContainer(c *gin.Context) {
 		"challenge_id":   gameChallenge.ChallengeID,
 		"challenge_name": gameChallenge.Challenge.Name,
 		"expire_time":    newContainer.ExpireTime,
+		"flag":           newContainer.TeamFlag.FlagContent,
 	})
-
-	// 异步开启k8s的pod任务
-	tasks.NewContainerStartTask(newContainer)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
