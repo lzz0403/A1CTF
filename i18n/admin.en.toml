@@ -46,6 +46,10 @@ other = "Failed to load challenges"
 description = "Failed to create challenge"
 other = "Failed to create challenge"
 
+[FailedToCreateWithoutContainer]
+description = "Dynamic Flag requires container"
+other = "Dynamic Flag requires container"
+
 [FailedToDeleteChallenge]
 description = "Failed to delete challenge"
 other = "Failed to delete challenge"
