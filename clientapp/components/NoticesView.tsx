@@ -16,14 +16,14 @@ import { MacScrollbar } from "mac-scrollbar";
 let messages: GameNotice[] = []
 
 // 单独的消息卡片组件，使用React.memo优化
-const NoticeCard = memo(({ 
-    notice, 
-    index: _index, 
-    theme 
-}: { 
-    notice: GameNotice, 
-    index: number, 
-    theme: string | undefined 
+const NoticeCard = memo(({
+    notice,
+    index: _index,
+    theme
+}: {
+    notice: GameNotice,
+    index: number,
+    theme: string | undefined
 }) => {
     const { t } = useTranslation("notices_view");
 
@@ -32,13 +32,13 @@ const NoticeCard = memo(({
             case NoticeCategory.NewAnnouncement:
                 return (<Mdx source={notice.data[1]}></Mdx>)
             case NoticeCategory.NewHint:
-                return (<span>{`💡 ${t("challenge_name")} [${notice.data.join(", ")}] ${t("new_hint")}`}</span>)
+                return (<span>{`💡 ${t("challenge_name")} `}<strong>{notice.data.join(", ")}</strong>{` ${t("new_hint")}`}</span>)
             case NoticeCategory.FirstBlood:
-                return (<span>{`🥇 ${notice.data[0]} ${t("blood_message_p1")} ${notice.data[1]} ${t("blood1")}`}</span>)
+                return (<span>{`🥇 ${notice.data[0]} ${t("blood_message_p1")} `}<strong>{notice.data[1]}</strong>{` ${t("blood1")}`}</span>)
             case NoticeCategory.SecondBlood:
-                return (<span>{`🥈 ${notice.data[0]} ${t("blood_message_p1")} ${notice.data[1]} ${t("blood2")}`}</span>)
+                return (<span>{`🥈 ${notice.data[0]} ${t("blood_message_p1")} `}<strong>{notice.data[1]}</strong>{` ${t("blood2")}`}</span>)
             case NoticeCategory.ThirdBlood:
-                return (<span>{`🥉 ${notice.data[0]} ${t("blood_message_p1")} ${notice.data[1]} ${t("blood3")}`}</span>)
+                return (<span>{`🥉 ${notice.data[0]} ${t("blood_message_p1")} `}<strong>{notice.data[1]}</strong>{` ${t("blood3")}`}</span>)
         }
     }, [notice.notice_category, notice.data, t]);
 
@@ -58,8 +58,8 @@ const NoticeCard = memo(({
     }, [notice.notice_category]);
 
     const noticeTitle = useMemo(() => {
-        return notice.notice_category == NoticeCategory.NewAnnouncement 
-            ? `${dayjs(notice.create_time).format("YYYY-MM-DD HH:mm:ss")} | ${notice.data[0]}` 
+        return notice.notice_category == NoticeCategory.NewAnnouncement
+            ? `${dayjs(notice.create_time).format("YYYY-MM-DD HH:mm:ss")} | ${notice.data[0]}`
             : dayjs(notice.create_time).format("YYYY-MM-DD HH:mm:ss");
     }, [notice.notice_category, notice.create_time, notice.data]);
 

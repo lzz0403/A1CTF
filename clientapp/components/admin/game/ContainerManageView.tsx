@@ -357,7 +357,7 @@ export function ContainerManageView({
             },
             cell: ({ row }) => {
                 const expireTime = row.original.container_expiretime;
-                return <div>{dayjs(expireTime).format('YYYY-MM-DD HH:mm:ss')} ({dayjs(expireTime).diff(dayjs(), 'minutes')}mins)</div>
+                return <div>{dayjs(expireTime).format('YYYY-MM-DD HH:mm:ss')}{row.original.container_status === ContainerStatus.ContainerRunning ? ` (${dayjs(expireTime).diff(dayjs(), 'minutes')} mins)` : ""}</div>
             },
             sortingFn: (rowA, rowB, _columnId) => {
                 const dateA = dayjs(rowA.original.container_expiretime);

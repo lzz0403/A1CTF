@@ -186,7 +186,7 @@ function MyTerminal({
     return (
         <div
             ref={ref as any}
-            className="w-full h-full bg-[#0f1720] p-2 rounded-b-md"
+            className="w-full h-full bg-[#0f1720] rounded-b-md"
         />
     );
 }
@@ -332,7 +332,7 @@ export default function ContainerTerminal({
                 </div>
 
                 {/* 终端容器 */}
-                <div className="flex-1 min-h-0 overflow-hidden">
+                <div className="flex-1 min-h-0 overflow-hidden p-2 bg-[#0f1720]">
                     <MyTerminal podName={podName} containerName={containerName} fitRef={fitRef} wsRef={wsRef} />
                 </div>
             </div>
