@@ -364,6 +364,14 @@ func AdminUpdateGameChallenge(c *gin.Context) {
 		var judgeConfig models.JudgeConfig
 		if judgeConfigBytes, err := sonic.Marshal(judgeConfigData); err == nil {
 			if err := sonic.Unmarshal(judgeConfigBytes, &judgeConfig); err == nil {
+				// FlagTemplate 必须存在，且长度不少于3个字符
+				if judgeConfig.FlagTemplate == nil || *judgeConfig.FlagTemplate == "" || len(*judgeConfig.FlagTemplate) < 4 {
+					c.JSON(http.StatusBadRequest, gin.H{
+						"code":    400,
+						"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "InvalidFlagTemplate"}),
+					})
+					return
+				}
 				updateData["judge_config"] = judgeConfig
 				updateFields = append(updateFields, "judge_config")
 			}
