@@ -237,6 +237,11 @@ export function ScoreTable(
                                             }}
                                         >{item.team_name}</a>
                                     </div>
+                                    {item.group_name && (
+                                        <div className="overflow-hidden select-none mr-2">
+                                            <span className="text-nowrap text-ellipsis overflow-hidden text-muted-foreground text-sm">{item.group_name}</span>
+                                        </div>
+                                    )}
                                     <div className="justify-end gap-1 hidden lg:flex">
                                         <span>{item.score}</span>
                                         <span className="text-gray-500">pts</span>
