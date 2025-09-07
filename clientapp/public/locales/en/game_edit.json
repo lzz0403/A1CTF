@@ -333,7 +333,7 @@
         },
         "search": "Supports team ID, Pod ID, container ID, team name, challenge name, challenge ID, team ID",
         "show": {
-            "error": "Show Error Containers",
+            "error": "Show Error",
             "item": "Show Items"
         },
         "empty": "No container data"
