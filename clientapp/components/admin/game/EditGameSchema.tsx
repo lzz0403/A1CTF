@@ -1,4 +1,4 @@
-import { Radar, MessageSquareLock, Bug, GlobeLock, Binary, FileSearch, HardDrive, Smartphone, SquareCode, Bot, Github, Bitcoin, ShieldCheck, brick-wall-fire } from 'lucide-react';
+import { Radar, MessageSquareLock, Bug, GlobeLock, Binary, FileSearch, HardDrive, Smartphone, SquareCode, Bot, Github, Bitcoin, ShieldCheck, BrickWallFire } from 'lucide-react';
 import * as z from 'zod';
 
 /*
@@ -20,7 +20,7 @@ export const categories: { [key: string]: any } = {
     AI: <Bot size={21} />,
     PENTEST: <ShieldCheck size={21} />,
     OSINT: <Github size={21} />,
-    IR: <brick-wall-fire size={21} />, // 添加IR分类及其图标
+    IR: <BrickWallFire size={21} />, // 添加IR分类及其图标
 };
 
 export const GameChallengeSchema = z.object({
