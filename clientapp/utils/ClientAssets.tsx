@@ -1,4 +1,4 @@
-import { Binary, Bitcoin, Bot, Bug, FileSearch, Github, GlobeLock, HardDrive, MessageSquareLock, Rabbit, Radar, ShieldCheck, Smartphone, SquareCode } from "lucide-react"
+import { Binary, Bitcoin, Bot, Bug, FileSearch, Github, GlobeLock, HardDrive, MessageSquareLock, Rabbit, Radar, ShieldCheck, Smartphone, SquareCode, brick-wall-fire } from "lucide-react"
 
 export const challengeCategoryColorMap : { [key: string]: string } = {
     "all": "rgb(32, 201, 151)",
@@ -14,7 +14,8 @@ export const challengeCategoryColorMap : { [key: string]: string } = {
     "ai": "rgb(148, 216, 45)",
     "pentest": "rgb(204, 93, 232)",
     "osint": "rgb(255, 146, 43)",
-    "blockchain": "rgb(75, 192, 192)"
+    "blockchain": "rgb(75, 192, 192)",
+    "ir": "rgb(255, 182, 235)", // 为IR添加一个颜色，可以根据需要调整
 };
 
 export const challengeCategoryIcons : { [key: string]: any } = {
@@ -31,5 +32,6 @@ export const challengeCategoryIcons : { [key: string]: any } = {
     "ppc": <SquareCode size={23} />,
     "ai": <Bot size={23} />,
     "pentest": <ShieldCheck size={23} />,
-    "osint": <Github size={23} />
+    "osint": <Github size={23} />,
+    "ir": <brick-wall-fire size={23} />, // 为IR添加一个图标，可以根据需要选择合适的图标
 };

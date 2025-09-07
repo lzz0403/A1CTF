@@ -27,7 +27,7 @@ import { Button } from "components/ui/button";
 import { Bitcoin, Cloud, FileCode, Github, PlusCircle, Save, ScanBarcode, ShieldCheck, TableProperties, Trash2, Upload } from "lucide-react"
 
 
-import { Binary, Bot, Bug, FileSearch, GlobeLock, HardDrive, MessageSquareLock, Radar, Smartphone, SquareCode } from "lucide-react"
+import { Binary, Bot, Bug, FileSearch, GlobeLock, HardDrive, MessageSquareLock, Radar, Smartphone, SquareCode, brick-wall-fire } from "lucide-react"
 import { useEffect, useState } from "react";
 import { AdminChallengeConfig } from "utils/A1API";
 import { api } from "utils/ApiHelper";
@@ -477,7 +477,8 @@ export function ChallengeManageForm({ challengeInfo }: { challengeInfo: AdminCha
         "PPC": <SquareCode size={21} />,
         "AI": <Bot size={21} />,
         "PENTEST": <ShieldCheck size={21} />,
-        "OSINT": <Github size={21} />
+        "OSINT": <Github size={21} />,
+        "IR": <brick-wall-fire size={21} />, // 添加IR分类及其图标
     };
 
     const formSchema = z.object({
