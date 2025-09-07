@@ -231,17 +231,15 @@ export function ScoreTable(
                                         <AvatarUsername avatar_url={item.team_avatar} username={item.team_name ?? ""} size={32} fontSize={14} />
                                     </div>
                                     <div className="flex-1 overflow-hidden select-none">
-                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${item.score} pts</div>`}
+                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${item.group_name} - ${item.score} pts</div>`}
                                             onClick={() => {
                                                 setShowUserDetail(item || {})
                                             }}
                                         >{item.team_name}</a>
                                     </div>
-                                    {item.group_name && (
-                                        <div className="overflow-hidden select-none mr-2">
-                                            <span className="text-nowrap text-ellipsis overflow-hidden text-muted-foreground text-sm">{item.group_name}</span>
-                                        </div>
-                                    )}
+                                    <div className="justify-end gap-1 hidden lg:flex">
+                                        <span>{item.group_name}</span>
+                                    </div>
                                     <div className="justify-end gap-1 hidden lg:flex">
                                         <span>{item.score}</span>
                                         <span className="text-gray-500">pts</span>

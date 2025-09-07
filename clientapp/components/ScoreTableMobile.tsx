@@ -91,6 +91,9 @@ export function ScoreTableMobile ({ scoreBoardModel, setShowUserDetail, challeng
                                         >{ item.team_name }</a>
                                     </div>
                                     <div className="justify-end gap-1">
+                                        <span>{ item.group_name }</span>
+                                    </div>
+                                    <div className="justify-end gap-1">
                                         <span>{ item.score }</span>
                                         <span className="text-gray-500">pts</span>
                                     </div>
