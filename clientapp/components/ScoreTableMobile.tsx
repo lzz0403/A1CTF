@@ -64,6 +64,20 @@ export function ScoreTableMobile ({ scoreBoardModel, setShowUserDetail, challeng
             <span>{ rank }</span>
         )
     }
+    const getTeamGroupName = (teamId: number): string => {
+        // 从scoreBoardModel中查找队伍
+        const team = scoreBoardModel?.teams?.find(team => team.team_id === teamId);
+        
+        // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
+        if (team) {
+            // 从groups中查找对应的分组
+            const group = scoreBoardModel?.groups?.find(group => group.group_id === team.group_id);
+            if (group) {
+                return group.group_name;
+            }
+        }
+        return "未分组";
+    };
 
     return (
         
@@ -84,11 +98,11 @@ export function ScoreTableMobile ({ scoreBoardModel, setShowUserDetail, challeng
                                         <AvatarUsername avatar_url={item.team_avatar} username={item.team_name ?? ""} size={32} fontSize={14} />
                                     </div>
                                     <div className="flex-1 overflow-hidden select-none">
-                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={ `<div class='text-sm'>${item.team_name} - ${item.group_name} - ${ item.score } pts</div>` } 
+                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={ `<div class='text-sm'>${item.team_name} - ${getTeamGroupName(item.team_id)} - ${ item.score } pts</div>` } 
                                             onClick={() => {
                                                 setShowUserDetail(item || {})
                                             }}
-                                        >{ item.team_name }-{ item.group_name }</a>
+                                        >{ item.team_name }-{getTeamGroupName(item.team_id)}</a>
                                     </div>
                                     <div className="justify-end gap-1">
                                         <span>{ item.score }</span>

@@ -73,7 +73,6 @@ export default function ScoreBoardPage(
         gameInfo?.start_time,
         gameInfo?.end_time
     ]);
-
     // 使用useCallback优化函数props，避免BetterChart不必要的重新渲染
     const handleToggleFullscreen = useCallback(() => {
         setIsChartFullscreen(!isChartFullscreen);
@@ -466,7 +465,7 @@ export default function ScoreBoardPage(
                             },
                             endLabel: {
                                 show: true,
-                                formatter: `${team.team_name} - ${team.group_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
+                                formatter: `${team.team_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
                                 color: theme === 'dark' ? '#f1f5f9' : '#0f172a',
                                 fontWeight: 'bold',
                                 fontSize: 12, // 稍微减小字体避免重叠

@@ -229,7 +229,7 @@ export function ScoreTable(
                     </div>
                 )}
 
-                <div id="left-container" className="min-w-[300px] max-w-[18vw] flex-none overflow-hidden">
+                <div id="left-container" className="min-w-[300px] max-w-[30vw] flex-none overflow-hidden">
                     <div className="flex flex-col overflow-hidden">
                         <div className={`w-full border-b-2 h-12 border-t-2 transition-[border-color] duration-300 flex items-center justify-center`}>
                             {/* <span className="font-bold">Username</span> */}
