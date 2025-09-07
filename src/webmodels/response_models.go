@@ -153,9 +153,10 @@ type TimeLineScoreItem struct {
 }
 
 type TimeLineItem struct {
-	TeamID   int64               `json:"team_id"`
-	TeamName string              `json:"team_name"`
-	Scores   []TimeLineScoreItem `json:"scores"`
+	TeamID    int64               `json:"team_id"`
+	TeamName  string              `json:"team_name"`
+	Scores    []TimeLineScoreItem `json:"scores"`
+	GroupName *string             `json:"group_name"` // 添加这一行
 }
 
 type TeamSolveItem struct {
