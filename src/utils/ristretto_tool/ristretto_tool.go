@@ -520,6 +520,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			SolvedChallenges: teamData.SolvedChallenges,
 			ScoreAdjustments: teamData.ScoreAdjustments,
 			GroupID:          teamData.GroupID,
+			GroupName:        teamData.GroupName,
 		}
 		finalScoreBoardMap[teamData.TeamID] = tmp
 		processedTeamRankings = append(processedTeamRankings, tmp)
@@ -544,6 +545,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			SolvedChallenges: teamData.SolvedChallenges,
 			ScoreAdjustments: teamData.ScoreAdjustments,
 			GroupID:          teamData.GroupID,
+			GroupName:        teamData.GroupName,
 		})
 		// 防止队伍数量少于 10报错
 		idx += 1
