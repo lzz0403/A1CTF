@@ -12,6 +12,7 @@ const TableScoreboard = "scoreboard"
 
 type ScoreBoardData struct {
 	TeamName             string    `json:"team_name"`
+	GroupName            string    `json:"group_name"`
 	SolvedChallenges     []string  `json:"solved_challenges"`
 	NewSolvedChallengeID *int64    `json:"new_solved"`
 	Score                float64   `json:"score"`
