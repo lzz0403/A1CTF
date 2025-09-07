@@ -20,7 +20,7 @@ export function ScoreTable(
         pagination,
         curPage,
         setCurPage,
-        isLoading
+        isLoading,
     }: {
         scoreBoardModel: GameScoreboardData,
         setShowUserDetail: Dispatch<SetStateAction<TeamScore>>,
@@ -29,7 +29,7 @@ export function ScoreTable(
         pagination: PaginationInfo | undefined,
         curPage: number,
         setCurPage: Dispatch<SetStateAction<number>>,
-        isLoading: boolean
+        isLoading: boolean,
     }
 ) {
 
@@ -113,17 +113,12 @@ export function ScoreTable(
         // 从scoreBoardModel中查找队伍
         const team = scoreBoardModel?.teams?.find(team => team.team_id === teamId);
         
-        // 如果找到队伍并且有group_name，则返回
-        if (team && team.group_name) {
-            return team.group_name;
-        }
-        
-        // 如果找不到队伍或没有group_name，则尝试通过group_id查找
-        if (team && team.group_id) {
+        // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
+        if (team) {
             // 从groups中查找对应的分组
-            const group = groups.find(group => group.group_id === team.group_id);
+            const group = scoreBoardModel?.groups?.find(group => group.group_id === team.group_id);
             if (group) {
-            return group.group_name;
+                return group.group_name;
             }
         }
         return "未分组";
