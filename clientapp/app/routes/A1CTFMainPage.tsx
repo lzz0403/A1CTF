@@ -20,8 +20,8 @@ export default function A1CTFMainPage() {
 
   const pickIconSrc = useCallback((): string | null => {
     if (!clientConfig) return null;
-    const white = clientConfig.FancyBackGroundIconWhite;
-    const black = clientConfig.FancyBackGroundIconBlack;
+    const white = clientConfig.SVGIconDark;
+    const black = clientConfig.SVGIconLight;
     if (!white || !black) return null;
 
     if (theme === "system") {
