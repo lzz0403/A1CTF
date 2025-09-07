@@ -466,7 +466,7 @@ export default function ScoreBoardPage(
                             },
                             endLabel: {
                                 show: true,
-                                formatter: `${team.team_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
+                                formatter: `${team.team_name} - ${team.group_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
                                 color: theme === 'dark' ? '#f1f5f9' : '#0f172a',
                                 fontWeight: 'bold',
                                 fontSize: 12, // 稍微减小字体避免重叠
