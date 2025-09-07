@@ -33,6 +33,14 @@ func UserCreateGameTeam(c *gin.Context) {
 		return
 	}
 
+	if game.GroupInviteCodeEnabled && payload.InviteCode == nil {
+		c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
+			Code:    400,
+			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "GroupInviteCodeRequired"}),
+		})
+		return
+	}
+
 	// 检查队伍名称是否已经存在
 	var existingTeam models.Team
 	if err := dbtool.DB().Where("game_id = ? AND team_name = ?", game.GameID, payload.Name).First(&existingTeam).Error; err == nil {
@@ -49,8 +57,8 @@ func UserCreateGameTeam(c *gin.Context) {
 		return
 	}
 
-	// 如果指定了分组ID，验证分组是否存在
-	if payload.GroupID != nil {
+	// 如果指定了分组ID，验证分组是否存在, 开启分组邀请码后不可以自选组
+	if payload.GroupID != nil && !game.GroupInviteCodeEnabled {
 		var group models.GameGroup
 		if err := dbtool.DB().Where("group_id = ? AND game_id = ?", *payload.GroupID, game.GameID).First(&group).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
@@ -68,6 +76,24 @@ func UserCreateGameTeam(c *gin.Context) {
 		}
 	}
 
+	var gameGroupID *int64 = nil
+
+	if game.GroupInviteCodeEnabled {
+		// 检查分组邀请码
+		var group models.GameGroup
+		if err := dbtool.DB().Where("invite_code = ? AND game_id = ?", *payload.InviteCode, game.GameID).First(&group).Error; err != nil {
+			c.JSON(http.StatusBadRequest, webmodels.ErrorMessage{
+				Code:    400,
+				Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "InvalidGroupInviteCode"}),
+			})
+			return
+		} else {
+			gameGroupID = &group.GroupID
+		}
+	} else {
+		gameGroupID = payload.GroupID
+	}
+
 	inviteCode := fmt.Sprintf("%s-%s", payload.Name, uuid.New().String())
 	teamMembers := pq.StringArray{user.UserID}
 
@@ -83,7 +109,7 @@ func UserCreateGameTeam(c *gin.Context) {
 		TeamHash:        general.RandomHash(16),
 		InviteCode:      &inviteCode,
 		TeamStatus:      models.ParticipatePending,
-		GroupID:         payload.GroupID,
+		GroupID:         gameGroupID,
 		TeamType:        models.TeamTypePlayer,
 	}
 

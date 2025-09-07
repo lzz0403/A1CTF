@@ -1,6 +1,7 @@
 {
     "invite_code": "Invite Code",
     "members": "Members",
+    "group_invite_code": "Group Invite Code",
     "show_invite_code": "Show invite code",
     "copy_invite_code": "Copy invite code",
     "refresh_invite_code": "Refresh invite code",

@@ -32,18 +32,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify/unstyled';
 import { api } from 'utils/ApiHelper';
-import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2, Clipboard } from 'lucide-react';
 import AlertConformer from 'components/modules/AlertConformer';
 import { useTranslation } from 'react-i18next';
-
-interface GameGroup {
-    group_id: number;
-    group_name: string;
-    group_description?: string;
-    display_order: number;
-    created_at: string;
-    updated_at: string;
-}
+import dayjs from 'dayjs';
+import { GameGroup } from 'utils/A1API';
+import copy from 'copy-to-clipboard';
 
 interface GameGroupManagerProps {
     gameId: number;
@@ -87,15 +81,7 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
         setLoading(true);
 
         api.admin.adminGetGameGroups(gameId).then((response) => {
-            const groups = (response.data.data || []).map((group: any) => ({
-                group_id: group.group_id,
-                group_name: group.group_name,
-                group_description: group.group_description || group.description,
-                display_order: group.display_order || 0,
-                created_at: group.created_at,
-                updated_at: group.updated_at,
-            }));
-            setGroups(groups);
+            setGroups(response.data.data || []);
         }).finally(() => {
             setLoading(false);
         })
@@ -224,6 +210,7 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                             <TableHead>{t("group.add.name.label")}</TableHead>
                             <TableHead>{t("group.add.info.label")}</TableHead>
                             <TableHead>{t("group.time")}</TableHead>
+                            <TableHead>{t("group.invite_code")}</TableHead>
                             <TableHead className="text-right">{t("action")}</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -248,7 +235,10 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                         {group.group_description || '-'}
                                     </TableCell>
                                     <TableCell>
-                                        {new Date(group.created_at).toLocaleDateString()}
+                                        {dayjs(group.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                                    </TableCell>
+                                    <TableCell>
+                                        {group.invite_code || "NULL"}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end gap-2">
@@ -259,6 +249,17 @@ export function GameGroupManager({ gameId }: GameGroupManagerProps) {
                                                 onClick={() => handleEditGroup(group)}
                                             >
                                                 <Pencil className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                type="button"
+                                                onClick={() => {
+                                                    copy(group.invite_code || "");
+                                                    toast.success(t("group.copy_success"));
+                                                }}
+                                            >
+                                                <Clipboard className="w-4 h-4" />
                                             </Button>
                                             <AlertConformer
                                                 title={t("group.timeline.delete.title")}

@@ -15,13 +15,14 @@ type ErrorMessage struct {
 // User Game Controller
 
 type UserGameSimpleInfo struct {
-	GameID    int64     `json:"game_id"`
-	Name      string    `json:"name"`
-	Summary   *string   `json:"summary"`
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
-	Visible   bool      `json:"visible"`
-	Poster    *string   `json:"poster"`
+	GameID                 int64     `json:"game_id"`
+	Name                   string    `json:"name"`
+	Summary                *string   `json:"summary"`
+	StartTime              time.Time `json:"start_time"`
+	GroupInviteCodeEnabled bool      `json:"group_invite_code_enabled"`
+	EndTime                time.Time `json:"end_time"`
+	Visible                bool      `json:"visible"`
+	Poster                 *string   `json:"poster"`
 }
 
 type UserFullGameInfo struct {

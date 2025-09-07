@@ -83,6 +83,10 @@
             "label": "是否可见",
             "description": "比赛是否可见"
         },
+        "group_invite_code_enable": {
+            "label": "启用组邀请码",
+            "description": "启动组邀请码后必须使用分组邀请码才能报名"
+        },
         "icon": {
             "label": "比赛图标",
             "dark": "深色",
@@ -191,6 +195,9 @@
         },
         "option": "可选",
         "time": "创建时间",
+        "invite_code": "邀请码(仅在启用组邀请码后有效)",
+        "copy": "复制邀请码",
+        "copy_success": "邀请码已复制到剪贴板",
         "empty": "暂无分组，点击\"创建分组\"开始添加"
     },
     "notice": {

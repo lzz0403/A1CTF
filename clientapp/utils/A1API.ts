@@ -310,6 +310,7 @@ export interface AdminFullGameInfo {
   first_blood_reward?: number;
   second_blood_reward?: number;
   third_blood_reward?: number;
+  group_invite_code_enable?: boolean;
   challenges?: AdminDetailGameChallenge[];
 }
 
@@ -319,6 +320,7 @@ export interface UserGameSimpleInfo {
   name: string;
   summary: string | null;
   poster?: string | null;
+  group_invite_code_enabled?: boolean;
   /** @format date-time */
   start_time: string;
   /** @format date-time */
@@ -475,6 +477,7 @@ export interface UserFullGameInfo {
   practice_mode: boolean;
   team_number_limit: number;
   container_number_limit: number;
+  group_invite_code_enabled?: boolean;
   require_wp: boolean;
   /** @format date-time */
   wp_expire_time: string;
@@ -844,6 +847,8 @@ export interface GameGroup {
    * @format date-time
    */
   created_at: string;
+  /** 邀请码 */
+  invite_code?: string;
   /**
    * 更新时间
    * @format date-time

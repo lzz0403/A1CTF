@@ -214,6 +214,22 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={form.control}
+                    name="group_invite_code_enable"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/50 p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel>{t("basic.group_invite_code_enable.label")}</FormLabel>
+                                <FormDescription>{t("basic.group_invite_code_enable.description")}</FormDescription>
+                            </div>
+                            <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
             </div>
 
             {/* 比赛图标 */}

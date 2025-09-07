@@ -1,5 +1,6 @@
 {
     "invite_code": "邀请码",
+    "group_invite_code": "分组邀请码",
     "members": "成员",
     "show_invite_code": "显示邀请码",
     "copy_invite_code": "复制邀请码",

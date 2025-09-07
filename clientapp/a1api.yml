@@ -3865,6 +3865,8 @@ components:
           type: number
         third_blood_reward:
           type: number
+        group_invite_code_enable:
+          type: boolean
         challenges:
           type: array
           items:
@@ -3896,6 +3898,8 @@ components:
         poster:
           type: string
           nullable: true
+        group_invite_code_enabled:
+          type: boolean
         start_time:
           type: string
           format: date-time
@@ -4187,6 +4191,8 @@ components:
           type: integer
         container_number_limit:
           type: integer
+        group_invite_code_enabled:
+          type: boolean
         require_wp:
           type: boolean
         wp_expire_time:
@@ -4879,6 +4885,9 @@ components:
           type: string
           format: date-time
           description: 创建时间
+        invite_code:
+          type: string
+          description: 邀请码
         updated_at:
           type: string
           format: date-time
