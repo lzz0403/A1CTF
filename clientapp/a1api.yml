@@ -3906,6 +3906,10 @@ components:
         end_time:
           type: string
           format: date-time
+        dark_icon:
+          type: string
+        light_icon:
+          type: string
         visible:
           type: boolean
       required:

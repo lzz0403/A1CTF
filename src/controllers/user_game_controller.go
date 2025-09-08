@@ -42,6 +42,8 @@ func UserListGames(c *gin.Context) {
 			GroupInviteCodeEnabled: game.GroupInviteCodeEnabled,
 			Visible:                game.Visible,
 			Poster:                 game.Poster,
+			LightIcon:              game.GameIconLight,
+			DarkIcon:               game.GameIconDark,
 		})
 	}
 

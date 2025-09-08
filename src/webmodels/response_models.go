@@ -23,6 +23,8 @@ type UserGameSimpleInfo struct {
 	EndTime                time.Time `json:"end_time"`
 	Visible                bool      `json:"visible"`
 	Poster                 *string   `json:"poster"`
+	LightIcon              *string   `json:"light_icon"`
+	DarkIcon               *string   `json:"dark_icon"`
 }
 
 type UserFullGameInfo struct {

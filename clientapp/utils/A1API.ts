@@ -325,6 +325,8 @@ export interface UserGameSimpleInfo {
   start_time: string;
   /** @format date-time */
   end_time: string;
+  dark_icon?: string;
+  light_icon?: string;
   visible: boolean;
 }
 
