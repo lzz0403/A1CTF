@@ -98,6 +98,7 @@
     "use-local-storage": "^3.0.0",
     "use-local-storage-state": "^19.5.0",
     "vaul": "^1.1.2",
+    "vite-plugin-compression": "^0.5.1",
     "vite-plugin-oxlint": "^1.4.0",
     "xlsx-js-style": "^1.2.0",
     "xss": "^1.0.15",
