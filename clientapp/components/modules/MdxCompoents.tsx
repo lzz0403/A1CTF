@@ -9,7 +9,7 @@ import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/pris
 
 import { useTheme } from 'next-themes';
 
-import ImageLoader from './modules/ImageLoader';
+import ImageLoader from './ImageLoader';
 import { useGlobalVariableContext } from 'contexts/GlobalVariableContext';
 
 export function Mdx({ source }: { source: string }) {

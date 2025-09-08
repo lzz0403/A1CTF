@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
 import { api, createSkipGlobalErrorConfig, ErrorMessage } from "utils/ApiHelper"
 import { randomInt } from "mathjs"
 import dayjs from "dayjs"
-import { Mdx } from "components/MdxCompoents"
+import LazyMdxCompoents from "components/modules/LazyMdxCompoents";
 import { toast } from 'react-toastify/unstyled';
 import ChallengeNameTitle from "./ChallengeNameTitle"
 import { useTheme } from "next-themes"
@@ -120,7 +120,7 @@ export default function ChallengeMainContent(
     const memoizedDescription = useMemo(() => {
         return curChallenge?.description ? (
             <div className="flex flex-col gap-0">
-                <Mdx source={curChallenge.description} />
+                <LazyMdxCompoents source={curChallenge.description} />
             </div>
         ) : (
             <span>{t("oops_empty")}</span>

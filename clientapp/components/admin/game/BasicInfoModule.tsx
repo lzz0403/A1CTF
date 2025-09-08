@@ -17,7 +17,7 @@ import ImageUploader from 'components/modules/ImageUploader';
 import { api } from 'utils/ApiHelper';
 import { SystemResourceType } from 'utils/A1API';
 import { DateTimePicker24h } from 'components/ui/data-time-picker';
-import ThemedEditor from 'components/modules/ThemedEditor';
+import LazyThemedEditor from "components/modules/LazyThemedEditor";
 import { useTranslation } from 'react-i18next';
 
 interface BasicInfoModuleProps {
@@ -152,7 +152,7 @@ export function BasicInfoModule({ form, gameID }: BasicInfoModuleProps) {
                                 <FormMessage className="text-[14px]" />
                             </div>
                             <FormControl>
-                                <ThemedEditor
+                                <LazyThemedEditor
                                     value={field.value}
                                     onChange={field.onChange}
                                     language="markdown"

@@ -12,9 +12,9 @@ import { api } from 'utils/ApiHelper';
 import { AdminNoticeItem } from 'utils/A1API';
 import { PlusCircle, Trash2, MessageSquare, Calendar, AlertCircle, Eye } from 'lucide-react';
 import dayjs from 'dayjs';
-import ThemedEditor from 'components/modules/ThemedEditor';
+import LazyThemedEditor from "components/modules/LazyThemedEditor";
 import { useTranslation, Trans } from 'react-i18next';
-import { Mdx } from 'components/MdxCompoents';
+import LazyMdxCompoents from 'components/modules/LazyMdxCompoents';
 
 interface GameNoticeManagerProps {
     gameId: number;
@@ -130,7 +130,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-2 block">{t("notice.create.content")}</label>
-                                <ThemedEditor
+                                <LazyThemedEditor
                                     value={createForm.content}
                                     onChange={(value) => setCreateForm(prev => ({ ...prev, content: value ?? "" }))}
                                     language="markdown"
@@ -269,7 +269,7 @@ export function GameNoticeManager({ gameId }: GameNoticeManagerProps) {
                     </DialogHeader>
                     <MacScrollbar className="max-h-[70vh]" skin={theme === "dark" ? "dark" : "light"}>
                         <div className="p-4 bg-muted/30 rounded-lg">
-                            <Mdx source={selectedNotice?.content ?? "empty"} />
+                            <LazyMdxCompoents source={selectedNotice?.content ?? "empty"} />
                         </div>
                     </MacScrollbar>
                 </DialogContent>

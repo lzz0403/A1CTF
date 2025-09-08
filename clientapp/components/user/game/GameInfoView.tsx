@@ -1,4 +1,4 @@
-import { Mdx } from "components/MdxCompoents";
+import LazyMdxCompoents from "components/modules/LazyMdxCompoents";
 import { useGlobalVariableContext } from "contexts/GlobalVariableContext";
 import { LibraryBig, QrCode } from "lucide-react";
 import { MacScrollbar } from "mac-scrollbar";
@@ -47,7 +47,7 @@ export default function GameInfoView(
                             <QrCode />
                         </div>
                         {gameDescription ? (
-                            <Mdx source={gameDescription || ""} />
+                            <LazyMdxCompoents source={gameDescription || ""} />
                         ) : (
                             <div className="w-full h-[60vh] flex items-center justify-center select-none">
                                 <span className="font-bold text-lg">{t("no_game_info")}</span>

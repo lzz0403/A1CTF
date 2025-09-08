@@ -38,7 +38,7 @@ import { useNavigate } from "react-router";
 import { UploadFileDialog } from "components/dialogs/UploadFileDialog";
 import { Switch } from "components/ui/switch";
 import { useTheme } from "next-themes";
-import ThemedEditor from "components/modules/ThemedEditor";
+import LazyThemedEditor from "components/modules/LazyThemedEditor";
 import { useTranslation, Trans } from "react-i18next";
 
 interface ContainerFormProps {
@@ -783,7 +783,7 @@ export function EditChallengeView({ challenge_info, isCreate = false }: { challe
                                         <FormMessage className="text-[14px]" />
                                     </div>
                                     <FormControl>
-                                        <ThemedEditor
+                                        <LazyThemedEditor
                                             value={field.value}
                                             onChange={field.onChange}
                                             language="markdown"

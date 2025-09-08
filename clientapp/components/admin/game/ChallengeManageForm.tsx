@@ -34,7 +34,7 @@ import { api } from "utils/ApiHelper";
 import { toast } from 'react-toastify/unstyled';
 import { UploadFileDialog } from "components/dialogs/UploadFileDialog";
 import { Switch } from "components/ui/switch";
-import ThemedEditor from "components/modules/ThemedEditor";
+import LazyThemedEditor from "components/modules/LazyThemedEditor";
 
 interface ContainerFormProps {
     control: any;
@@ -762,7 +762,7 @@ export function ChallengeManageForm({ challengeInfo }: { challengeInfo: AdminCha
                                 <FormMessage className="text-[14px]" />
                             </div>
                             <FormControl>
-                                <ThemedEditor
+                                <LazyThemedEditor
                                     value={field.value}
                                     onChange={field.onChange}
                                     language="markdown"

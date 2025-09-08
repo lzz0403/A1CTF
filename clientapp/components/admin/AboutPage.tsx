@@ -1,5 +1,5 @@
-import { Mdx } from 'components/MdxCompoents';
-import ThemedEditor from 'components/modules/ThemedEditor';
+import LazyMdxCompoents from "components/modules/LazyMdxCompoents";
+import LazyThemedEditor from "components/modules/LazyThemedEditor";
 import { Button } from 'components/ui/button';
 import { Save } from 'lucide-react';
 import { MacScrollbar } from 'mac-scrollbar';
@@ -44,7 +44,7 @@ export default function AboutPage(
 
     // 使用 useMemo 优化 Mdx 组件，只在 debouncedSource 改变时重新渲染
     const memoizedMdx = useMemo(() => {
-        return <Mdx source={debouncedSource} />;
+        return <LazyMdxCompoents source={debouncedSource} />;
     }, [debouncedSource]);
 
     const watchValue = useWatch({
@@ -73,7 +73,7 @@ export default function AboutPage(
             <div className='w-full h-full overflow-hidden'>
                 <div className="h-full w-full flex gap-4">
                     <div className='h-full w-1/2'>
-                        <ThemedEditor
+                        <LazyThemedEditor
                             value={aboutMeSource}
                             onChange={(value) => {
                                 const newValue = value || "";

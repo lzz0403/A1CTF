@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { CalendarClock, X } from "lucide-react";
 import dayjs from "dayjs";
 import { GameNotice, NoticeCategory } from "utils/A1API";
-import { Mdx } from "./MdxCompoents";
+import LazyMdxCompoents from "./modules/LazyMdxCompoents";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
 import { MacScrollbar } from "mac-scrollbar";
@@ -30,7 +30,7 @@ const NoticeCard = memo(({
     const getNoticeMessage = useMemo(() => {
         switch (notice.notice_category) {
             case NoticeCategory.NewAnnouncement:
-                return (<Mdx source={notice.data[1]}></Mdx>)
+                return (<LazyMdxCompoents source={notice.data[1]}></LazyMdxCompoents>)
             case NoticeCategory.NewHint:
                 return (<span>{`💡 ${t("challenge_name")} `}<strong>{notice.data.join(", ")}</strong>{` ${t("new_hint")}`}</span>)
             case NoticeCategory.FirstBlood:
