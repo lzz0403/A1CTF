@@ -27,32 +27,32 @@ export function Mdx({ source }: { source: string }) {
             <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkBreaks]}
                 rehypePlugins={[rehypeRaw]}
-                // components={{
-                //     code: ({ children = [], className, ...props }) => {
-                //         // 
-                //         const match = /language-(\w+)/.exec(className || '')
-                //         return match ? (<SyntaxHighlighter
-                //             language={match?.[1]}
-                //             showLineNumbers={true}
-                //             style={theme == "dark" ? (oneDark as any) : (oneLight as any)}
-                //             PreTag='div'
-                //             className='syntax-hight-wrapper transition-colors duration-300'
-                //         >
-                //             {children as string[]}
-                //         </SyntaxHighlighter>) : (
-                //             <code {...props} className={className}>
-                //                 {children}
-                //             </code>
-                //         )
-                //     },
-                //     img: ({ node: _node, ...props }) => (
-                //         <ImageLoader
-                //             src={props.src || clientConfig.DefaultBGImage}
-                //             alt={props.alt || ""}
-                //             className="w-full h-full object-cover"
-                //         />
-                //     ),
-                // }}
+                components={{
+                    code: ({ children = [], className, ...props }) => {
+                        // 
+                        const match = /language-(\w+)/.exec(className || '')
+                        return match ? (<SyntaxHighlighter
+                            language={match?.[1]}
+                            showLineNumbers={true}
+                            style={theme == "dark" ? (oneDark as any) : (oneLight as any)}
+                            PreTag='div'
+                            className='syntax-hight-wrapper transition-colors duration-300'
+                        >
+                            {children as string[]}
+                        </SyntaxHighlighter>) : (
+                            <code {...props} className={className}>
+                                {children}
+                            </code>
+                        )
+                    },
+                    img: ({ node: _node, ...props }) => (
+                        <ImageLoader
+                            src={props.src || clientConfig.DefaultBGImage}
+                            alt={props.alt || ""}
+                            className="w-full h-full object-cover"
+                        />
+                    ),
+                }}
                 skipHtml={false}
             >{source.replace(/<br\s*\/?>/g, "\n")}</ReactMarkdown>
         </div>
