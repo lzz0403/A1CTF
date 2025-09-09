@@ -31,9 +31,9 @@ export default function FancyBackground() {
         if (!white || !black) return null;
 
         if (theme === "system") {
-            return systemTheme === "dark" ? white : black;
+            return systemTheme === "dark" ? black : white;
         }
-        return theme === "light" ? black : white;
+        return theme === "light" ? white : black;
     }, [theme, systemTheme, clientConfig]);
 
     const pickMaskBaseColor = useCallback((): string => {

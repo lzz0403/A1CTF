@@ -193,7 +193,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                                                 <ClientChecker />
                                                 <div className="bg-background absolute top-0 left-0 w-screen h-screen z-[-1]" />
                                                 {animationPresent && <FancyBackground />}
-                                                <GameSwitchHover animation={true} />
+                                                <GameSwitchHover />
                                                 {screenTooSmall ? (
                                                     <Suspense>{children}</Suspense>
                                                 ) : <ScreenTooSmall />}
