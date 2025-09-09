@@ -142,6 +142,7 @@ func main() {
 
 	// 初始化 k8s 节点名称和地址映射
 	k8stool.InitNodeAddressMap()
+	k8stool.InitNodePortRangeMap()
 
 	// 初始化数据库连接
 	dbtool.Init()

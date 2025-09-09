@@ -90,42 +90,6 @@ func getContainerPorts(podInfo k8stool.PodInfo, task *models.Container) error {
 	return nil
 }
 
-func deleteRunningPod(podInfo k8stool.PodInfo, task *models.Container) error {
-	err := k8stool.DeletePod(&podInfo)
-	if err != nil {
-		tasks.LogContainerOperation(nil, nil, models.ActionContainerStopping, task.ContainerID, map[string]interface{}{
-			"game_id":               task.GameID,
-			"team_id":               task.TeamID,
-			"team_hash":             task.TeamHash,
-			"challenge_name":        task.ChallengeName,
-			"ingame_id":             task.InGameID,
-			"pod_name":              podInfo.Name,
-			"container_id":          task.ContainerID,
-			"container_expose_info": task.ContainerExposeInfos,
-		}, err)
-		return fmt.Errorf("DeletePod %+v error: %v", task, err)
-	} else {
-		if err := dbtool.DB().Model(&task).Updates(map[string]interface{}{
-			"container_status": models.ContainerStopped,
-		}).Error; err != nil {
-			return fmt.Errorf("failed to update container status: %v", err)
-		}
-	}
-
-	tasks.LogContainerOperation(nil, nil, models.ActionContainerStopped, task.ContainerID, map[string]interface{}{
-		"game_id":               task.GameID,
-		"team_id":               task.TeamID,
-		"team_hash":             task.TeamHash,
-		"challenge_name":        task.ChallengeName,
-		"ingame_id":             task.InGameID,
-		"pod_name":              podInfo.Name,
-		"container_id":          task.ContainerID,
-		"container_expose_info": task.ContainerExposeInfos,
-	}, nil)
-
-	return nil
-}
-
 func UpdateLivingContainers() {
 
 	// log.Println("UpdateLivingContainers")
@@ -187,7 +151,10 @@ func UpdateLivingContainers() {
 			if container.ContainerStatus == models.ContainerStarting {
 				// 如果远程服务器Pod已经是Running状态，就获取端口并且更新数据库
 				zaphelper.Logger.Info("Getting container port", zap.Any("container", container))
-				getContainerPorts(podInfo, container)
+				err := getContainerPorts(podInfo, container)
+				if err != nil {
+					zaphelper.Logger.Error("Failed to get container ports", zap.Error(err), zap.Any("container", container))
+				}
 			}
 
 			// 下面会处理
