@@ -13,11 +13,11 @@ export default function GamePosterInfoModule(
     {
         gameInfo,
         gameStatus,
-        teamStatus
+        _teamStatus
     }: {
         gameInfo: UserFullGameInfo | undefined,
         gameStatus: A1GameStatus,
-        teamStatus: ParticipationStatus
+        _teamStatus: ParticipationStatus
     }
 ) {
     const { t } = useTranslation("game_view")

@@ -1,7 +1,7 @@
 import { Button } from "components/ui/button"
 import ThemeSwitcher from "components/ToggleTheme"
 
-import { ArrowUpToLine, UserRoundMinus, Settings, Wrench, User } from 'lucide-react'
+import { ArrowUpToLine, UserRoundMinus, Settings, Wrench } from 'lucide-react'
 
 import {
     DropdownMenu,
