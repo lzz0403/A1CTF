@@ -26,7 +26,7 @@ import { Bitcoin, CircleArrowLeft, FileCode, Github, Save, ScanBarcode, ShieldCh
 
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
-import { Binary, Bot, Bug, FileSearch, GlobeLock, HardDrive, MessageSquareLock, Radar, Smartphone, SquareCode } from "lucide-react"
+import { Binary, Bot, Bug, FileSearch, GlobeLock, HardDrive, MessageSquareLock, Radar, Smartphone, SquareCode, BrickWallFire } from "lucide-react"
 import { useEffect, useState } from "react";
 import { MacScrollbar } from "mac-scrollbar";
 import { AdminChallengeConfig } from "utils/A1API";
@@ -52,7 +52,8 @@ export function CreateChallengeView() {
         "PPC": <SquareCode size={21} />,
         "AI": <Bot size={21} />,
         "PENTEST": <ShieldCheck size={21} />,
-        "OSINT": <Github size={21} />
+        "OSINT": <Github size={21} />,
+        "IR": <BrickWallFire size={21} />, // 添加IR分类及其图标
     };
 
     const formSchema = z.object({

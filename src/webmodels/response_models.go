@@ -153,9 +153,10 @@ type TimeLineScoreItem struct {
 }
 
 type TimeLineItem struct {
-	TeamID   int64               `json:"team_id"`
-	TeamName string              `json:"team_name"`
-	Scores   []TimeLineScoreItem `json:"scores"`
+	TeamID    int64               `json:"team_id"`
+	TeamName  string              `json:"team_name"`
+	Scores    []TimeLineScoreItem `json:"scores"`
+	GroupName string              `json:"group_name"` // 添加这一行
 }
 
 type TeamSolveItem struct {
@@ -187,7 +188,7 @@ type TeamScoreItem struct {
 	Score            float64                   `json:"score"`
 	Penalty          int64                     `json:"penalty"` // 罚时（秒）
 	GroupID          *int64                    `json:"group_id"`
-	GroupName        *string                   `json:"group_name"`
+	GroupName        string                    `json:"group_name"`
 	SolvedChallenges []TeamSolveItem           `json:"solved_challenges"`
 	ScoreAdjustments []TeamScoreAdjustmentItem `json:"score_adjustments"`
 	LastSolveTime    int64                     `json:"last_solve_time"`

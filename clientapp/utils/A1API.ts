@@ -566,7 +566,7 @@ export interface TeamScore {
   /** 所属分组ID */
   group_id?: number | null;
   /** 所属分组名称 */
-  group_name?: string | null;
+  group_name?: string;
   solved_challenges?: SolvedChallenge[];
   score_adjustments?: TeamScoreAdjustment[];
 }

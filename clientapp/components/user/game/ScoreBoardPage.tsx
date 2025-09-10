@@ -73,7 +73,6 @@ export default function ScoreBoardPage(
         gameInfo?.start_time,
         gameInfo?.end_time
     ]);
-
     // 使用useCallback优化函数props，避免BetterChart不必要的重新渲染
     const handleToggleFullscreen = useCallback(() => {
         setIsChartFullscreen(!isChartFullscreen);

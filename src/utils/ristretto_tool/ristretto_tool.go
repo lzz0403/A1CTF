@@ -347,6 +347,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			TeamSlogan:       team.TeamSlogan,
 			TeamDescription:  team.TeamDescription,
 			GroupID:          team.GroupID,
+			GroupName:        team.GroupName,
 			Score:            0,
 			Penalty:          0,
 			SolvedChallenges: make([]webmodels.TeamSolveItem, 0),
@@ -520,6 +521,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			SolvedChallenges: teamData.SolvedChallenges,
 			ScoreAdjustments: teamData.ScoreAdjustments,
 			GroupID:          teamData.GroupID,
+			GroupName:        teamData.GroupName,
 		}
 		finalScoreBoardMap[teamData.TeamID] = tmp
 		processedTeamRankings = append(processedTeamRankings, tmp)
@@ -544,6 +546,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			SolvedChallenges: teamData.SolvedChallenges,
 			ScoreAdjustments: teamData.ScoreAdjustments,
 			GroupID:          teamData.GroupID,
+			GroupName:        teamData.GroupName,
 		})
 		// 防止队伍数量少于 10报错
 		idx += 1
@@ -598,9 +601,10 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			teamID := team.TeamID
 
 			tmpTimeLine := webmodels.TimeLineItem{
-				TeamID:   teamID,
-				TeamName: team.TeamName,
-				Scores:   make([]webmodels.TimeLineScoreItem, 0),
+				TeamID:    teamID,
+				TeamName:  team.TeamName,
+				Scores:    make([]webmodels.TimeLineScoreItem, 0),
+				GroupName: team.GroupName,
 			}
 
 			scoreboard, exists := teamGameScoreboardMap[teamID]
@@ -633,9 +637,10 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 
 			if teamData, ok := teamDataMap[team.TeamID]; ok {
 				tmpTimeLine := webmodels.TimeLineItem{
-					TeamID:   team.TeamID,
-					TeamName: teamData.TeamName,
-					Scores:   make([]webmodels.TimeLineScoreItem, 0),
+					TeamID:    team.TeamID,
+					TeamName:  teamData.TeamName,
+					Scores:    make([]webmodels.TimeLineScoreItem, 0),
+					GroupName: teamData.GroupName,
 				}
 
 				scoreboard, exists := teamGameScoreboardMap[teamID]

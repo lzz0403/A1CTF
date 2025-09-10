@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import dayjs from "dayjs";
 
 import ReactDOMServer from 'react-dom/server';
-import { GameScoreboardData, PaginationInfo, TeamScore, UserSimpleGameChallenge } from "utils/A1API";
+import { GameGroupSimple, GameScoreboardData, PaginationInfo, TeamScore, UserSimpleGameChallenge } from "utils/A1API";
 import AvatarUsername from "./modules/AvatarUsername";
 import { challengeCategoryIcons } from "utils/ClientAssets";
 import { useTranslation } from "react-i18next";
@@ -20,7 +20,7 @@ export function ScoreTable(
         pagination,
         curPage,
         setCurPage,
-        isLoading
+        isLoading,
     }: {
         scoreBoardModel: GameScoreboardData,
         setShowUserDetail: Dispatch<SetStateAction<TeamScore>>,
@@ -29,7 +29,7 @@ export function ScoreTable(
         pagination: PaginationInfo | undefined,
         curPage: number,
         setCurPage: Dispatch<SetStateAction<number>>,
-        isLoading: boolean
+        isLoading: boolean,
     }
 ) {
 
@@ -45,6 +45,7 @@ export function ScoreTable(
     const [curPageData, setCurPageData] = useState<TeamScore[]>([])
     // const [curPage, setCurPage] = useState(1)
     const [totalPage, setTotalPage] = useState(0)
+    const [groups, setGroups] = useState<GameGroupSimple[]>([])
 
     // 计算总列数
     const totalColumns = Object.values(challenges).reduce((sum, challengeList) => sum + challengeList.length, 0)
@@ -107,7 +108,21 @@ export function ScoreTable(
 
     //     setCurPageData(pageData)
     // }, [scoreboardItems, curPage, pageSize])
-
+    // 通过队伍ID获取对应的group_name
+    const getTeamGroupName = (teamId: number): string => {
+        // 从scoreBoardModel中查找队伍
+        const team = scoreBoardModel?.teams?.find(team => team.team_id === teamId);
+        
+        // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
+        if (team) {
+            // 从groups中查找对应的分组
+            const group = scoreBoardModel?.groups?.find(group => group.group_id === team.group_id);
+            if (group) {
+                return group.group_name;
+            }
+        }
+        return "未分组";
+    };
 
     const getRankIcon = (rank: number) => {
         if (rank == 1) return (<Medal className="stroke-[#FFB02E]" />)
@@ -175,6 +190,7 @@ export function ScoreTable(
             return (<></>)
         }
     }
+    
 
     // 移除之前的动态宽度计算函数，现在所有列都使用固定宽度
     // getCategoryWidth 和 getChallengeColumnWidth 函数不再需要
@@ -213,7 +229,7 @@ export function ScoreTable(
                     </div>
                 )}
 
-                <div id="left-container" className="min-w-[300px] max-w-[18vw] flex-none overflow-hidden">
+                <div id="left-container" className="min-w-[300px] max-w-[30vw] flex-none overflow-hidden">
                     <div className="flex flex-col overflow-hidden">
                         <div className={`w-full border-b-2 h-12 border-t-2 transition-[border-color] duration-300 flex items-center justify-center`}>
                             {/* <span className="font-bold">Username</span> */}
@@ -231,13 +247,11 @@ export function ScoreTable(
                                         <AvatarUsername avatar_url={item.team_avatar} username={item.team_name ?? ""} size={32} fontSize={14} />
                                     </div>
                                     <div className="flex-1 overflow-hidden select-none">
-                                        <div className="flex items-center gap-2">
-                                            <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${item.score} pts${item.group_name ? ` - ${item.group_name}` : ''}</div>`}
-                                                onClick={() => {
-                                                    setShowUserDetail(item || {})
-                                                }}
-                                            >{item.group_name}</a>
-                                        </div>
+                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${getTeamGroupName(item.team_id)} - ${item.score} pts</div>`}
+                                            onClick={() => {
+                                                setShowUserDetail(item || {})
+                                            }}
+                                        >{item.team_name}-{getTeamGroupName(item.team_id)}</a>
                                     </div>
                                     <div className="justify-end gap-1 hidden lg:flex">
                                         <span>{item.score}</span>

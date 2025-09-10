@@ -59,6 +59,7 @@ type Team struct {
 	TeamID          int64               `gorm:"column:team_id;primaryKey;autoIncrement" json:"team_id"`
 	GameID          int64               `gorm:"column:game_id;not null" json:"game_id"`
 	TeamName        string              `gorm:"column:team_name;not null" json:"team_name"`
+	GroupName       string              `gorm:"column:group_name;not null" json:"group_name"`
 	TeamAvatar      *string             `gorm:"column:team_avatar" json:"team_avatar"`
 	TeamSlogan      *string             `gorm:"column:team_slogan" json:"team_slogan"`
 	TeamDescription *string             `gorm:"column:team_description" json:"team_description"`

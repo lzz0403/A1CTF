@@ -33,6 +33,7 @@ import { ScoreAdjustmentInfo, CreateScoreAdjustmentPayload, AdminListTeamItem } 
 interface Team {
     team_id: number;
     team_name: string;
+    group_name: string;
 }
 
 export function ScoreAdjustmentManagePage() {
@@ -88,7 +89,8 @@ export function ScoreAdjustmentManagePage() {
         }).then((res) => {
             const teamList = res.data.data?.map((team: AdminListTeamItem) => ({
                 team_id: team.team_id,
-                team_name: team.team_name
+                team_name: team.team_name,
+                group_name: team.group_name,
             })) || [];
 
             setTeamSearchResults(teamList);
@@ -143,7 +145,8 @@ export function ScoreAdjustmentManagePage() {
             // 转换队伍数据格式
             const teamList = teamsRes.data.data?.map((team: AdminListTeamItem) => ({
                 team_id: team.team_id,
-                team_name: team.team_name
+                team_name: team.team_name,
+                group_name: team.group_name,
             })) || [];
             setTeams(teamList);
         } catch (error) {

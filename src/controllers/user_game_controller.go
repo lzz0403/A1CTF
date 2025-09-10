@@ -156,7 +156,7 @@ func UserGetGameDetailWithTeamInfo(c *gin.Context) {
 			"team_hash":        curTeam.TeamHash,
 			"invite_code":      curTeam.InviteCode,
 			"team_status":      curTeam.TeamStatus,
-			"group_name":       nil,
+			"group_name":       curTeam.GroupName,
 			"rank":             0,
 			"penalty":          0,
 		}

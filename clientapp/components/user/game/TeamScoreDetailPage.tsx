@@ -190,7 +190,7 @@ export default function TeamScoreDetailPage(
                 },
                 title: {
                     left: 'center',
-                    text: `${showUserDetail.team_name} - 记分榜`,
+                    text: `${showUserDetail.team_name} - ${showUserDetail.group_name || ''} - 记分榜`,
                     textStyle: {
                         color: theme == "dark" ? "#FFFFFF" : "#121212",
                     }
