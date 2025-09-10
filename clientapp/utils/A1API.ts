@@ -617,7 +617,6 @@ export interface TeamTimeline {
   team_id?: number;
   /** @example "test114514" */
   team_name?: string;
-  group_name?: string;
   scores?: ScoreRecord[];
 }
 
@@ -677,7 +676,7 @@ export interface AdminListTeamItem {
   /** @format int64 */
   team_id: number;
   team_name: string;
-  group_name: string;
+  group_name?: string | null;
   team_avatar?: string | null;
   team_slogan?: string | null;
   members: AdminSimpleTeamMemberInfo[];

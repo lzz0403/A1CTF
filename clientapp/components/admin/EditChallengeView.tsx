@@ -355,7 +355,7 @@ function AttachmentForm({ control, index, form, removeAttachment, onFormSubmit }
                                                 <span className="text-[12px] font-bold">静态附件</span>
                                             </div>
                                         </SelectItem>
-                                        <SelectItem value="DYNAMICFILE">
+                                        <SelectItem value="DYNAMICFILE" disabled>
                                             <div className="w-full flex gap-2 items-center h-[25px]">
                                                 <FileCode />
                                                 <span className="text-[12px] font-bold">动态附件</span>

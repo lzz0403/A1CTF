@@ -5024,9 +5024,6 @@ components:
         team_name:
           type: string
           description: 队伍名称
-        group_name:
-          type: string
-          description: 分组名称
         adjustment_type:
           type: string
           enum: [cheat, reward, other]
@@ -5055,7 +5052,6 @@ components:
         - adjustment_id
         - team_id
         - team_name
-        - group_name
         - adjustment_type
         - score_change
         - reason
