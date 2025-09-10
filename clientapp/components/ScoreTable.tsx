@@ -396,7 +396,7 @@ export function ScoreTable(
                         </>
                     )}
                 </div>
-
+                
                 {/* 下一页按钮 */}
                 <Button
                     size="sm"
