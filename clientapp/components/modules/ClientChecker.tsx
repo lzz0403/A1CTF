@@ -37,7 +37,7 @@ export default function () {
     const unLoginAllowedPage = [
         "/",
         "/login",
-        "/signup",
+        // "/signup", // 注册路由已被屏蔽，只能通过API进行注册
         "/games",
         "/about",
         "/version",

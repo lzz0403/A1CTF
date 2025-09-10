@@ -50,6 +50,16 @@ other = "无效的文件ID"
 description = "加载文件映射失败"
 other = "加载文件映射失败"
 
+# 注册API密钥错误信息
+
+[RegistrationDisabled]
+description = "注册功能已禁用"
+other = "注册功能已禁用"
+
+[InvalidAPIKey]
+description = "无效的API密钥"
+other = "无效的API密钥"
+
 [FileNotFound]
 description = "文件未找到"
 other = "文件未找到"

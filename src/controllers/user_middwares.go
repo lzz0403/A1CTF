@@ -18,11 +18,45 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/spf13/viper"
 )
 
 type GameStatusMiddlewareProps struct {
 	VisibleAfterEnded bool
 	CheckGameStarted  bool
+}
+
+// APIKeyMiddleware 用于验证API请求中的密钥，只允许带有正确API密钥的请求访问注册接口
+func APIKeyMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 从配置文件中获取API密钥
+		apiKey := viper.GetString("system.api-register-key")
+		
+		// 如果配置中没有设置API密钥，则默认禁止所有注册请求
+		if apiKey == "" {
+			c.JSON(http.StatusForbidden, gin.H{
+				"code":    403,
+				"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "RegistrationDisabled"}),
+			})
+			c.Abort()
+			return
+		}
+		
+		// 从请求头中获取API密钥
+		requestAPIKey := c.GetHeader("X-API-Key")
+		
+		// 验证API密钥是否正确
+		if requestAPIKey != apiKey {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":    401,
+				"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "InvalidAPIKey"}),
+			})
+			c.Abort()
+			return
+		}
+		
+		c.Next()
+	}
 }
 
 // 比赛状态检查中间件

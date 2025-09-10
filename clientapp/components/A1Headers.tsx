@@ -132,9 +132,10 @@ const PageHeader = () => {
                             </>
                         ) : (
                             <>
-                                <Button asChild>
+                                {/* 注册功能已被屏蔽，只能通过API进行注册 */}
+                                {/* <Button asChild>
                                     <Link to={`/signup`}>{t("signup")}</Link>
-                                </Button>
+                                </Button> */}
                                 <Button asChild variant="outline">
                                     <Link to={`/login`}>{t("login")}</Link>
                                 </Button>
@@ -239,11 +240,12 @@ const PageHeader = () => {
                                                     <KeyRound /><span className="font-bold">{t("login")}</span>
                                                 </Link>
                                             </Button>
-                                            <Button asChild variant="ghost" className="mt-[0.5px] [&_svg]:size-[18px]">
+                                            {/* 注册功能已被屏蔽，只能通过API进行注册 */}
+                                            {/* <Button asChild variant="ghost" className="mt-[0.5px] [&_svg]:size-[18px]">
                                                 <Link to={`/signup`}>
                                                     <User /><span className="font-bold">{t("signup")}</span>
                                                 </Link>
-                                            </Button>
+                                            </Button> */}
                                         </>
                                     )}
                                 </div>

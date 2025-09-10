@@ -219,7 +219,8 @@ func main() {
 	public := r.Group("/api")
 	{
 		public.POST("/auth/login", authMiddleware.LoginHandler)
-		public.POST("/auth/register", controllers.PayloadValidator(
+		// 添加API密钥验证中间件，只允许通过API进行注册
+		public.POST("/auth/register", controllers.APIKeyMiddleware(), controllers.PayloadValidator(
 			webmodels.RegisterPayload{},
 		), controllers.Register)
 

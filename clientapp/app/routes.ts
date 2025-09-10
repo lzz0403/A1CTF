@@ -19,7 +19,8 @@ export default [
 
     // 账户验证模块
     route("login", "routes/auth/UserLoginPage.tsx"),
-    route("signup", "routes/auth/UserSignupPage.tsx"),
+    // 注册路由已被屏蔽，只能通过API进行注册
+    // route("signup", "routes/auth/UserSignupPage.tsx"),
     route("email-verify", "routes/auth/EmailVerify.tsx"),
     route("forget-password", "routes/auth/ForgetPassword.tsx"),
     route("reset-password", "routes/auth/ResetPassword.tsx"),

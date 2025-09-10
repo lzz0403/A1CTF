@@ -169,12 +169,13 @@ export function LoginForm() {
                     disabled={loading || (clientConfig.captchaEnabled && token == "")}
                     onClick={form.handleSubmit(onSubmit)}
                 >{t("login")}</Button>
-                <div className="text-center text-sm">
+                {/* 注册功能已被屏蔽，只能通过API进行注册 */}
+                {/* <div className="text-center text-sm">
                     {t("dont_have_account")}{" "}
                     <a className="underline underline-offset-4 cursor-pointer" onClick={() => router(`/signup`)}>
                         {t("sign_up_title")}
                     </a>
-                </div>
+                </div> */}
                 <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border transition-[border-color] duration-300">
                     <span className="relative z-10 bg-background px-2 text-muted-foreground transition-all duration-300">
                         {t("or_continue_with")}

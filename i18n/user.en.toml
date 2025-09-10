@@ -50,6 +50,16 @@ other = "Invalid file ID"
 description = "Failed to load files map"
 other = "Failed to load files map"
 
+# Registration API Key Error Messages
+
+[RegistrationDisabled]
+description = "Registration is disabled"
+other = "Registration is disabled"
+
+[InvalidAPIKey]
+description = "Invalid API key"
+other = "Invalid API key"
+
 [FileNotFound]
 description = "File not found"
 other = "File not found"
