@@ -36,6 +36,9 @@ k8s:
      # You can add multiple port range map with same node name
      # - { name: "vm-4-3-ubuntu", "start": 23101, "end": 24101 }
      # - { name: "vm-4-3-ubuntu", "start": 24102, "end": 25102 }
+  pull-secret-names:
+    # You can add multiple pull secret names here, make sure they are created in the a1ctf-challenges namespace as the pods
+    # - default-name
 
 postgres:
   host: localhost

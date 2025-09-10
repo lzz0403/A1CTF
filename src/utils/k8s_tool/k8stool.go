@@ -261,6 +261,15 @@ func CreatePod(podInfo *PodInfo) error {
 		},
 	}
 
+	secretNames := viper.GetStringSlice("k8s.pull-secret-names")
+	if len(secretNames) > 0 {
+		secrets := make([]corev1.LocalObjectReference, len(secretNames))
+		for i, secretName := range secretNames {
+			secrets[i] = corev1.LocalObjectReference{Name: secretName}
+		}
+		pod.Spec.ImagePullSecrets = secrets
+	}
+
 	// 创建 Pod
 	_, err = clientset.CoreV1().Pods(namespace).Create(context.Background(), pod, metav1.CreateOptions{})
 	if err != nil {
