@@ -154,6 +154,7 @@ func UpdateLivingContainers() {
 				err := getContainerPorts(podInfo, container)
 				if err != nil {
 					zaphelper.Logger.Error("Failed to get container ports", zap.Error(err), zap.Any("container", container))
+					tasks.NewContainerStopTask(*container)
 				}
 			}
 
