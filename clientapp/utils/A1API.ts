@@ -2225,9 +2225,19 @@ export class Api<
       challengeId: number,
       params: RequestParams = {},
     ) =>
-      this.request<void, void | ErrorMessage>({
+      this.request<
+        {
+          code?: number;
+          data?: {
+            /** @format date-time */
+            new_expire_time: string;
+          };
+        },
+        void | ErrorMessage
+      >({
         path: `/api/game/${gameId}/container/${challengeId}`,
         method: "PATCH",
+        format: "json",
         ...params,
       }),
 

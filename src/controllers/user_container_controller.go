@@ -385,8 +385,10 @@ func UserExtendGameContainer(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":    200,
-		"message": "OK",
+		"code": 200,
+		"data": gin.H{
+			"new_expire_time": newExpireTime,
+		},
 	})
 }
 

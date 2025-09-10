@@ -85,7 +85,12 @@ export default function ChallengeMainContent(
 
     const handleExtendContainer = () => {
 
-        api.user.userExtendContainerLifeForAChallenge(gameID, curChallenge?.challenge_id ?? 0)
+        api.user.userExtendContainerLifeForAChallenge(gameID, curChallenge?.challenge_id ?? 0).then((res) => {
+            setContainerExpireTime(res.data.data?.new_expire_time
+                ? dayjs(res.data.data.new_expire_time)
+                : null)
+            toast.success(t("container_extend_success"))
+        })
     }
 
     const handleDestoryContainer = () => {

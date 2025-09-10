@@ -1725,6 +1725,21 @@ paths:
       responses:
         '200':
           description: Container life extended
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      new_expire_time:
+                        type: string
+                        format: date-time
+                    required:
+                      - new_expire_time
         '400':
           description: Bad request
         '500':
