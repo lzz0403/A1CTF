@@ -496,7 +496,7 @@ func GetPodPorts(podInfo *PodInfo) (*PodPorts, error) {
 
 			_, err = clientset.CoreV1().Services(namespace).Create(context.Background(), service, metav1.CreateOptions{})
 			if err != nil {
-				// return fmt.Errorf("error creating service: %v", err)
+				return nil, fmt.Errorf("failed creating service with manual port assignment: %v", err)
 			}
 		}
 
