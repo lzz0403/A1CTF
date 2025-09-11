@@ -72,6 +72,8 @@ type Team struct {
 
 	// 关联
 	Group *GameGroup `gorm:"foreignKey:GroupID;references:group_id" json:"group,omitempty"`
+	// 虚拟字段，不映射到数据库
+	GroupName *string `gorm:"-" json:"group_name,omitempty"`
 }
 
 // TableName 获取Team的表名
