@@ -3670,6 +3670,7 @@ components:
         - AI
         - PENTEST
         - OSINT
+        - IR
     FlagType:
       type: string
       enum:

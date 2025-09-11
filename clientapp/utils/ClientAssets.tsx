@@ -1,4 +1,4 @@
-import { Binary, Bitcoin, Bot, Bug, FileSearch, Github, GlobeLock, HardDrive, MessageSquareLock, Rabbit, Radar, ShieldCheck, Smartphone, SquareCode } from "lucide-react"
+import { Binary, Bitcoin, Bot, Bug, FileSearch, Github, GlobeLock, HardDrive, MessageSquareLock, Rabbit, Radar, ShieldCheck, Smartphone, SquareCode, BrickWallFire } from "lucide-react"
 
 export const challengeCategoryColorMap : { [key: string]: string } = {
     "all": "rgb(32, 201, 151)",
@@ -18,18 +18,19 @@ export const challengeCategoryColorMap : { [key: string]: string } = {
 };
 
 export const challengeCategoryIcons : { [key: string]: any } = {
-    "all": <Rabbit size={23} />,
-    "misc": <Radar size={23} />,
-    "crypto": <MessageSquareLock size={23} />,
-    "pwn": <Bug size={23} />,
-    "web": <GlobeLock size={23} />,
-    "reverse": <Binary size={23} />,
-    "forensics": <FileSearch size={23} />,
-    "blockchain": <Bitcoin size={21} />,
-    "hardware": <HardDrive size={23} />,
-    "mobile": <Smartphone size={23} />,
-    "ppc": <SquareCode size={23} />,
-    "ai": <Bot size={23} />,
-    "pentest": <ShieldCheck size={23} />,
-    "osint": <Github size={23} />
+    "All": <Rabbit size={23} />,
+    "Misc": <Radar size={23} />,
+    "Crypto": <MessageSquareLock size={23} />,
+    "Pwn": <Bug size={23} />,
+    "Web": <GlobeLock size={23} />,
+    "Reverse": <Binary size={23} />,
+    "Forensics": <FileSearch size={23} />,
+    "Blockchain": <Bitcoin size={21} />,
+    "Hardware": <HardDrive size={23} />,
+    "Mobile": <Smartphone size={23} />,
+    "PPC": <SquareCode size={23} />,
+    "AI": <Bot size={23} />,
+    "Pentest": <ShieldCheck size={23} />,
+    "OSINT": <Github size={23} />,
+    "IR": <BrickWallFire size={23} />,
 };

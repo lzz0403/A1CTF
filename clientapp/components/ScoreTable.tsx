@@ -55,6 +55,21 @@ export function ScoreTable(
     const shouldAddBlankColumn = containerWidth > 0 && totalFixedWidth < containerWidth
     const blankColumnWidth = shouldAddBlankColumn ? containerWidth - totalFixedWidth : 0
 
+    const getTeamGroupName = (teamId: number): string => {
+        // 从scoreBoardModel中查找队伍
+        const team = scoreBoardModel?.teams?.find(team => team.team_id === teamId);
+        
+        // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
+        if (team) {
+            // 从groups中查找对应的分组
+            const group = scoreBoardModel?.groups?.find(group => group.group_id === team.group_id);
+            if (group) {
+                return group.group_name;
+            }
+        }
+        return "未分组";
+    };
+
     useEffect(() => {
         if (pagination) {
             setCurPage(pagination.current_page)
@@ -213,7 +228,7 @@ export function ScoreTable(
                     </div>
                 )}
 
-                <div id="left-container" className="min-w-[300px] max-w-[18vw] flex-none overflow-hidden">
+                <div id="left-container" className="min-w-[300px] max-w-[30vw] flex-none overflow-hidden">
                     <div className="flex flex-col overflow-hidden">
                         <div className={`w-full border-b-2 h-12 border-t-2 transition-[border-color] duration-300 flex items-center justify-center`}>
                             {/* <span className="font-bold">Username</span> */}
@@ -231,11 +246,11 @@ export function ScoreTable(
                                         <AvatarUsername avatar_url={item.team_avatar} username={item.team_name ?? ""} size={32} fontSize={14} />
                                     </div>
                                     <div className="flex-1 overflow-hidden select-none">
-                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${item.score} pts</div>`}
+                                        <a className="text-nowrap text-ellipsis overflow-hidden hover:underline focus:underline" data-tooltip-id="challengeTooltip" data-tooltip-html={`<div class='text-sm'>${item.team_name} - ${getTeamGroupName(item.team_id)} - ${item.score} pts</div>`}
                                             onClick={() => {
                                                 setShowUserDetail(item || {})
                                             }}
-                                        >{item.team_name}</a>
+                                        >{item.team_name}-{getTeamGroupName(item.team_id)}</a>
                                     </div>
                                     <div className="justify-end gap-1 hidden lg:flex">
                                         <span>{item.score}</span>

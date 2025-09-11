@@ -17,7 +17,7 @@ import { Button } from "../ui/button";
 import { ArrowUpDown, Bitcoin, CircleArrowLeft, Github, Save, ShieldCheck } from "lucide-react"
 import { Textarea } from "../ui/textarea";
 
-import { Binary, Bot, Bug, FileSearch, GlobeLock, HardDrive, MessageSquareLock, Radar, Smartphone, SquareCode } from "lucide-react"
+import { Binary, Bot, Bug, FileSearch, GlobeLock, HardDrive, MessageSquareLock, Radar, Smartphone, SquareCode, BrickWallFire } from "lucide-react"
 import { useEffect, useRef, useState } from "react";
 import { MacScrollbar } from "mac-scrollbar";
 import { AdminFullGameInfo } from "utils/A1API";
@@ -142,7 +142,8 @@ export function CreateGameView() {
         "PPC": <SquareCode size={21} />,
         "AI": <Bot size={21} />,
         "PENTEST": <ShieldCheck size={21} />,
-        "OSINT": <Github size={21} />
+        "OSINT": <Github size={21} />,
+        "IR": <BrickWallFire size={21} />,
     };
 
     const formSchema = z.object({
