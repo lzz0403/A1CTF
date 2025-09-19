@@ -35,7 +35,7 @@ export default function InChallengeViewManager(
 
                 setChallenges((prev) => ({
                     ...prev,
-                    [curChallenge.category?.toLocaleLowerCase() ?? "0"]: prev[curChallenge.category?.toLocaleLowerCase() ?? "0"].map((c) => {
+                    [curChallenge.category?.toLocaleUpperCase() ?? "0"]: prev[curChallenge.category?.toLocaleUpperCase() ?? "0"].map((c) => {
                         
                         if (c.challenge_id == curChallenge.challenge_id) {
                             return {
@@ -59,7 +59,7 @@ export default function InChallengeViewManager(
 
             // 删除题目列表里的题目
             setChallenges((prev) => {
-                const categoryKey = curChallenge?.category?.toLocaleLowerCase() ?? "0";
+                const categoryKey = curChallenge?.category?.toLocaleUpperCase() ?? "0";
                 const filteredChallenges = prev[categoryKey]?.filter(
                     (c) => c.challenge_id !== curChallenge?.challenge_id
                 ) || [];
