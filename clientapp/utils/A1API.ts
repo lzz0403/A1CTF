@@ -142,6 +142,7 @@ export enum ChallengeCategory {
   AI = "AI",
   PENTEST = "PENTEST",
   OSINT = "OSINT",
+  IR = "IR",
 }
 
 export enum JudgeType {

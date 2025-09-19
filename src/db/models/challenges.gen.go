@@ -95,6 +95,7 @@ const (
 	CategoryOSINT      ChallengeCategory = "OSINT"
 	CategoryFORENSICS  ChallengeCategory = "FORENSICS"
 	CategoryPENTEST    ChallengeCategory = "PENTEST"
+	CategoryIR         ChallengeCategory = "IR"
 	CategoryOTHER      ChallengeCategory = "OTHER"
 )
 
@@ -154,7 +155,7 @@ type Challenge struct {
 	ChallengeID     *int64                 `gorm:"column:challenge_id;primaryKey;autoIncrement:true" json:"challenge_id"`
 	Name            string                 `gorm:"column:name;not null" json:"name"`
 	Description     string                 `gorm:"column:description;not null" json:"description"`
-	Category        ChallengeCategory      `gorm:"column:category;not null" json:"category" binding:"required,oneof=WEB PWN REVERSE MISC CRYPTO PPC AI BLOCKCHAIN IOT MOBILE OSINT FORENSICS PENTEST OTHER"`
+	Category        ChallengeCategory      `gorm:"column:category;not null" json:"category" binding:"required,oneof=WEB PWN REVERSE MISC CRYPTO PPC AI BLOCKCHAIN IOT MOBILE OSINT FORENSICS PENTEST IR OTHER"`
 	Attachments     AttachmentConfigs      `gorm:"column:attachments;not null" json:"attachments"`
 	ContainerType   ChallengeContainerType `gorm:"column:container_type;not null" json:"container_type"`
 	ContainerConfig *k8stool.A1Containers  `gorm:"column:container_config" json:"container_config"`
