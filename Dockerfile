@@ -14,8 +14,8 @@ COPY .git/ .git/
 # Generate version.ts with git hash and build time
 RUN GIT_HASH=$(git rev-parse --short HEAD) && \
     BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
-    echo "export const A1CTF_VERSION = \"dev-${GIT_HASH}\"" > version.ts && \
-    echo "export const A1CTF_NAME = \"A1CTF Preview\"" >> version.ts && \
+    echo "export const A1CTF_VERSION = \"PCTF-Modify-${GIT_HASH}\"" > version.ts && \
+    echo "export const A1CTF_NAME = \"A1CTF Platform PCTF-Modify\"" >> version.ts && \
     echo "export const BUILD_TIME = \"${BUILD_TIME}\"" >> version.ts
 
 RUN npm install
