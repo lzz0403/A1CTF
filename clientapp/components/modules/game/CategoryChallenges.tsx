@@ -34,7 +34,7 @@ export default function CategoryChallenges({
     let shouldExtend = false
 
     if (curChallenge) {
-        shouldExtend = curChallenge?.category?.toString().toLocaleUpperCase() == category
+        shouldExtend = curChallenge?.category?.toString().toLocaleLowerCase() == category
     }
 
     const [categoryFolded, setCategoryFolded] = useState(!shouldExtend);
@@ -124,7 +124,7 @@ export default function CategoryChallenges({
                                     >
                                         {(visibleItems[category]?.[challenge?.challenge_id ?? 0]) ? (
                                             <ChallengeCard
-                                                type={challenge.category?.toLocaleUpperCase() || "None"}
+                                                type={challenge.category?.toLocaleLowerCase() || "None"}
                                                 name={challenge?.challenge_name ?? "None"}
                                                 solved={challenge?.solve_count ?? 0}
                                                 score={challenge?.cur_score ?? 0}

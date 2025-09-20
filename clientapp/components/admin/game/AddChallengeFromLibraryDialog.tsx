@@ -137,7 +137,7 @@ export default function AddChallengeFromLibraryDialog(
     const handleAddChallenge = useCallback((data: ChallengeSearchResult) => {
         api.admin.addGameChallenge(data.GameID, data.ChallengeID).then((res) => {
             const challenge = res.data.data
-            const category: string = challenge.category?.toLocaleUpperCase() as string
+            const category: string = challenge.category?.toLocaleLowerCase() as string
             const newSimpleChallenge: UserSimpleGameChallenge = {
                 challenge_id: challenge.challenge_id ?? 0,
                 challenge_name: challenge.challenge_name ?? "",
@@ -200,7 +200,7 @@ export default function AddChallengeFromLibraryDialog(
                 try {
                     const res = await api.admin.addGameChallenge(data.GameID, data.ChallengeID)
                     const challenge = res.data.data
-                    const category: string = challenge.category?.toLocaleUpperCase() as string
+                    const category: string = challenge.category?.toLocaleLowerCase() as string
                     const newSimpleChallenge: UserSimpleGameChallenge = {
                         challenge_id: challenge.challenge_id ?? 0,
                         challenge_name: challenge.challenge_name ?? "",
