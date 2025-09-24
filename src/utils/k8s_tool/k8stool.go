@@ -215,7 +215,7 @@ func CreatePod(podInfo *PodInfo) error {
 
 		// add the flag env
 		container.Env = append(container.Env, corev1.EnvVar{
-			Name:  "A1CTF_FLAG",
+			Name:  "GZCTF_FLAG",
 			Value: podInfo.Flag,
 		})
 
