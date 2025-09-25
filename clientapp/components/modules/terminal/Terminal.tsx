@@ -101,7 +101,7 @@ function MyTerminal({
         const https_enabled = window.location.protocol === "https:";
         const baseURL = window.location.host;
         const socket = new WebSocket(
-            `${https_enabled ? "wss" : "ws"}://${baseURL}/api/pod/${podName}/${containerName}/exec`
+            `${https_enabled ? "wss" : "ws"}://localhost/api/pod/${podName}/${containerName}/exec`
         );
         socket.binaryType = "arraybuffer";
         wsRef.current = socket;
