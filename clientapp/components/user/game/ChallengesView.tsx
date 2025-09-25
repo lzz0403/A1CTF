@@ -205,7 +205,7 @@ export function ChallengesView({
                 const connectPromise = new Promise<void>((resolve, reject) => {
 
                     const https_enabled = window.location.protocol == "https:"
-                    const socket = new WebSocket(`${https_enabled ? "wss" : "ws"}://wss.pctf.top/api/hub?game=${gameID}`)
+                    const socket = new WebSocket(`${https_enabled ? "wss" : "ws"}://${baseURL}/api/hub?game=${gameID}`)
                     wsRef.current = socket
 
                     setWsStatus("connecting")
