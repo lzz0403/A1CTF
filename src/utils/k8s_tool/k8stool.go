@@ -218,6 +218,15 @@ func CreatePod(podInfo *PodInfo) error {
 			Name:  "GZCTF_FLAG",
 			Value: podInfo.Flag,
 		})
+		container.Env = append(container.Env, corev1.EnvVar{
+			Name:  "A1CTF_CATEGORY",
+			Value: string(podInfo.Category),
+		})
+		container.Env = append(container.Env, corev1.EnvVar{
+			Name:  "A1CTF_CHALLENGE_NAME",
+			Value: podInfo.ChallengeName,
+		})
+
 
 		if len(c.ExposePorts) > 0 {
 			var containerPorts []corev1.ContainerPort
