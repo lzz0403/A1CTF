@@ -140,6 +140,8 @@ type PodInfo struct {
 	TeamHash   string
 	Labels     map[string]string
 	Containers []A1Container
+	Category   models.Category
+	ChallengeName string
 	Flag       string
 	AllowWAN   bool
 	AllowDNS   bool
