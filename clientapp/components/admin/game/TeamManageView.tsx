@@ -68,7 +68,9 @@ export type TeamModel = {
         user_id: string
     }[],
     status: ParticipationStatus,
-    score: number
+    score: number,
+    group_id: number | null,
+    group_name: string | null
 }
 
 interface ConfirmDialogProps {
@@ -261,6 +263,7 @@ export function TeamManageView(
     
     // 从scoreBoardModel中通过队伍名称查找队伍
     const team = scoreBoardModel.teams.find(team => team.team_name === teamName);
+    console.log(team)
     
     // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
     if (team && team.group_id) {
@@ -301,10 +304,11 @@ export function TeamManageView(
             header: t("events.filter.team"),
             cell: ({ row }) => {
                 const avatar_url = row.original.team_avatar;
+                const groupName = row.original.group_name || "未分组";
                 return (
                     <div className="flex gap-3 items-center">
                         <AvatarUsername avatar_url={avatar_url} username={row.getValue("team_name") as string} />
-                        {row.getValue("team_name")}-{getTeamGroupName(row.getValue("team_name"))}
+                        {row.getValue("team_name")}-{groupName}
                     </div>
                 )
             },
@@ -493,7 +497,9 @@ export function TeamManageView(
                     user_id: member.user_id
                 })),
                 status: item.status,
-                score: item.score
+                score: item.score,
+                group_id: item.group_id || null,
+                group_name: item.group_name || null
             }));
             setData(formattedData);
         })

@@ -26,7 +26,7 @@ func AdminListTeams(c *gin.Context) {
 		return
 	}
 
-	query := dbtool.DB().Where("game_id = ?", payload.GameID)
+	query := dbtool.DB().Preload("GameGroup").Where("game_id = ?", payload.GameID)
 
 	// 如果有搜索关键词，添加搜索条件
 	if payload.Search != "" {
@@ -120,6 +120,13 @@ func AdminListTeams(c *gin.Context) {
 			Members:    tmpMembers,
 			Status:     team.TeamStatus,
 			Score:      team.TeamScore,
+			GroupID:    team.GroupID,
+			GroupName:  func() *string {
+				if team.GameGroup != nil {
+					return &team.GameGroup.GroupName
+				}
+				return nil
+			}(),
 		})
 	}
 

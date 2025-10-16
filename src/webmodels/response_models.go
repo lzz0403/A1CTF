@@ -148,6 +148,8 @@ type AdminListTeamItem struct {
 	Members    []AdminSimpleTeamMemberInfo `json:"members"`
 	Status     models.ParticipationStatus  `json:"status"`
 	Score      float64                     `json:"score"`
+	GroupID    *int64                      `json:"group_id"`
+	GroupName  *string                     `json:"group_name"`
 }
 
 type TimeLineScoreItem struct {
