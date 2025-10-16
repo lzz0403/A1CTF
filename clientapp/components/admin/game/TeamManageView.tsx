@@ -38,7 +38,7 @@ import {
 
 
 import { Badge } from "../../ui/badge";
-import { ParticipationStatus } from "utils/A1API";
+import { ParticipationStatus, GameScoreboardData } from "utils/A1API";
 
 import { api } from "utils/ApiHelper";
 import AvatarUsername from "../../modules/AvatarUsername";
@@ -105,8 +105,10 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
 export function TeamManageView(
     {
+        scoreBoardModel,
         gameId,
     }: {
+        scoreBoardModel: GameScoreboardData,
         gameId: number
     }
 ) {
@@ -251,6 +253,20 @@ export function TeamManageView(
                 return { color: "#D9D9D9", text: t("team.status.default") };
         }
     };
+    const getTeamGroupName = (teamId: number): string => {
+    // 从scoreBoardModel中查找队伍
+    const team = scoreBoardModel?.teams?.find(team => team.team_id === teamId);
+    
+    // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
+    if (team) {
+        // 从groups中查找对应的分组
+        const group = scoreBoardModel?.groups?.find(group => group.group_id === team.group_id);
+        if (group) {
+            return group.group_name;
+        }
+    }
+    return "未分组";
+};
 
     const columns: ColumnDef<TeamModel>[] = [
         {
@@ -283,7 +299,7 @@ export function TeamManageView(
                 return (
                     <div className="flex gap-3 items-center">
                         <AvatarUsername avatar_url={avatar_url} username={row.getValue("team_name") as string} />
-                        {row.getValue("team_name")}
+                        {row.getValue("team_name")}-{getTeamGroupName(row.original.team_id)}
                     </div>
                 )
             },
