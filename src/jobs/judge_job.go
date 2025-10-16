@@ -73,7 +73,7 @@ func processQueueingJudge(judge *models.Judge) error {
 			if newSolve.Rank <= 3 {
 				var solveDetail = models.Solve{}
 
-				if err := dbtool.DB().Where("solve_id = ?", newSolve.SolveID).Preload("Challenge").Preload("Team").First(&solveDetail).Error; err != nil {
+				if err := dbtool.DB().Where("solve_id = ?", newSolve.SolveID).Preload("Challenge").Preload("Team.Group").First(&solveDetail).Error; err != nil {
 					zaphelper.Logger.Error("Announce first blood error", zap.Error(err))
 				}
 
@@ -89,8 +89,14 @@ func processQueueingJudge(judge *models.Judge) error {
 					noticeCate = models.NoticeThirdBlood
 				}
 
+				// 构建包含分组信息的队伍名称
+				teamDisplayName := solveDetail.Team.TeamName
+				if solveDetail.Team.Group != nil {
+					teamDisplayName = solveDetail.Team.TeamName + "-" + solveDetail.Team.Group.GroupName
+				}
+
 				go func() {
-					noticetool.InsertNotice(judge.GameID, noticeCate, []string{solveDetail.Team.TeamName, solveDetail.Challenge.Name})
+					noticetool.InsertNotice(judge.GameID, noticeCate, []string{teamDisplayName, solveDetail.Challenge.Name})
 				}()
 			}
 
