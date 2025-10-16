@@ -253,9 +253,9 @@ export function TeamManageView(
                 return { color: "#D9D9D9", text: t("team.status.default") };
         }
     };
-    const getTeamGroupName = (teamId: number): string => {
-    // 从scoreBoardModel中查找队伍
-    const team = scoreBoardModel?.teams?.find(team => team.team_id === teamId);
+    const getTeamGroupName = (teamName: string): string => {
+    // 从scoreBoardModel中通过队伍名称查找队伍
+    const team = scoreBoardModel?.teams?.find(team => team.team_name === teamName);
     
     // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
     if (team) {
@@ -299,7 +299,7 @@ export function TeamManageView(
                 return (
                     <div className="flex gap-3 items-center">
                         <AvatarUsername avatar_url={avatar_url} username={row.getValue("team_name") as string} />
-                        {row.getValue("team_name")}-{getTeamGroupName(row.original.team_id)}
+                        {row.getValue("team_name")}-{getTeamGroupName(row.getValue("team_name"))}
                     </div>
                 )
             },
