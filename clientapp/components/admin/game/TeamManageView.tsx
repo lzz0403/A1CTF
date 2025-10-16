@@ -254,13 +254,18 @@ export function TeamManageView(
         }
     };
     const getTeamGroupName = (teamName: string): string => {
+    // 检查scoreBoardModel是否存在
+    if (!scoreBoardModel || !scoreBoardModel.teams) {
+        return "未分组";
+    }
+    
     // 从scoreBoardModel中通过队伍名称查找队伍
-    const team = scoreBoardModel.teams?.find(team => team.team_name === teamName);
+    const team = scoreBoardModel.teams.find(team => team.team_name === teamName);
     
     // 如果找到队伍且有group_id，则通过group_id查找对应的分组名称
     if (team && team.group_id) {
         // 从groups中查找对应的分组
-        const group = scoreBoardModel.groups?.find(group => group.group_id === team.group_id);
+        const group = scoreBoardModel.groups.find(group => group.group_id === team.group_id);
         if (group) {
             return group.group_name;
         }
