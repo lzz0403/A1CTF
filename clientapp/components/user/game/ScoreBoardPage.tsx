@@ -733,7 +733,7 @@ export default function ScoreBoardPage(
                                                             <ScoreTable
                                                                 scoreBoardModel={scoreBoardModel}
                                                                 setShowUserDetail={setShowUserDetail}
-                                                                challenges={challenges}
+                                                                challenges={selectedCategory ? { [selectedCategory]: challenges[selectedCategory] || [] } : challenges}
                                                                 pageSize={pageSize}
                                                                 pagination={pagination}
                                                                 curPage={currentPage}
@@ -742,7 +742,11 @@ export default function ScoreBoardPage(
                                                             />
                                                         </>
                                                     ) : (
-                                                        <ScoreTableMobile scoreBoardModel={scoreBoardModel} setShowUserDetail={setShowUserDetail} challenges={challenges} />
+                                                        <ScoreTableMobile
+                                                            scoreBoardModel={scoreBoardModel}
+                                                            setShowUserDetail={setShowUserDetail}
+                                                            challenges={selectedCategory ? { [selectedCategory]: challenges[selectedCategory] || [] } : challenges}
+                                                        />
                                                     )) : (
                                                         <></>
                                                     )}
