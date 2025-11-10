@@ -223,12 +223,19 @@ export default function ScoreBoardPage(
             }
         }));
 
-        // 工具：将一组队伍生成“总排名”工作表（不含题目明细）
+        // 工具：将一组队伍生成“总排名”工作表（包含所有题目明细列）
         const appendOverallSheet = (sheetName: string, inputTeams: typeof teams) => {
             const baseHeaders = (t("scoreboard.excel_headers", { returnObjects: true }) as string[]).slice();
-            // 仅保留 基础列：排名 / 队伍名 / 总分
+            const headers = baseHeaders.slice();
+            // 添加所有方向的题目列
+            allCategories.forEach(cat => {
+                (challengesByCategory[cat] || []).forEach(ch => {
+                    headers.push(`${cat.toUpperCase()}-${ch.challenge_name}`);
+                });
+            });
+
             const sheetData: any[][] = [];
-            sheetData.push(makeHeaderRow(baseHeaders));
+            sheetData.push(makeHeaderRow(headers));
 
             const ordered = [...inputTeams].sort((a, b) => {
                 if ((b.score || 0) !== (a.score || 0)) return (b.score || 0) - (a.score || 0);
@@ -289,11 +296,39 @@ export default function ScoreBoardPage(
                 }
                 row.push({ v: team.score || 0, t: 'n', s: scoreStyle });
 
+                // 所有题目分数明细
+                allCategories.forEach(cat => {
+                    (challengesByCategory[cat] || []).forEach(ch => {
+                        const solved = team.solved_challenges?.find(s => s.challenge_id === ch.challenge_id);
+                        const val = solved ? (solved.score || 0) : 0;
+                        let st: any = {
+                            alignment: { horizontal: "center", vertical: "center" },
+                            border: {
+                                top: { style: "thin", color: { rgb: "E5E7EB" } },
+                                bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                                left: { style: "thin", color: { rgb: "E5E7EB" } },
+                                right: { style: "thin", color: { rgb: "E5E7EB" } }
+                            }
+                        };
+                        if (val > 0) {
+                            st.fill = { patternType: "solid", fgColor: { rgb: "DCFCE7" } };
+                            st.font = { color: { rgb: "166534" }, bold: true };
+                        } else if (idx % 2 === 0 && rank > 3) {
+                            st.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
+                        }
+                        row.push({ v: val, t: 'n', s: st });
+                    });
+                });
+
                 sheetData.push(row);
             });
 
             const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-            worksheet['!cols'] = [{ wch: 8 }, { wch: 20 }, { wch: 10 }];
+            const colWidths = [{ wch: 8 }, { wch: 20 }, { wch: 10 }];
+            allCategories.forEach(cat => {
+                (challengesByCategory[cat] || []).forEach(() => colWidths.push({ wch: 15 }));
+            });
+            worksheet['!cols'] = colWidths;
 
             let name = sheetName;
             if (name.length > 31) name = name.slice(0, 31);
