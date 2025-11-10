@@ -125,6 +125,10 @@ export default function ScoreBoardPage(
         }
         params.page = 1;
         params.size = (pagination?.total_count ?? 0) + 100; // 获取大量数据用于导出
+        // 如果有方向筛选，则同时在导出请求中携带，确保只返回该方向的题目集合
+        if (selectedCategory) {
+            params.category = selectedCategory;
+        }
 
 
         api.user.userGetGameScoreboard(gmid, params).then((response) => {
@@ -134,12 +138,13 @@ export default function ScoreBoardPage(
                 throw new Error(`${t('scoreboard.filename').trim()}${t('scoreboard.data_error')}`);
             }
 
-            // 创建XLSX工作簿
+            // 创建XLSX工作簿（按学校/分组与方向拆分为多表）
             const workbook = generateScoreboardXLSX(data);
 
             // 生成文件并下载
             const groupSuffix = selectedGroupId && data.current_group ? `_${data.current_group.group_name}${t('group')}` : '';
-            const filename = `${gameInfo.name}${groupSuffix}_${t('scoreboard.filename').trim()}_${dayjs().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`;
+            const directionSuffix = selectedCategory ? `_${selectedCategory.toUpperCase()}` : '';
+            const filename = `${gameInfo.name}${groupSuffix}${directionSuffix}_${t('scoreboard.filename').trim()}_${dayjs().format('YYYY-MM-DD_HH-mm-ss')}.xlsx`;
 
             XLSX.writeFile(workbook, filename);
 
@@ -148,7 +153,7 @@ export default function ScoreBoardPage(
         }).finally(() => {
             setIsDownloading(false);
         })
-    }, [gameInfo, gmid, isDownloading, selectedGroupId, pagination]);
+    }, [gameInfo, gmid, isDownloading, selectedGroupId, selectedCategory, pagination]);
 
     // 分组选择处理
     const handleGroupChange = useCallback((value: string) => {
@@ -175,133 +180,105 @@ export default function ScoreBoardPage(
         setCurrentPage(1);
     }, []);
 
-    // 生成XLSX工作簿
+    // 生成XLSX工作簿（按学校/分组与方向分别生成不同工作表）
     const generateScoreboardXLSX = (data: GameScoreboardData): XLSX.WorkBook => {
         const teams = data.teams || [];
         const challenges = data.challenges || [];
+        const groupsList = data.groups || [];
 
-        // 按类别分组题目
+        // 构建 challengeId -> category 映射
+        const challengeIdToCategory = new Map<number, string>();
+        challenges.forEach(ch => {
+            const cat = ch.category?.toLowerCase() || 'misc';
+            challengeIdToCategory.set(ch.challenge_id, cat);
+        });
+
+        // 按类别分组题目，后续用于生成列
         const challengesByCategory: Record<string, UserSimpleGameChallenge[]> = {};
-        challenges.forEach(challenge => {
-            const category = challenge.category?.toLowerCase() || 'misc';
-            if (!challengesByCategory[category]) {
-                challengesByCategory[category] = [];
-            }
-            challengesByCategory[category].push(challenge);
+        challenges.forEach(ch => {
+            const cat = ch.category?.toLowerCase() || 'misc';
+            if (!challengesByCategory[cat]) challengesByCategory[cat] = [];
+            challengesByCategory[cat].push(ch);
         });
 
-        // 创建表头
-        const headers = t("scoreboard.excel_headers", { returnObjects: true }) as string[]
+        // 计算需要导出的分组（学校）集合
+        const exportGroups = selectedGroupId
+            ? groupsList.filter(g => g.group_id === selectedGroupId)
+            : groupsList.length > 0
+                ? groupsList
+                : (data.current_group ? [data.current_group] : []);
 
-        // 添加题目列（按类别分组）
-        Object.keys(challengesByCategory).sort().forEach(category => {
-            challengesByCategory[category].forEach(challenge => {
-                headers.push(`${category.toUpperCase()}-${challenge.challenge_name}`);
-            });
-        });
+        // 计算需要导出的方向集合
+        const allCategories = Object.keys(challengesByCategory).sort();
+        const exportCategories = selectedCategory
+            ? [selectedCategory.toLowerCase()]
+            : allCategories;
 
-        // 创建数据行（使用正确的单元格对象格式）
-        const sheetData: any[][] = [];
+        // 创建工作簿
+        const workbook = XLSX.utils.book_new();
 
-        // 添加表头行（带样式）
-        const headerRow = headers.map(header => ({
-            v: header,
-            t: 's',
-            s: {
-                font: {
-                    bold: true,
-                    color: { rgb: "FFFFFF" },
-                    sz: 12
-                },
-                fill: {
-                    patternType: "solid",
-                    fgColor: { rgb: "4F46E5" }
-                },
-                alignment: {
-                    horizontal: "center",
-                    vertical: "center"
-                },
-                border: {
-                    top: { style: "thin", color: { rgb: "000000" } },
-                    bottom: { style: "thin", color: { rgb: "000000" } },
-                    left: { style: "thin", color: { rgb: "000000" } },
-                    right: { style: "thin", color: { rgb: "000000" } }
-                }
-            }
-        }));
-        sheetData.push(headerRow);
+        // 遍历 分组 × 方向，分别生成工作表
+        exportGroups.forEach(group => {
+            const groupTeams = teams.filter(t => t.group_id === group.group_id);
 
-        // 添加数据行
-        teams.forEach((team, teamIndex) => {
-            const row: any[] = [];
+            exportCategories.forEach(cat => {
+                const catChallenges = challengesByCategory[cat] || [];
 
-            // 排名列
-            const rank = team.rank || 0;
-            let rankStyle: any = {
-                alignment: { horizontal: "center", vertical: "center" },
-                border: {
-                    top: { style: "thin", color: { rgb: "E5E7EB" } },
-                    bottom: { style: "thin", color: { rgb: "E5E7EB" } },
-                    left: { style: "thin", color: { rgb: "E5E7EB" } },
-                    right: { style: "thin", color: { rgb: "E5E7EB" } }
-                }
-            };
+                // 表头：基础列 + 当前方向题目列
+                const headers = (t("scoreboard.excel_headers", { returnObjects: true }) as string[]).slice();
+                catChallenges.forEach(ch => {
+                    headers.push(`${cat.toUpperCase()}-${ch.challenge_name}`);
+                });
 
-            // 前三名特殊样式
-            if (rank === 1) {
-                rankStyle.fill = { patternType: "solid", fgColor: { rgb: "FEF3C7" } };
-                rankStyle.font = { bold: true, color: { rgb: "D97706" } };
-            } else if (rank === 2) {
-                rankStyle.fill = { patternType: "solid", fgColor: { rgb: "F3F4F6" } };
-                rankStyle.font = { bold: true, color: { rgb: "6B7280" } };
-            } else if (rank === 3) {
-                rankStyle.fill = { patternType: "solid", fgColor: { rgb: "FED7AA" } };
-                rankStyle.font = { bold: true, color: { rgb: "EA580C" } };
-            } else if (teamIndex % 2 === 0) {
-                rankStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
-            }
+                // 表数据
+                const sheetData: any[][] = [];
 
-            row.push({ v: rank, t: 'n', s: rankStyle });
+                // 头部样式行
+                const headerRow = headers.map(h => ({
+                    v: h,
+                    t: 's',
+                    s: {
+                        font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 },
+                        fill: { patternType: "solid", fgColor: { rgb: "4F46E5" } },
+                        alignment: { horizontal: "center", vertical: "center" },
+                        border: {
+                            top: { style: "thin", color: { rgb: "000000" } },
+                            bottom: { style: "thin", color: { rgb: "000000" } },
+                            left: { style: "thin", color: { rgb: "000000" } },
+                            right: { style: "thin", color: { rgb: "000000" } }
+                        }
+                    }
+                }));
+                sheetData.push(headerRow);
 
-            // 队伍名称列
-            let nameStyle: any = {
-                alignment: { horizontal: "left", vertical: "center" },
-                border: {
-                    top: { style: "thin", color: { rgb: "E5E7EB" } },
-                    bottom: { style: "thin", color: { rgb: "E5E7EB" } },
-                    left: { style: "thin", color: { rgb: "E5E7EB" } },
-                    right: { style: "thin", color: { rgb: "E5E7EB" } }
-                }
-            };
-            if (teamIndex % 2 === 0 && rank > 3) {
-                nameStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
-            }
-            row.push({ v: team.team_name || '', t: 's', s: nameStyle });
+                // 计算团队在当前方向的分数，用于排序和显示“总分”列
+                const dirScoreByTeam: Record<number, number> = {};
+                groupTeams.forEach(team => {
+                    let sum = 0;
+                    (team.solved_challenges || []).forEach(sc => {
+                        if (challengeIdToCategory.get(sc.challenge_id) === cat) {
+                            sum += sc.score || 0;
+                        }
+                    });
+                    dirScoreByTeam[team.team_id] = sum;
+                });
 
-            // 总分列
-            let scoreStyle: any = {
-                alignment: { horizontal: "center", vertical: "center" },
-                border: {
-                    top: { style: "thin", color: { rgb: "E5E7EB" } },
-                    bottom: { style: "thin", color: { rgb: "E5E7EB" } },
-                    left: { style: "thin", color: { rgb: "E5E7EB" } },
-                    right: { style: "thin", color: { rgb: "E5E7EB" } }
-                }
-            };
-            if (teamIndex % 2 === 0 && rank > 3) {
-                scoreStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
-            }
-            row.push({ v: team.score || 0, t: 'n', s: scoreStyle });
+                // 按当前方向分数降序排序，生成组内排名
+                const orderedTeams = [...groupTeams].sort((a, b) => {
+                    const sa = dirScoreByTeam[a.team_id] || 0;
+                    const sb = dirScoreByTeam[b.team_id] || 0;
+                    if (sb !== sa) return sb - sa;
+                    // 次要排序：总分降序 -> 原始 rank（稳定性）
+                    if ((b.score || 0) !== (a.score || 0)) return (b.score || 0) - (a.score || 0);
+                    return (a.rank || 0) - (b.rank || 0);
+                });
 
-            // 题目分数列
-            Object.keys(challengesByCategory).sort().forEach(category => {
-                challengesByCategory[category].forEach(challenge => {
-                    const solvedChallenge = team.solved_challenges?.find(
-                        solved => solved.challenge_id === challenge.challenge_id
-                    );
-                    const score = solvedChallenge ? solvedChallenge.score || 0 : 0;
+                // 填充数据行
+                orderedTeams.forEach((team, idx) => {
+                    const row: any[] = [];
 
-                    let challengeStyle: any = {
+                    const rank = idx + 1;
+                    let rankStyle: any = {
                         alignment: { horizontal: "center", vertical: "center" },
                         border: {
                             top: { style: "thin", color: { rgb: "E5E7EB" } },
@@ -310,47 +287,95 @@ export default function ScoreBoardPage(
                             right: { style: "thin", color: { rgb: "E5E7EB" } }
                         }
                     };
-
-                    // 已解题目绿色背景
-                    if (score > 0) {
-                        challengeStyle.fill = { patternType: "solid", fgColor: { rgb: "DCFCE7" } };
-                        challengeStyle.font = { color: { rgb: "166534" }, bold: true };
-                    } else if (teamIndex % 2 === 0 && rank > 3) {
-                        challengeStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
+                    if (rank === 1) {
+                        rankStyle.fill = { patternType: "solid", fgColor: { rgb: "FEF3C7" } };
+                        rankStyle.font = { bold: true, color: { rgb: "D97706" } };
+                    } else if (rank === 2) {
+                        rankStyle.fill = { patternType: "solid", fgColor: { rgb: "F3F4F6" } };
+                        rankStyle.font = { bold: true, color: { rgb: "6B7280" } };
+                    } else if (rank === 3) {
+                        rankStyle.fill = { patternType: "solid", fgColor: { rgb: "FED7AA" } };
+                        rankStyle.font = { bold: true, color: { rgb: "EA580C" } };
+                    } else if (idx % 2 === 0) {
+                        rankStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
                     }
+                    row.push({ v: rank, t: 'n', s: rankStyle });
 
-                    row.push({ v: score, t: 'n', s: challengeStyle });
+                    // 队伍名称
+                    let nameStyle: any = {
+                        alignment: { horizontal: "left", vertical: "center" },
+                        border: {
+                            top: { style: "thin", color: { rgb: "E5E7EB" } },
+                            bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                            left: { style: "thin", color: { rgb: "E5E7EB" } },
+                            right: { style: "thin", color: { rgb: "E5E7EB" } }
+                        }
+                    };
+                    if (idx % 2 === 0 && rank > 3) {
+                        nameStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
+                    }
+                    row.push({ v: team.team_name || '', t: 's', s: nameStyle });
+
+                    // 当前方向总分
+                    let scoreStyle: any = {
+                        alignment: { horizontal: "center", vertical: "center" },
+                        border: {
+                            top: { style: "thin", color: { rgb: "E5E7EB" } },
+                            bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                            left: { style: "thin", color: { rgb: "E5E7EB" } },
+                            right: { style: "thin", color: { rgb: "E5E7EB" } }
+                        }
+                    };
+                    if (idx % 2 === 0 && rank > 3) {
+                        scoreStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
+                    }
+                    row.push({ v: dirScoreByTeam[team.team_id] || 0, t: 'n', s: scoreStyle });
+
+                    // 题目分数（仅当前方向）
+                    catChallenges.forEach(ch => {
+                        const solved = team.solved_challenges?.find(s => s.challenge_id === ch.challenge_id);
+                        const val = solved ? (solved.score || 0) : 0;
+                        let st: any = {
+                            alignment: { horizontal: "center", vertical: "center" },
+                            border: {
+                                top: { style: "thin", color: { rgb: "E5E7EB" } },
+                                bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                                left: { style: "thin", color: { rgb: "E5E7EB" } },
+                                right: { style: "thin", color: { rgb: "E5E7EB" } }
+                            }
+                        };
+                        if (val > 0) {
+                            st.fill = { patternType: "solid", fgColor: { rgb: "DCFCE7" } };
+                            st.font = { color: { rgb: "166534" }, bold: true };
+                        } else if (idx % 2 === 0 && rank > 3) {
+                            st.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
+                        }
+                        row.push({ v: val, t: 'n', s: st });
+                    });
+
+                    sheetData.push(row);
                 });
-            });
 
-            sheetData.push(row);
-        });
+                // 工作表与列宽
+                const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+                const colWidths = [
+                    { wch: 8 },
+                    { wch: 20 },
+                    { wch: 10 },
+                ];
+                catChallenges.forEach(() => colWidths.push({ wch: 15 }));
+                worksheet['!cols'] = colWidths;
 
-        // 创建工作表
-        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-
-        // 设置列宽
-        const colWidths = [
-            { wch: 8 },  // 排名
-            { wch: 20 }, // 队伍名称
-            { wch: 10 }, // 总分
-        ];
-
-        // 为每个题目列设置宽度
-        Object.keys(challengesByCategory).sort().forEach(category => {
-            challengesByCategory[category].forEach(() => {
-                colWidths.push({ wch: 15 }); // 题目列宽度
+                // 追加到工作簿
+                const safeGroup = (group.group_name || 'GROUP').replace(/[\\/:*?\[\]]/g, '-');
+                const safeCat = (cat || 'CAT').toUpperCase().replace(/[\\/:*?\[\]]/g, '-');
+                let sheetName = `${safeGroup}-${safeCat}`;
+                if (sheetName.length > 31) sheetName = sheetName.slice(0, 31);
+                XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
             });
         });
 
-        worksheet['!cols'] = colWidths;
-
-        // 创建工作簿
-        const workbook = XLSX.utils.book_new();
-        const sheetName = `${t('scoreboard.filename').trim()}_${dayjs().format('MM-DD_HH-mm')}`;
-        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-
-        // 设置工作簿属性
+        // 设置属性
         workbook.Props = {
             Title: `${gameInfo?.name || 'CTF'} ${t('scoreboard.filename').trim()}`,
             Subject: `${t('scoreboard.subject')}${t('scoreboard.filename')}`,
