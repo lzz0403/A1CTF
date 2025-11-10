@@ -681,23 +681,24 @@ export default function ScoreBoardPage(
                                                                     <SelectItem value="100">100</SelectItem>
                                                                 </SelectContent>
                                                             </Select>
-                                                            {/* 方向筛选按钮（放在每页显示旁边） */}
-                                                            {challenges && (
-                                                                <div className='flex items-center gap-2'>
-                                                                    <span className='text-sm font-medium'>{t("scoreboard.directions")}:</span>
-                                                                    <Select value={selectedCategory || "all"} onValueChange={handleCategoryChange} disabled={pageLoading}>
-                                                                        <SelectTrigger className="w-[120px] h-8 text-xs sm:text-sm">
-                                                                            <SelectValue placeholder={t("scoreboard.select_directions")} />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            <SelectItem value="all">{t("scoreboard.all_directions")}</SelectItem>
-                                                                            {Object.keys(challenges).sort().map((cat) => (
-                                                                                <SelectItem key={cat} value={cat}>{cat.toUpperCase()}</SelectItem>
-                                                                            ))}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    {/* 方向筛选按钮（放在每页显示旁边） */}
+                                                    {challenges && (
+                                                        <div className='flex items-center gap-2'>
+                                                            <span className='text-sm font-medium'>{t("scoreboard.directions")}:</span>
+                                                            <Select value={selectedCategory || "all"} onValueChange={handleCategoryChange} disabled={pageLoading}>
+                                                                <SelectTrigger className="w-[120px] h-8 text-xs sm:text-sm">
+                                                                    <SelectValue placeholder={t("scoreboard.select_directions")} />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="all">{t("scoreboard.all_directions")}</SelectItem>
+                                                                    {Object.keys(challenges).sort().map((cat) => (
+                                                                        <SelectItem key={cat} value={cat}>{cat.toUpperCase()}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
                                                         </div>
                                                     )}
                                                 </div>
