@@ -49,6 +49,8 @@ export default function ScoreBoardPage(
     const [pageSize, setPageSize] = useState(20)
     const [groups, setGroups] = useState<GameGroupSimple[]>([])
     const [pagination, setPagination] = useState<PaginationInfo | undefined>(undefined)
+    // 方向(类别)筛选
+    const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
 
     const lastTimeLine = useRef<string>()
     const [isChartFullscreen, setIsChartFullscreen] = useState(false)
@@ -165,6 +167,13 @@ export default function ScoreBoardPage(
             toast.info(t("scoreboard.resize_success"));
         }
     }, [pagination]);
+
+    // 方向筛选变化处理
+    const handleCategoryChange = useCallback((value: string) => {
+        const cat = value === "all" ? undefined : value;
+        setSelectedCategory(cat);
+        setCurrentPage(1);
+    }, []);
 
     // 生成XLSX工作簿
     const generateScoreboardXLSX = (data: GameScoreboardData): XLSX.WorkBook => {
@@ -377,6 +386,9 @@ export default function ScoreBoardPage(
             if (selectedGroupId) {
                 params.group_id = selectedGroupId;
             }
+            if (selectedCategory) {
+                params.category = selectedCategory;
+            }
 
             api.user.userGetGameScoreboard(gmid, params).then((res) => {
 
@@ -516,7 +528,7 @@ export default function ScoreBoardPage(
         return () => {
             clearInterval(scoreBoardInter)
         }
-    }, [gameInfo, currentPage, selectedGroupId, pageSize, theme])
+    }, [gameInfo, currentPage, selectedGroupId, selectedCategory, pageSize, theme])
 
     return (
         <>
@@ -669,6 +681,23 @@ export default function ScoreBoardPage(
                                                                     <SelectItem value="100">100</SelectItem>
                                                                 </SelectContent>
                                                             </Select>
+                                                            {/* 方向筛选按钮（放在每页显示旁边） */}
+                                                            {challenges && (
+                                                                <div className='flex items-center gap-2'>
+                                                                    <span className='text-sm font-medium'>{t("scoreboard.directions")}:</span>
+                                                                    <Select value={selectedCategory || "all"} onValueChange={handleCategoryChange} disabled={pageLoading}>
+                                                                        <SelectTrigger className="w-[120px] h-8 text-xs sm:text-sm">
+                                                                            <SelectValue placeholder={t("scoreboard.select_directions")} />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            <SelectItem value="all">{t("scoreboard.all_directions")}</SelectItem>
+                                                                            {Object.keys(challenges).sort().map((cat) => (
+                                                                                <SelectItem key={cat} value={cat}>{cat.toUpperCase()}</SelectItem>
+                                                                            ))}
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>

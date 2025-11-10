@@ -1,14 +1,16 @@
 package controllers
 
 import (
-	"a1ctf/src/db/models"
-	jwtauth "a1ctf/src/modules/jwt_auth"
-	dbtool "a1ctf/src/utils/db_tool"
-	i18ntool "a1ctf/src/utils/i18n_tool"
-	"a1ctf/src/utils/ristretto_tool"
-	"a1ctf/src/webmodels"
-	"net/http"
-	"strconv"
+    "a1ctf/src/db/models"
+    jwtauth "a1ctf/src/modules/jwt_auth"
+    dbtool "a1ctf/src/utils/db_tool"
+    i18ntool "a1ctf/src/utils/i18n_tool"
+    "a1ctf/src/utils/ristretto_tool"
+    "a1ctf/src/webmodels"
+    "net/http"
+    "strconv"
+    "sort"
+    "strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -240,12 +242,13 @@ func UserGetGameNotices(c *gin.Context) {
 }
 
 func UserGameGetScoreBoard(c *gin.Context) {
-	game := c.MustGet("game").(models.Game)
+    game := c.MustGet("game").(models.Game)
 
-	// 解析查询参数
-	groupIDStr := c.Query("group_id")
-	pageStr := c.DefaultQuery("page", "1")
-	sizeStr := c.DefaultQuery("size", "20")
+    // 解析查询参数
+    groupIDStr := c.Query("group_id")
+    pageStr := c.DefaultQuery("page", "1")
+    sizeStr := c.DefaultQuery("size", "20")
+    categoryStr := strings.ToLower(strings.TrimSpace(c.Query("category")))
 
 	var groupID *int64
 	if groupIDStr != "" {
@@ -291,15 +294,20 @@ func UserGameGetScoreBoard(c *gin.Context) {
 		}
 	}
 
-	// 获取题目信息
-	simpleGameChallenges, err := ristretto_tool.CachedGameSimpleChallenges(game.GameID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, webmodels.ErrorMessage{
-			Code:    500,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "FailedToLoadGameChallengesBoard"}),
-		})
-		return
-	}
+    // 获取题目信息
+    simpleGameChallenges, err := ristretto_tool.CachedGameSimpleChallenges(game.GameID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, webmodels.ErrorMessage{
+            Code:    500,
+            Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "FailedToLoadGameChallengesBoard"}),
+        })
+        return
+    }
+    // 构建题目 -> 方向(类别) 的映射，统一为小写
+    challengeCategoryLower := make(map[int64]string, len(simpleGameChallenges))
+    for _, ch := range simpleGameChallenges {
+        challengeCategoryLower[ch.ChallengeID] = strings.ToLower(string(ch.Category))
+    }
 
 	// 获取排行榜数据（用于获取 Top10 时间线和当前用户队伍信息）
 	scoreBoard, err := ristretto_tool.CachedGameScoreBoard(game.GameID)
@@ -332,25 +340,59 @@ func UserGameGetScoreBoard(c *gin.Context) {
 		}
 	}
 
-	// 获取过滤后的排行榜数据（已缓存）
-	filteredData, err := ristretto_tool.CachedFilteredGameScoreBoard(game.GameID, groupID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, webmodels.ErrorMessage{
-			Code:    500,
-			Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "FailedToLoadFilteredScoreboard"}),
-		})
-		return
-	}
+    // 获取过滤后的排行榜数据（已缓存，支持分组）
+    filteredData, err := ristretto_tool.CachedFilteredGameScoreBoard(game.GameID, groupID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, webmodels.ErrorMessage{
+            Code:    500,
+            Message: i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "FailedToLoadFilteredScoreboard"}),
+        })
+        return
+    }
+    // 基础数据：按分组过滤后的排行榜
+    var baseTeamRankings []webmodels.TeamScoreItem
+    var baseTimeLines []webmodels.TimeLineItem
+    if categoryStr != "" && categoryStr != "all" {
+        // 应用方向(类别)过滤：只保留在该方向有得分的队伍，并将得分改为该方向的累计分
+        baseTeamRankings = make([]webmodels.TeamScoreItem, 0, len(filteredData.FilteredTeamRankings))
+        for _, team := range filteredData.FilteredTeamRankings {
+            var catScore float64 = 0
+            for _, solve := range team.SolvedChallenges {
+                if challengeCategoryLower[solve.ChallengeID] == categoryStr {
+                    catScore += solve.Score
+                }
+            }
+            if catScore > 0 {
+                newItem := team
+                newItem.Score = catScore
+                baseTeamRankings = append(baseTeamRankings, newItem)
+            }
+        }
+        // 方向排名：按得分降序、罚分升序、队伍ID升序
+        sort.Slice(baseTeamRankings, func(i, j int) bool {
+            if baseTeamRankings[i].Score != baseTeamRankings[j].Score {
+                return baseTeamRankings[i].Score > baseTeamRankings[j].Score
+            }
+            if baseTeamRankings[i].Penalty != baseTeamRankings[j].Penalty {
+                return baseTeamRankings[i].Penalty < baseTeamRankings[j].Penalty
+            }
+            return baseTeamRankings[i].TeamID < baseTeamRankings[j].TeamID
+        })
+        baseTimeLines = filteredData.FilteredTimeLines
+    } else {
+        baseTeamRankings = filteredData.FilteredTeamRankings
+        baseTimeLines = filteredData.FilteredTimeLines
+    }
 
-	totalCachedTeamsCount := filteredData.TotalCount
+    totalCachedTeamsCount := int64(len(baseTeamRankings))
 
-	totalPages := (totalCachedTeamsCount + size - 1) / size
-	pagination := webmodels.PaginationInfo{
-		CurrentPage: page,
-		PageSize:    size,
-		TotalCount:  totalCachedTeamsCount,
-		TotalPages:  totalPages,
-	}
+    totalPages := (totalCachedTeamsCount + size - 1) / size
+    pagination := webmodels.PaginationInfo{
+        CurrentPage: page,
+        PageSize:    size,
+        TotalCount:  totalCachedTeamsCount,
+        TotalPages:  totalPages,
+    }
 
 	if totalPages == 0 {
 		// 如果没有数据，设置为第1页
@@ -372,25 +414,29 @@ func UserGameGetScoreBoard(c *gin.Context) {
 	curStartIdx := (page - 1) * size
 	curEndIdx := min(curStartIdx+size, totalCachedTeamsCount)
 
-	var pageTeamScores []webmodels.TeamScoreItem
-	var pageTimeLines []webmodels.TimeLineItem
+    var pageTeamScores []webmodels.TeamScoreItem
+    var pageTimeLines []webmodels.TimeLineItem
 
-	if totalCachedTeamsCount > 0 && curStartIdx < totalCachedTeamsCount {
-		pageTeamScores = filteredData.FilteredTeamRankings[curStartIdx:curEndIdx]
-		pageTimeLines = filteredData.FilteredTimeLines[curStartIdx:min(curEndIdx, int64(len(filteredData.FilteredTimeLines)))]
+    if totalCachedTeamsCount > 0 && curStartIdx < totalCachedTeamsCount {
+        pageTeamScores = baseTeamRankings[curStartIdx:curEndIdx]
 
-		// 补全 timelines 不足 teamscores 的部分, 出现这种情况的原因是因为积分榜只有在队伍有得分的情况下才会生成一条记录
-		if len(pageTimeLines) < len(pageTeamScores) {
-			pageTimeLines = append(pageTimeLines, webmodels.TimeLineItem{
-				TeamID:   pageTeamScores[len(pageTimeLines)].TeamID,
-				TeamName: pageTeamScores[len(pageTimeLines)].TeamName,
-				Scores:   make([]webmodels.TimeLineScoreItem, 0),
-			})
-		}
-	} else {
-		pageTeamScores = make([]webmodels.TeamScoreItem, 0)
-		pageTimeLines = make([]webmodels.TimeLineItem, 0)
-	}
+        // 根据队伍ID匹配时间线，保证与队伍列表一一对应
+        pageTimeLines = make([]webmodels.TimeLineItem, 0, len(pageTeamScores))
+        teamTimelineIndex := make(map[int64]webmodels.TimeLineItem, len(baseTimeLines))
+        for _, tl := range baseTimeLines {
+            teamTimelineIndex[tl.TeamID] = tl
+        }
+        for _, ts := range pageTeamScores {
+            if tl, ok := teamTimelineIndex[ts.TeamID]; ok {
+                pageTimeLines = append(pageTimeLines, tl)
+            } else {
+                pageTimeLines = append(pageTimeLines, webmodels.TimeLineItem{TeamID: ts.TeamID, TeamName: ts.TeamName, Scores: make([]webmodels.TimeLineScoreItem, 0)})
+            }
+        }
+    } else {
+        pageTeamScores = make([]webmodels.TeamScoreItem, 0)
+        pageTimeLines = make([]webmodels.TimeLineItem, 0)
+    }
 
 	// 过滤一遍 Top10，过滤掉没得分的
 	filteredTop10TimeLines := make([]webmodels.TimeLineItem, 0)

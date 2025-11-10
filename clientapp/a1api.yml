@@ -1847,6 +1847,12 @@ paths:
           schema:
             type: integer
             default: 20
+        - name: category
+          in: query
+          required: false
+          description: 方向(类别)，如 web/pwn/crypto；与分组筛选可组合
+          schema:
+            type: string
       responses:
         '200':
           description: Successful response
