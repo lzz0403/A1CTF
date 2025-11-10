@@ -392,7 +392,19 @@ export default function ScoreBoardPage(
 
             api.user.userGetGameScoreboard(gmid, params).then((res) => {
 
-                setScoreBoardModel(res.data.data)
+                // 依据筛选后的顺序重算排名（考虑分页偏移），避免显示原始总榜名次
+                const data = res.data.data as GameScoreboardData;
+                const page = data?.pagination?.current_page ?? currentPage;
+                const size = data?.pagination?.page_size ?? pageSize;
+                if (Array.isArray(data?.teams)) {
+                    const recalculated = data.teams.map((team, index) => ({
+                        ...team,
+                        rank: (Math.max(page, 1) - 1) * Math.max(size, 1) + (index + 1),
+                    }));
+                    data.teams = recalculated;
+                }
+
+                setScoreBoardModel(data)
 
                 // 设置分组信息
                 if (res.data.data?.groups) {
