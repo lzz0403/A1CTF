@@ -2296,16 +2296,18 @@ export class Api<
       query?: {
         /** 分组ID，如果不传则显示所有队伍 */
         group_id?: number;
+        /** 方向类别(如 web/pwn/crypto)，与分组筛选可组合 */
+        category?: string;
         /**
          * 页码，从1开始
          * @default 1
          */
-        page?: number;
-        /**
-         * 每页大小
-         * @default 20
-         */
-        size?: number;
+         page?: number;
+         /**
+          * 每页大小
+          * @default 20
+          */
+          size?: number;
       },
       params: RequestParams = {},
     ) =>
