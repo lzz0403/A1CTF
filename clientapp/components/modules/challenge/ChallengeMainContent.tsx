@@ -177,21 +177,24 @@ export default function ChallengeMainContent(
 
 
     useEffect(() => {
-        setContainerInfo(curChallenge?.containers ?? [])
         setContainerExpireTime(curChallenge?.container_expiretime
             ? dayjs(curChallenge.container_expiretime)
             : null)
 
         if (curChallenge?.container_status == ContainerStatus.ContainerRunning) {
             setContainerRunningTrigger(true)
+            // 保持运行时的实时容器信息，不从 curChallenge 覆盖
         } else if (curChallenge?.container_status == ContainerStatus.ContainerQueueing) {
             setContainerLaunching(true)
             setRefreshContainerTrigger(true)
+            setContainerInfo(curChallenge?.containers ?? [])
         } else if (curChallenge?.container_status == ContainerStatus.ContainerStarting) {
             setContainerLaunching(true)
             setRefreshContainerTrigger(true)
+            setContainerInfo(curChallenge?.containers ?? [])
         } else {
             setContainerRunningTrigger(false)
+            setContainerInfo(curChallenge?.containers ?? [])
         }
     }, [curChallenge])
 
@@ -299,9 +302,9 @@ export default function ChallengeMainContent(
                                         <div className="flex gap-2 items-center">
                                             <Network />
                                             {container.container_ports?.length ? (
-                                                <div className="flex gap-2">
+                                                <div className="flex flex-wrap gap-2">
                                                     {container.container_ports.map((port, j) => (
-                                                        <div key={j} className="flex gap-2 items-center">
+                                                        <div key={j} className="flex gap-2 items-center shrink-0">
                                                             <span className="text-sm font-bold">{port.port_name}:</span>
                                                             <div className="border-2 border-foreground px-2 rounded-md flex items-center justify-center hover:bg-foreground/30 transition-colors duration-300"
                                                                 onClick={() => {
