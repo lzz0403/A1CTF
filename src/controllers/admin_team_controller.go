@@ -114,24 +114,24 @@ func AdminListTeams(c *gin.Context) {
 			}
 		}
 
-		record := webmodels.AdminListTeamItem{
-			TeamID:     team.TeamID,
-			TeamName:   team.TeamName,
-			TeamAvatar: team.TeamAvatar,
-			TeamSlogan: team.TeamSlogan,
-			GroupName:  nil,
-			GroupID:    team.GroupID,
-			Members:    tmpMembers,
-			Status:     team.TeamStatus,
-			Score:      team.TeamScore,
-			GroupID:    team.GroupID,
-			GroupName:  func() *string {
-				if team.Group != nil {
-					return &team.Group.GroupName
-				}
-				return nil
-			}(),
-		})
+    record := webmodels.AdminListTeamItem{
+        TeamID:     team.TeamID,
+        TeamName:   team.TeamName,
+        TeamAvatar: team.TeamAvatar,
+        TeamSlogan: team.TeamSlogan,
+        GroupID:    team.GroupID,
+        GroupName: func() *string {
+            if team.Group != nil {
+                return &team.Group.GroupName
+            }
+            return nil
+        }(),
+        Members: tmpMembers,
+        Status:  team.TeamStatus,
+        Score:   team.TeamScore,
+    }
+
+    teamItems = append(teamItems, record)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
