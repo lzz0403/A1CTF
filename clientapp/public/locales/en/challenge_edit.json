@@ -58,6 +58,10 @@
         "dns": {
             "label": "DNS Outbound",
             "description": "This option only takes effect when external network access is disabled"
+        },
+        "privileged": {
+            "label": "Privileged Container",
+            "description": "Run container in privileged mode (securityContext.privileged=true)"
         }
     },
     "attachment": {

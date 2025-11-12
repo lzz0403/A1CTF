@@ -141,6 +141,26 @@ function ContainerForm({ control, index, removeContainer }: ContainerFormProps) 
                     </FormItem>
                 )}
             />
+            <FormField
+                control={control}
+                name={`container_config.${index}.privileged`}
+                render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/50 p-4 shadow-sm bg-background/30">
+                        <div className="space-y-0.5">
+                            <FormLabel>{t("container.privileged.label")}</FormLabel>
+                            <FormDescription>
+                                {t("container.privileged.description")}
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch
+                                checked={!!field.value}
+                                onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
             <div className="flex flex-col gap-2">
                 <div className="flex items-center h-[20px] mb-4">
                     <FormLabel>{t("container.cmd.label")}</FormLabel>
@@ -516,7 +536,8 @@ export function EditChallengeView({ challenge_info, isCreate = false }: { challe
                 ),
                 cpu_limit: z.coerce.number({ invalid_type_error: t("container.error.cpu") }),
                 memory_limit: z.coerce.number({ invalid_type_error: t("container.error.mem") }),
-                storage_limit: z.coerce.number({ invalid_type_error: t("container.error.store") })
+                storage_limit: z.coerce.number({ invalid_type_error: t("container.error.store") }),
+                privileged: z.boolean().optional()
             })
         ),
         attachments: z.array(
@@ -581,7 +602,8 @@ export function EditChallengeView({ challenge_info, isCreate = false }: { challe
                 )),
                 cpu_limit: e.cpu_limit,
                 memory_limit: e.memory_limit,
-                storage_limit: e.storage_limit
+                storage_limit: e.storage_limit,
+                privileged: e.privileged ?? false
             })) || [],
             attachments: challenge_info.attachments?.map((e) => ({
                 attach_hash: e.attach_hash || "",
@@ -629,7 +651,8 @@ export function EditChallengeView({ challenge_info, isCreate = false }: { challe
                 expose_ports: e.expose_ports,
                 cpu_limit: e.cpu_limit,
                 memory_limit: e.memory_limit,
-                storage_limit: e.storage_limit
+                storage_limit: e.storage_limit,
+                privileged: e.privileged
             })),
             create_time: challenge_info.create_time,
             description: values.description,
@@ -913,7 +936,8 @@ export function EditChallengeView({ challenge_info, isCreate = false }: { challe
                                             expose_ports: [],
                                             cpu_limit: 100,
                                             memory_limit: 64,
-                                            storage_limit: 128
+                                            storage_limit: 128,
+                                            privileged: false
                                         })
                                     }
                                 >

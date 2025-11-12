@@ -58,6 +58,10 @@
         "dns": {
             "label": "DNS出网",
             "description": "只有不出网时该选项才生效"
+        },
+        "privileged": {
+            "label": "特权容器",
+            "description": "开启后容器将以特权模式运行（securityContext.privileged=true）"
         }
     },
     "attachment": {
