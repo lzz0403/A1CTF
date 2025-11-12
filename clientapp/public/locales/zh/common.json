@@ -21,6 +21,9 @@
     "loading": "加载中...",
     "admin": "管理后台",
     "continue": "继续操作",
+    "answer_incorrect": "答案错误，请重试",
+    "complete_math_question": "完成下面的数学题",
+    "final_confirm": "你确定吗？",
     "cancel": "取消",
     "confirm": "确认",
     "error": {

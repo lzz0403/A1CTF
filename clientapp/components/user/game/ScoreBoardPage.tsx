@@ -9,6 +9,7 @@ import * as XLSX from 'xlsx-js-style';
 
 import { Tooltip } from 'react-tooltip';
 import { Button } from 'components/ui/button';
+import { Label } from "components/ui/label";
 
 import { randomInt } from "mathjs";
 import { MacScrollbar } from 'mac-scrollbar';
@@ -17,7 +18,7 @@ import BetterChart from 'components/BetterChart';
 import { useGlobalVariableContext } from 'contexts/GlobalVariableContext';
 import { api } from 'utils/ApiHelper';
 import { GameScoreboardData, TeamScore, UserFullGameInfo, UserSimpleGameChallenge, GameGroupSimple, PaginationInfo } from 'utils/A1API';
-import { useIsMobile } from 'hooks/use-mobile';
+import { useIsMobile } from 'hooks/UseMobile';
 import { ScoreTableMobile } from 'components/ScoreTableMobile';
 import { toast } from 'react-toastify/unstyled';
 
@@ -30,6 +31,7 @@ import {
 } from "components/ui/select"
 import TeamScoreDetailPage from './TeamScoreDetailPage';
 import { useTranslation } from 'react-i18next';
+import { Checkbox } from 'components/ui/checkbox';
 
 export default function ScoreBoardPage(
     { gmid }
@@ -42,6 +44,8 @@ export default function ScoreBoardPage(
     const [gameInfo, setGameInfo] = useState<UserFullGameInfo | undefined>(undefined)
     const [challenges, setChallenges] = useState<Record<string, UserSimpleGameChallenge[]>>({})
     const [scoreBoardModel, setScoreBoardModel] = useState<GameScoreboardData>()
+
+    const [showGroupTags, setShowGroupTags] = useState(false)
 
     // 分组和分页相关状态
     const [selectedGroupId, setSelectedGroupId] = useState<number | undefined>(undefined)
@@ -602,16 +606,25 @@ export default function ScoreBoardPage(
                     },
                     ...(res.data.data?.top10_timelines?.map((team, index) => {
 
-                        const lastRecordTime = team.scores?.[team.scores?.length - 1]?.record_time;
-                        const lastScore = team.scores?.[team.scores?.length - 1]?.score || 0;
+                        let baseTime = team.time_base ?? 0
+
+                        for (let i = 0; i < team.scores!.length; i++) {
+                            if (team.times) {
+                                team.times[i] += baseTime;
+                                baseTime = team.times[i];
+                            }
+                        }
+
+                        const lastRecordTime = team.times?.[team.times?.length - 1];
+                        const lastScore = team.scores?.[team.scores?.length - 1] || 0;
 
                         const shouldAddEnd = lastRecordTime && dayjs(lastRecordTime).isBefore(end);
 
                         let data = [
                             [+dayjs(gameInfo.start_time).toDate(), 0],
-                            ...(team.scores?.map((item) => [
-                                +(item.record_time ? dayjs(item.record_time).toDate() : 0),
-                                item.score || 0
+                            ...(team.scores?.map((score, idx) => [
+                                +(team.times?.[idx] ? dayjs(team.times?.[idx]).toDate() : 0),
+                                score || 0
                             ]) || []),
                         ];
 
@@ -630,7 +643,7 @@ export default function ScoreBoardPage(
                             },
                             endLabel: {
                                 show: true,
-                                formatter: `${team.team_name} - ${team.scores![team.scores!.length - 1]?.score ?? 0} pts`,
+                                formatter: `${team.team_name} - ${team.scores![team.scores!.length - 1] ?? 0} pts`,
                                 color: theme === 'dark' ? '#f1f5f9' : '#0f172a',
                                 fontWeight: 'bold',
                                 fontSize: 12, // 稍微减小字体避免重叠
@@ -688,7 +701,6 @@ export default function ScoreBoardPage(
             <TeamScoreDetailPage
                 showUserDetail={showUserDetail}
                 setShowUserDetail={setShowUserDetail}
-                scoreBoardModel={scoreBoardModel}
                 gameInfo={gameInfo}
                 challenges={challenges}
             />
@@ -705,17 +717,33 @@ export default function ScoreBoardPage(
                             <div className='flex-1' />
                             {/* 下载积分榜按钮 */}
                             {gameInfo && (
-                                <Button
-                                    onClick={downloadScoreboardXLSX}
-                                    disabled={isDownloading}
-                                    className={`mr-4 transition-all duration-300 hover:scale-110 ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''
-                                        }`}
-                                    variant="outline"
-                                    size="sm"
-                                >
-                                    <Download size={18} className={`mr-2 ${isDownloading ? 'animate-spin' : ''}`} />
-                                    {isDownloading ? t("scoreboard.downloading") : t("scoreboard.download")}
-                                </Button>
+                                <div className='flex items-center gap-2'>
+                                    <Label className="hover:bg-accent/50 cursor-pointer flex items-start gap-3 rounded-lg border p-[10px] has-[[aria-checked=true]]:border-green-600 has-[[aria-checked=true]]:bg-green-50 dark:has-[[aria-checked=true]]:border-green-900 dark:has-[[aria-checked=true]]:bg-green-950">
+                                        <Checkbox
+                                            id="toggle-2"
+                                            checked={showGroupTags}
+                                            onCheckedChange={(e) => {
+                                                setShowGroupTags(e.valueOf() as boolean);
+                                            }}
+                                            className="data-[state=checked]:border-green-600 data-[state=checked]:bg-green-600 data-[state=checked]:text-white dark:data-[state=checked]:border-green-700 dark:data-[state=checked]:bg-green-700"
+                                        />
+                                        <div className="grid gap-1.5 font-normal">
+                                            <p className="text-sm leading-none font-medium">
+                                                {t("scoreboard.show_group_tags")}
+                                            </p>
+                                        </div>
+                                    </Label>
+                                    <Button
+                                        onClick={downloadScoreboardXLSX}
+                                        disabled={isDownloading}
+                                        className={`mr-4 transition-all duration-300 ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''
+                                            }`}
+                                        variant="outline"
+                                    >
+                                        <Download size={18} className={`mr-2 ${isDownloading ? 'animate-spin' : ''}`} />
+                                        {isDownloading ? t("scoreboard.downloading") : t("scoreboard.download")}
+                                    </Button>
+                                </div>
                             )}
                         </div>
                         {gameInfo ? (

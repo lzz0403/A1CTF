@@ -152,7 +152,7 @@
             "title": "Confirm Deletion",
             "description": "This action cannot be undone"
         },
-        "drag": "Drag challenges here to assign them to this timeline",
+        "drag": "Please add a timeline first",
         "edit": "Edit Timeline",
         "global": {
             "title": "Global Challenges",
@@ -163,7 +163,7 @@
             "title": "Timeline Challenges",
             "description": "Challenges assigned to a specific timeline",
             "empty": "Please add a timeline first",
-            "drag": "Drag challenges to the timeline above"
+            "drag": "Drag challenges to here"
         }
     },
     "group": {
@@ -196,6 +196,8 @@
         "option": "Optional",
         "time": "Created At",
         "invite_code": "InviteCode(Only valid if group invite code is enabled)",
+        "people_count": "Number of Teams",
+        "group_id": "Group ID",
         "copy": "Copy InviteCode",
         "copy_success": "InviteCode copied to clipboard",
         "empty": "No groups yet. Click \"Create Group\" to add one"
@@ -271,6 +273,7 @@
         "list": "Member List",
         "user_id": "User ID",
         "slogan": "Team Slogan",
+        "group_name": "Group Name",
         "menu": {
             "title": "Open Menu",
             "copy": "Copy Team ID"

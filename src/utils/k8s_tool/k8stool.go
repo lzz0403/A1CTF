@@ -8,6 +8,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"net"
 
 	"github.com/bytedance/sonic"
 	"github.com/go-playground/validator/v10"
@@ -137,15 +138,15 @@ func (e *A1Containers) Scan(value interface{}) error {
 }
 
 type PodInfo struct {
-	Name       string
-	TeamHash   string
-	Labels     map[string]string
-	Containers []A1Container
-	Category   string
+	Name          string
+	TeamHash      string
+	Labels        map[string]string
+	Containers    []A1Container
+	Category      string
 	ChallengeName string
-	Flag       string
-	AllowWAN   bool
-	AllowDNS   bool
+	Flag          string
+	AllowWAN      bool
+	AllowDNS      bool
 }
 
 func GetClient() (*kubernetes.Clientset, error) {
@@ -193,6 +194,14 @@ func ListPods() (*corev1.PodList, error) {
 	return podList, nil
 }
 
+func IsIPv6(addr string) bool {
+	ip := net.ParseIP(addr)
+	if ip == nil {
+		return false
+	}
+	return ip.To4() == nil
+}
+
 func CreatePod(podInfo *PodInfo) error {
 	clientset, err := GetClient()
 	if err != nil {
@@ -230,7 +239,6 @@ func CreatePod(podInfo *PodInfo) error {
 			Value: podInfo.ChallengeName,
 		})
 
-
 		if len(c.ExposePorts) > 0 {
 			var containerPorts []corev1.ContainerPort
 			for _, port := range c.ExposePorts {
@@ -263,14 +271,34 @@ func CreatePod(podInfo *PodInfo) error {
 
 		containers = append(containers, container)
 	}
+
+	fastVal := false
+
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   podInfo.Name,
 			Labels: podInfo.Labels,
 		},
 		Spec: corev1.PodSpec{
-			Containers: containers,
+			Containers:         containers,
+			EnableServiceLinks: &fastVal,
 		},
+	}
+
+	if viper.GetBool("k8s.custom-dns-server.enabled") {
+		pod.Spec.DNSPolicy = corev1.DNSNone
+		pod.Spec.DNSConfig = &corev1.PodDNSConfig{}
+		pod.Spec.DNSConfig.Nameservers = viper.GetStringSlice("k8s.custom-dns-server.nameservers")
+	}
+
+	// 添加SecurityContext配置
+	for i, c := range podInfo.Containers {
+		if c.Privileged {
+			// 为需要特权模式的容器设置SecurityContext
+			containers[i].SecurityContext = &corev1.SecurityContext{
+				Privileged: &c.Privileged,
+			}
+		}
 	}
 
 	// 添加SecurityContext配置
@@ -382,20 +410,9 @@ func CreatePod(podInfo *PodInfo) error {
 		}
 
 		if podInfo.AllowDNS {
-			networkPolicy.Spec.Egress = append(networkPolicy.Spec.Egress, networkingv1.NetworkPolicyEgressRule{
+			dnsEgressRule := networkingv1.NetworkPolicyEgressRule{
 				To: []networkingv1.NetworkPolicyPeer{
-					{
-						NamespaceSelector: &metav1.LabelSelector{
-							MatchLabels: map[string]string{
-								"kubernetes.io/metadata.name": "kube-system",
-							},
-						},
-						PodSelector: &metav1.LabelSelector{
-							MatchLabels: map[string]string{
-								"k8s-app": "kube-dns",
-							},
-						},
-					},
+					// clear
 				},
 				Ports: []networkingv1.NetworkPolicyPort{
 					{
@@ -413,7 +430,43 @@ func CreatePod(podInfo *PodInfo) error {
 						Port: &intstr.IntOrString{IntVal: 53},
 					},
 				},
-			})
+			}
+
+			// 处理自定义 pod dns 服务器情况下的 dns出网, 处理某些奇怪的集群默认 dns 是坏的 ?()
+			if !viper.GetBool("k8s.custom-dns-server.enabled") {
+				// 如果是默认使用 ClusterFirst, 需要添加 k8s 内部 dns 服务的匹配
+				dnsEgressRule.To = append(dnsEgressRule.To, networkingv1.NetworkPolicyPeer{
+					NamespaceSelector: &metav1.LabelSelector{
+						MatchLabels: map[string]string{
+							"kubernetes.io/metadata.name": "kube-system",
+						},
+					},
+					PodSelector: &metav1.LabelSelector{
+						MatchLabels: map[string]string{
+							"k8s-app": "kube-dns",
+						},
+					},
+				})
+			} else {
+				// 否则就为每一个 ns 添加出站规则
+				for _, ns := range viper.GetStringSlice("k8s.custom-dns-server.nameservers") {
+					if IsIPv6(ns) {
+						dnsEgressRule.To = append(dnsEgressRule.To, networkingv1.NetworkPolicyPeer{
+							IPBlock: &networkingv1.IPBlock{
+								CIDR: fmt.Sprintf("%s/128", ns),
+							},
+						})
+					} else {
+						dnsEgressRule.To = append(dnsEgressRule.To, networkingv1.NetworkPolicyPeer{
+							IPBlock: &networkingv1.IPBlock{
+								CIDR: fmt.Sprintf("%s/32", ns),
+							},
+						})
+					}
+				}
+			}
+
+			networkPolicy.Spec.Egress = append(networkPolicy.Spec.Egress, dnsEgressRule)
 		}
 
 		_, err = clientset.NetworkingV1().NetworkPolicies(namespace).Create(context.Background(), networkPolicy, metav1.CreateOptions{})

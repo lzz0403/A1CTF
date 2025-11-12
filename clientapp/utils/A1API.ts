@@ -528,12 +528,6 @@ export interface ExposePortInfo {
   }[];
 }
 
-export interface GameScoreboardResponse {
-  /** @example 200 */
-  code?: number;
-  data?: GameScoreboardData;
-}
-
 export interface GameScoreboardData {
   /** @example 1 */
   game_id?: number;
@@ -541,8 +535,7 @@ export interface GameScoreboardData {
   name?: string;
   teams?: TeamScore[];
   your_team?: TeamScore;
-  top10_timelines?: TeamTimeline[];
-  team_timelines?: TeamTimeline[];
+  top10_timelines?: TeamTimelineLowCost[];
   challenges?: UserSimpleGameChallenge[];
   groups?: GameGroupSimple[];
   current_group?: GameGroupSimple;
@@ -627,6 +620,16 @@ export interface TeamTimeline {
   scores?: ScoreRecord[];
 }
 
+export interface TeamTimelineLowCost {
+  /** @example 1 */
+  team_id?: number;
+  /** @example "test114514" */
+  team_name?: string;
+  scores?: number[];
+  times?: number[];
+  time_base?: number;
+}
+
 export interface ScoreRecord {
   record_time?: number;
   /**
@@ -685,6 +688,8 @@ export interface AdminListTeamItem {
   team_name: string;
   team_avatar?: string | null;
   team_slogan?: string | null;
+  group_name?: string | null;
+  group_id?: number | null;
   members: AdminSimpleTeamMemberInfo[];
   /**
    * Team participation status:
@@ -859,6 +864,30 @@ export interface GameGroup {
    */
   updated_at: string;
   teams: AdminListTeamItem[];
+}
+
+export interface AdminGameGroupItem {
+  /** 分组ID */
+  group_id: number;
+  /** 分组名称 */
+  group_name: string;
+  /** 分组描述 */
+  group_description?: string | null;
+  /** 显示顺序 */
+  display_order: number;
+  /**
+   * 创建时间
+   * @format date-time
+   */
+  created_at?: string;
+  /** 邀请码 */
+  invite_code?: string;
+  /**
+   * 更新时间
+   * @format date-time
+   */
+  updated_at?: string;
+  people_count: number;
 }
 
 export interface CreateGameGroupPayload {
@@ -2312,10 +2341,44 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<GameScoreboardResponse, any>({
+      this.request<
+        {
+          /** @example 200 */
+          code?: number;
+          data?: GameScoreboardData;
+        },
+        any
+      >({
         path: `/api/game/${gameId}/scoreboard`,
         method: "GET",
         query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags user
+     * @name UserGetGameScoreboardTimeLine
+     * @summary Get game scoreboard timeline data for a team
+     * @request GET:/api/game/{game_id}/scoreboard/{team_id}/timeline
+     */
+    userGetGameScoreboardTimeLine: (
+      gameId: number,
+      teamId: number,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** @example 200 */
+          code?: number;
+          data?: TeamTimelineLowCost;
+        },
+        any
+      >({
+        path: `/api/game/${gameId}/scoreboard/${teamId}/timeline`,
+        method: "GET",
         format: "json",
         ...params,
       }),
@@ -2353,6 +2416,39 @@ export class Api<
         method: "POST",
         body: data,
         type: ContentType.FormData,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags user
+     * @name UserGetGroupInviteCodeDetail
+     * @summary get the invite code detail of a group
+     * @request POST:/api/game/{game_id}/group/invite-code
+     */
+    userGetGroupInviteCodeDetail: (
+      gameId: number,
+      data: {
+        invite_code: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          code: number;
+          data: {
+            group_name: string;
+            group_id: number;
+          };
+        },
+        any
+      >({
+        path: `/api/game/${gameId}/group/invite-code`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -2616,6 +2712,28 @@ export class Api<
       >({
         path: `/api/admin/game/${gameId}`,
         method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Delete a game
+     *
+     * @tags admin
+     * @name DeleteGame
+     * @summary Delete a game
+     * @request DELETE:/api/admin/game/{game_id}
+     */
+    deleteGame: (gameId: number, params: RequestParams = {}) =>
+      this.request<
+        {
+          code: number;
+          message: string;
+        },
+        void | ErrorMessage
+      >({
+        path: `/api/admin/game/${gameId}`,
+        method: "DELETE",
         format: "json",
         ...params,
       }),
@@ -3336,7 +3454,7 @@ export class Api<
       this.request<
         {
           code: number;
-          data: GameGroup[];
+          data: AdminGameGroupItem[];
         },
         any
       >({

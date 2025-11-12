@@ -167,7 +167,10 @@ export function ChallengesView({
                     // setPageSwitch(true)
 
                     finishLoading()
-                }, createSkipGlobalErrorConfig()).catch((_error: AxiosError) => { })
+                }, createSkipGlobalErrorConfig()).catch((_error: AxiosError) => { 
+                    setSearchParams({ })
+                    finishLoading()
+                })
             } else {
                 finishLoading()
             }
@@ -368,6 +371,8 @@ export function ChallengesView({
     useEffect(() => {
         if (curChallenge?.challenge_id) {
             setSearchParams({ id: curChallenge.challenge_id.toString() })
+        } else {
+            setSearchParams({ })
         }
     }, [curChallenge?.challenge_id])
 

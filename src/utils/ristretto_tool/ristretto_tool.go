@@ -210,7 +210,12 @@ func CachedSolvedChallengesForGame(gameID int64) (map[int64][]models.Solve, erro
 	obj, err := GetOrCacheSingleFlight(fmt.Sprintf("solved_challenges_for_game_%d", gameID), func() (interface{}, error) {
 		var totalSolves []models.Solve
 
-		if err := dbtool.DB().Where("game_id = ? AND solve_status = ?", gameID, models.SolveCorrect).Preload("Challenge").Find(&totalSolves).Error; err != nil {
+		cachedGame, err := CachedGameInfo(gameID)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := dbtool.DB().Where("game_id = ? AND solve_status = ? AND solve_time >= ? AND solve_time <= ?", gameID, models.SolveCorrect, cachedGame.StartTime, cachedGame.EndTime).Preload("Challenge").Find(&totalSolves).Error; err != nil {
 			return nil, err
 		}
 
@@ -268,6 +273,35 @@ func filterValidSolves(solves []models.Solve) []models.Solve {
 		}
 	}
 	return filtered
+}
+
+func CoverToLowCost(timelines []webmodels.TimeLineItem) []webmodels.TimeLineItemLowCost {
+	lowCostList := make([]webmodels.TimeLineItemLowCost, 0, len(timelines))
+	for _, item := range timelines {
+		// 先找一个最小值
+		timeBase := int64(1 << 62)
+
+		for _, score := range item.Scores {
+			timeBase = min(timeBase, int64(score.RecordTime))
+		}
+
+		lowCostItem := webmodels.TimeLineItemLowCost{
+			TeamID:   item.TeamID,
+			TeamName: item.TeamName,
+			Scores:   make([]int64, 0, len(item.Scores)),
+			Times:    make([]int64, 0, len(item.Scores)),
+			TimeBase: int64(timeBase),
+		}
+
+		for _, score := range item.Scores {
+			lowCostItem.Scores = append(lowCostItem.Scores, int64(score.Score))
+			lowCostItem.Times = append(lowCostItem.Times, score.RecordTime-timeBase)
+			timeBase = score.RecordTime
+		}
+
+		lowCostList = append(lowCostList, lowCostItem)
+	}
+	return lowCostList
 }
 
 func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData, error) {
@@ -339,6 +373,12 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			}
 		}
 
+		var groupName *string = nil
+
+		if team.Group != nil {
+			groupName = &team.Group.GroupName
+		}
+
 		teamDataMap[team.TeamID] = webmodels.TeamScoreItem{
 			TeamID:           team.TeamID,
 			TeamName:         team.TeamName,
@@ -347,6 +387,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			TeamSlogan:       team.TeamSlogan,
 			TeamDescription:  team.TeamDescription,
 			GroupID:          team.GroupID,
+			GroupName:        groupName,
 			Score:            0,
 			Penalty:          0,
 			SolvedChallenges: make([]webmodels.TeamSolveItem, 0),
@@ -520,6 +561,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			SolvedChallenges: teamData.SolvedChallenges,
 			ScoreAdjustments: teamData.ScoreAdjustments,
 			GroupID:          teamData.GroupID,
+			GroupName:        teamData.GroupName,
 		}
 		finalScoreBoardMap[teamData.TeamID] = tmp
 		processedTeamRankings = append(processedTeamRankings, tmp)
@@ -544,6 +586,7 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 			SolvedChallenges: teamData.SolvedChallenges,
 			ScoreAdjustments: teamData.ScoreAdjustments,
 			GroupID:          teamData.GroupID,
+			GroupName:        teamData.GroupName,
 		})
 		// 防止队伍数量少于 10报错
 		idx += 1
@@ -709,6 +752,10 @@ func CalculateGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData,
 	cachedData.Top10TimeLines = timeLines
 	cachedData.Top10Teams = top10Teams
 
+	// 压缩时间线数据
+	cachedData.Top10TimeLinesLowCost = CoverToLowCost(cachedData.Top10TimeLines)
+	cachedData.AllTimeLinesLowCost = CoverToLowCost(cachedData.AllTimeLines)
+
 	return &cachedData, nil
 }
 
@@ -735,11 +782,13 @@ func CachedGameScoreBoard(gameID int64) (*webmodels.CachedGameScoreBoardData, er
 	// zaphelper.Logger.Error("Get scoreboard from cache failed", zap.String("cache_key", cacheKey))
 
 	obj := webmodels.CachedGameScoreBoardData{
-		TeamRankings:       make([]webmodels.TeamScoreItem, 0),
-		AllTimeLines:       make([]webmodels.TimeLineItem, 0),
-		Top10TimeLines:     make([]webmodels.TimeLineItem, 0),
-		Top10Teams:         make([]webmodels.TeamScoreItem, 0),
-		FinalScoreBoardMap: make(map[int64]webmodels.TeamScoreItem),
+		TeamRankings:          make([]webmodels.TeamScoreItem, 0),
+		AllTimeLines:          make([]webmodels.TimeLineItem, 0),
+		Top10TimeLines:        make([]webmodels.TimeLineItem, 0),
+		Top10Teams:            make([]webmodels.TeamScoreItem, 0),
+		FinalScoreBoardMap:    make(map[int64]webmodels.TeamScoreItem),
+		Top10TimeLinesLowCost: make([]webmodels.TimeLineItemLowCost, 0),
+		AllTimeLinesLowCost:   make([]webmodels.TimeLineItemLowCost, 0),
 	}
 
 	return &obj, nil

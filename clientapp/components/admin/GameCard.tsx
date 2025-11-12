@@ -1,3 +1,4 @@
+import AlertConformer from "components/modules/AlertConformer";
 import ImageLoader from "components/modules/ImageLoader";
 import { Badge } from "components/ui/badge";
 import { Button } from "components/ui/button";
@@ -10,12 +11,15 @@ import { EyeClosed, Calendar, Settings, Calculator, Trash2, Pause, Play, Square,
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify/unstyled";
+import { KeyedMutator } from "swr";
 import { UserGameSimpleInfo } from "utils/A1API";
 import { api } from "utils/ApiHelper";
 
 export default function GameCard(
-    { game }: {
-        game: UserGameSimpleInfo
+    { game, refreshGameList }: {
+        game: UserGameSimpleInfo,
+        refreshGameList: KeyedMutator<UserGameSimpleInfo[]>,
     }
 ) {
 
@@ -200,17 +204,29 @@ export default function GameCard(
                             >
                                 <Calculator className="h-4 w-4" />
                             </Button>
-                            <Button
-                                size="sm"
-                                variant="destructive"
-                                className="backdrop-blur-sm bg-red-500/30 hover:bg-red-500/50 border-red-500/20 text-white h-9 w-9 p-0"
-                                data-tooltip-content={t("remove")}
-                                data-tooltip-id="my-tooltip"
-                                data-tooltip-place="bottom"
-                                disabled={true} // TODO 暂时没有实现删除比赛的功能,先禁用
+                            <AlertConformer
+                                title={t("alert_title")}
+                                description={t("delete_description", { name: game.name })}
+                                onConfirm={() => {
+                                    api.admin.deleteGame(game.game_id).then((res) => {
+                                        toast.success(res.data.message)
+                                        setTimeout(() => refreshGameList(), 500)
+                                    })
+                                }}
+                                type="critical"
+                                descriptionClassName="text-md"
                             >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+                                <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="backdrop-blur-sm bg-red-500/30 hover:bg-red-500/50 border-red-500/20 text-white h-9 w-9 p-0"
+                                    data-tooltip-content={t("remove")}
+                                    data-tooltip-id="my-tooltip"
+                                    data-tooltip-place="bottom"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </AlertConformer>
                         </div>
                     </div>
                 </div>

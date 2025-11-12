@@ -110,14 +110,14 @@ export function CategorySidebar({
             // prevGameDetail.current = groupedChallenges
             // setGameDetail(response.data)
 
-            let stillExists = false
+            let curChallengeStillExists = false
 
             for (const key in groupedChallenges) {
                 if (groupedChallenges.hasOwnProperty(key)) {
                     groupedChallenges[key].forEach(challenge => {
                         // 
                         if (challenge.challenge_name == curChallengeRef.current?.challenge_name) {
-                            stillExists = true
+                            curChallengeStillExists = true
                         }
                     });
 
@@ -135,7 +135,7 @@ export function CategorySidebar({
                 }
             }
 
-            if (!stillExists) {
+            if (!curChallengeStillExists) {
                 setCurChallenge(undefined)
                 curChallengeRef.current = undefined
             }

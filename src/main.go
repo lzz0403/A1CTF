@@ -44,6 +44,7 @@ import (
 	"github.com/chenyahui/gin-cache/persist"
 
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/pprof"
 )
 
 func StartLoopEvent() {
@@ -199,7 +200,10 @@ func main() {
 		zaphelper.Sugar.Warn("No trusted proxies set, using default. If you are using a reverse proxy, please set the trusted proxies in the config file.")
 	}
 
-	// pprof.Register(r)
+	// pprof system monitor
+	if viper.GetBool("system.pprof-enable") {
+		pprof.Register(r)
+	}
 
 	// 启动 Gin 框架性能监控
 	if viper.GetBool("monitoring.enabled") {
@@ -232,6 +236,11 @@ func main() {
 			VisibleAfterEnded: true,
 			CheckGameStarted:  true,
 		}), controllers.UserGameGetScoreBoard)
+
+		public.GET("/game/:game_id/scoreboard/:team_id/timeline", bestGzipMiddleware, controllers.GameStatusMiddleware(controllers.GameStatusMiddlewareProps{
+			VisibleAfterEnded: true,
+			CheckGameStarted:  true,
+		}), controllers.UserGameGetScoreBoardTimeLine)
 
 		public.GET("/game/:game_id", defaultGzipMiddleware, controllers.GameStatusMiddleware(controllers.GameStatusMiddlewareProps{
 			VisibleAfterEnded: true,
@@ -374,6 +383,7 @@ func main() {
 
 			gameGroup.GET("/:game_id", controllers.PathParmsMiddlewareBuilder("G"), controllers.AdminGetGame)
 			gameGroup.PUT("/:game_id", controllers.PathParmsMiddlewareBuilder("G"), controllers.AdminUpdateGame)
+			gameGroup.DELETE("/:game_id", controllers.PathParmsMiddlewareBuilder("G"), controllers.AdminDeleteGame)
 
 			// gamechallenges 操作接口
 			gameGroup.GET("/:game_id/challenge/:challenge_id", controllers.PathParmsMiddlewareBuilder("GC[Challenge]"), controllers.AdminGetGameChallenge)
@@ -436,6 +446,12 @@ func main() {
 				VisibleAfterEnded: true,
 				CheckGameStarted:  false,
 			}), controllers.UserGetGameGroups)
+
+			// 组邀请码路由
+			userGameGroup.POST("/:game_id/group/invite-code", controllers.GameStatusMiddleware(controllers.GameStatusMiddlewareProps{
+				VisibleAfterEnded: true,
+				CheckGameStarted:  false,
+			}), controllers.PayloadValidator(webmodels.UserGetGroupInviteCodeGroupPayload{}), controllers.UserGetGroupInviteCodeGroup)
 
 			// 创建比赛队伍
 			userGameGroup.POST("/:game_id/createTeam", controllers.GameStatusMiddleware(controllers.GameStatusMiddlewareProps{

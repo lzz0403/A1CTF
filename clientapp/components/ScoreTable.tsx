@@ -1,4 +1,4 @@
-import { Award, Flag, Medal } from "lucide-react";
+import { Award, Flag, Medal, Tag } from "lucide-react";
 import { MacScrollbar } from "mac-scrollbar";
 import { useTheme } from "next-themes";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
@@ -10,12 +10,15 @@ import { GameScoreboardData, PaginationInfo, TeamScore, UserSimpleGameChallenge 
 import AvatarUsername from "./modules/AvatarUsername";
 import { challengeCategoryIcons } from "utils/ClientAssets";
 import { useTranslation } from "react-i18next";
+import { Badge } from "./ui/badge";
+import ScrollingText from "./modules/ScrollingText";
 
 export function ScoreTable(
     {
         scoreBoardModel,
         setShowUserDetail,
         challenges,
+        showGroupTags,
         pageSize: _pageSize,
         pagination,
         curPage,
@@ -28,6 +31,7 @@ export function ScoreTable(
         pageSize: number,
         pagination: PaginationInfo | undefined,
         curPage: number,
+        showGroupTags: boolean,
         setCurPage: Dispatch<SetStateAction<number>>,
         isLoading: boolean
     }

@@ -547,3 +547,11 @@ other = "Not allow to delete admin user"
 [InvalidContainer]
 description = "Invalid pod name or container name"
 other = "Invalid pod name or container name"
+
+[FailedToDeleteGame]
+description = "Failed to delete game"
+other = "Failed to delete game"
+
+[GameDeletedSuccessfully]
+description = "Game deleted successfully"
+other = "Game deleted successfully"

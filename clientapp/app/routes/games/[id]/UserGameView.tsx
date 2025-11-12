@@ -29,7 +29,7 @@ export default function Games() {
     const { gameStatus, isLoading } = useGame(gameID)
 
     useEffect(() => {
-        if (!module) navigate("/games/" + id + "/info")
+        if (!module) navigate(`/games/${id}/info`)
         setCurChoicedModule(module || "info")
     }, [module])
 

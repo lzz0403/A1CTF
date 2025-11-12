@@ -547,3 +547,11 @@ other = "您无权删除管理员用户"
 [InvalidContainer]
 description = "无效的 Pod Name 或 Container Name"
 other = "无效的 Pod Name 或 Container Name"
+
+[FailedToDeleteGame]
+description = "删除比赛失败"
+other = "删除比赛失败"
+
+[GameDeletedSuccessfully]
+description = "比赛删除成功"
+other = "比赛删除成功"

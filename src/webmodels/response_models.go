@@ -95,11 +95,11 @@ type GameNotice struct {
 }
 
 type GameScoreboardData struct {
-	GameID               int64                     `json:"game_id"`
-	Name                 string                    `json:"name"`
-	Top10TimeLines       []TimeLineItem            `json:"top10_timelines"`
-	TeamScores           []TeamScoreItem           `json:"teams"`
-	TeamTimeLines        []TimeLineItem            `json:"team_timelines"`
+	GameID         int64                 `json:"game_id"`
+	Name           string                `json:"name"`
+	Top10TimeLines []TimeLineItemLowCost `json:"top10_timelines"`
+	TeamScores     []TeamScoreItem       `json:"teams"`
+	// TeamTimeLines        []TimeLineItemLowCost     `json:"team_timelines"`
 	YourTeam             *TeamScoreItem            `json:"your_team"`
 	SimpleGameChallenges []UserSimpleGameChallenge `json:"challenges"`
 	Groups               []GameGroupSimple         `json:"groups"`
@@ -145,6 +145,8 @@ type AdminListTeamItem struct {
 	TeamName   string                      `json:"team_name"`
 	TeamAvatar *string                     `json:"team_avatar"`
 	TeamSlogan *string                     `json:"team_slogan"`
+	GroupName  *string                     `json:"group_name"`
+	GroupID    *int64                      `json:"group_id"`
 	Members    []AdminSimpleTeamMemberInfo `json:"members"`
 	Status     models.ParticipationStatus  `json:"status"`
 	Score      float64                     `json:"score"`
@@ -161,6 +163,16 @@ type TimeLineItem struct {
 	TeamID   int64               `json:"team_id"`
 	TeamName string              `json:"team_name"`
 	Scores   []TimeLineScoreItem `json:"scores"`
+}
+
+// 减少传输占用的 model
+
+type TimeLineItemLowCost struct {
+	TeamID   int64   `json:"team_id"`
+	TeamName string  `json:"team_name"`
+	Scores   []int64 `json:"scores"`
+	Times    []int64 `json:"times"`
+	TimeBase int64   `json:"time_base"`
 }
 
 type TeamSolveItem struct {
@@ -199,24 +211,16 @@ type TeamScoreItem struct {
 }
 
 type CachedGameScoreBoardData struct {
-	FinalScoreBoardMap map[int64]TeamScoreItem
-	Top10TimeLines     []TimeLineItem
-	Top10Teams         []TeamScoreItem
-	AllTimeLines       []TimeLineItem
-	TeamRankings       []TeamScoreItem
+	FinalScoreBoardMap    map[int64]TeamScoreItem
+	Top10TimeLines        []TimeLineItem
+	Top10Teams            []TeamScoreItem
+	AllTimeLines          []TimeLineItem
+	TeamRankings          []TeamScoreItem
+	Top10TimeLinesLowCost []TimeLineItemLowCost
+	AllTimeLinesLowCost   []TimeLineItemLowCost
 }
 
 // Team management responses
-
-type TeamJoinRequestInfo struct {
-	RequestID  int64                    `json:"request_id"`
-	UserID     string                   `json:"user_id"`
-	Username   string                   `json:"username"`
-	UserAvatar *string                  `json:"user_avatar"`
-	Status     models.JoinRequestStatus `json:"status"`
-	CreateTime time.Time                `json:"create_time"`
-	Message    *string                  `json:"message"`
-}
 
 // 分组相关的响应模型
 type GameGroupSimple struct {
@@ -247,4 +251,15 @@ type AdminContainerItem struct {
 	PodID               string                 `json:"pod_id"`
 	TeamID              int64                  `json:"team_id"`
 	ChallengeID         int64                  `json:"challenge_id"`
+}
+
+type AdminGameGroupItem struct {
+	GroupID     int64     `json:"group_id"`
+	GameID      int64     `json:"game_id"`
+	GroupName   string    `json:"group_name"`
+	InviteCode  string    `json:"invite_code"`
+	Description *string   `json:"group_description"`
+	PeopleCount int64     `json:"people_count"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

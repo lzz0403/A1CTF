@@ -16,6 +16,7 @@ import (
 	"gorm.io/gorm"
 
 	"a1ctf/src/db/models"
+	"a1ctf/src/tasks"
 	dbtool "a1ctf/src/utils/db_tool"
 	"a1ctf/src/utils/general"
 	i18ntool "a1ctf/src/utils/i18n_tool"
@@ -268,6 +269,23 @@ func AdminGetGameChallenge(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"data": result,
+	})
+}
+
+func AdminDeleteGame(c *gin.Context) {
+	game := c.MustGet("game").(models.Game)
+
+	if err := dbtool.DB().Delete(&game).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    500,
+			"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "FailedToDeleteGame"}),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": i18ntool.Translate(c, &i18n.LocalizeConfig{MessageID: "GameDeletedSuccessfully"}),
 	})
 }
 
@@ -1456,6 +1474,8 @@ func AdminDeleteChallengeSolves(c *gin.Context) {
 		})
 		return
 	}
+
+	tasks.NewRecalculateRankForAChallengeTask(gameID, []int64{challengeID})
 
 	// 构建响应消息
 	var message string

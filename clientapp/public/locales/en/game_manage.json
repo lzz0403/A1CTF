@@ -36,5 +36,7 @@
   "enable_race": "Race Mode",
   "edit": "Edit Game",
   "adjust": "Score Adjustment",
-  "remove": "Delete Game"
+  "remove": "Delete Game",
+  "delete_description": "Are you sure you want to delete the game \"{{name}}\"? This action cannot be undone. All submission records and team information will be permanently deleted.",
+  "alert_title": "Confirm Deletion"
 }

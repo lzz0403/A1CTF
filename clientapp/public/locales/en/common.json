@@ -21,6 +21,9 @@
     "loading": "Loading...",
     "admin": "Admin",
     "continue": "Continue",
+    "answer_incorrect": "Incorrect answer, please try again",
+    "complete_math_question": "Complete the math question below",
+    "final_confirm": "Are you sure?",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "error": {
