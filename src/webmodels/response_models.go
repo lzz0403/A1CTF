@@ -141,17 +141,15 @@ type TeamMemberInfo struct {
 }
 
 type AdminListTeamItem struct {
-	TeamID     int64                       `json:"team_id"`
-	TeamName   string                      `json:"team_name"`
-	TeamAvatar *string                     `json:"team_avatar"`
-	TeamSlogan *string                     `json:"team_slogan"`
-	GroupName  *string                     `json:"group_name"`
-	GroupID    *int64                      `json:"group_id"`
-	Members    []AdminSimpleTeamMemberInfo `json:"members"`
-	Status     models.ParticipationStatus  `json:"status"`
-	Score      float64                     `json:"score"`
-	GroupID    *int64                      `json:"group_id"`
-	GroupName  *string                     `json:"group_name"`
+    TeamID     int64                       `json:"team_id"`
+    TeamName   string                      `json:"team_name"`
+    TeamAvatar *string                     `json:"team_avatar"`
+    TeamSlogan *string                     `json:"team_slogan"`
+    GroupName  *string                     `json:"group_name"`
+    GroupID    *int64                      `json:"group_id"`
+    Members    []AdminSimpleTeamMemberInfo `json:"members"`
+    Status     models.ParticipationStatus  `json:"status"`
+    Score      float64                     `json:"score"`
 }
 
 type TimeLineScoreItem struct {
