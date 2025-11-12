@@ -80,6 +80,7 @@ type A1Container struct {
 	CPULimit     int64           `json:"cpu_limit" validate:"min=0" label:"CPULimit" message:"CPU limit must be greater than 0"`
 	MemoryLimit  int64           `json:"memory_limit" validate:"min=0" label:"MemoryLimit" message:"Memory limit must be greater than 0"`
 	StorageLimit int64           `json:"storage_limit" validate:"min=0" label:"StorageLimit" message:"Storage limit must be greater than 0"`
+	Privileged   bool            `json:"privileged" validate:"-"`
 }
 
 // 自定义验证函数 - 验证DNS标签格式
@@ -270,6 +271,16 @@ func CreatePod(podInfo *PodInfo) error {
 		Spec: corev1.PodSpec{
 			Containers: containers,
 		},
+	}
+
+	// 添加SecurityContext配置
+	for i, c := range podInfo.Containers {
+		if c.Privileged {
+			// 为需要特权模式的容器设置SecurityContext
+			containers[i].SecurityContext = &corev1.SecurityContext{
+				Privileged: &c.Privileged,
+			}
+		}
 	}
 
 	secretNames := viper.GetStringSlice("k8s.pull-secret-names")
