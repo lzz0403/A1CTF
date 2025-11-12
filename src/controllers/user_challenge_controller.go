@@ -158,12 +158,13 @@ func UserGetGameChallenge(c *gin.Context) {
 		}
 
 		if len(containers) == 1 {
+			allPorts := make(models.ExposePorts, 0)
 			for _, container_expose := range containers[0].ContainerExposeInfos {
 				if container_expose.ContainerName == container.Name {
-					tempConfig.ContainerPorts = container_expose.ExposePorts
-					break
+					allPorts = append(allPorts, container_expose.ExposePorts...)
 				}
 			}
+			tempConfig.ContainerPorts = allPorts
 		}
 
 		result.Containers = append(result.Containers, tempConfig)
