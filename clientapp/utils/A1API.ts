@@ -206,6 +206,7 @@ export interface Container {
   cpu_limit?: number;
   memory_limit?: number;
   storage_limit?: number;
+  privileged?: boolean;
 }
 
 export interface JudgeConfig {

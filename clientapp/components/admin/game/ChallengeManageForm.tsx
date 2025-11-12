@@ -173,6 +173,30 @@ function ContainerForm({ control, index, removeContainer }: ContainerFormProps) 
                 </FormDescription>
             </div>
 
+            <div className="flex items-center space-x-2 mt-4">
+                <FormField
+                    control={control}
+                    name={`container_config.${index}.privileged`}
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center">
+                            <FormControl>
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={field.value ?? false}
+                                        onChange={(e) => field.onChange(e.target.checked)}
+                                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <FormLabel className="font-normal">启用特权模式</FormLabel>
+                                </div>
+                            </FormControl>
+                            <FormDescription>
+                                以特权模式运行容器，拥有类似Docker --privileged的宿主机权限
+                            </FormDescription>
+                        </FormItem>
+                    )}
+                />
+            </div>
             {/* <span className="text-md font-semibold mt-4">资源限制</span> */}
             <div className="grid grid-cols-3 gap-4 mt-4">
                 <FormField
