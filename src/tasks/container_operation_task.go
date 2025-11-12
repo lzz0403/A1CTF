@@ -71,7 +71,7 @@ func HandleContainerStartTask(ctx context.Context, t *asynq.Task) error {
 			"ingame_id": fmt.Sprintf("%d", task.InGameID),
 		},
 		Flag:     task.TeamFlag.FlagContent,
-		Category: task.Challenge.Category,
+		Category: string(task.Challenge.Category),
 		ChallengeName: task.ChallengeName,
 		AllowWAN: task.Challenge.AllowWAN,
 		AllowDNS: task.Challenge.AllowDNS,
