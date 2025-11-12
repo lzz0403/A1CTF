@@ -177,24 +177,21 @@ export default function ChallengeMainContent(
 
 
     useEffect(() => {
+        setContainerInfo(curChallenge?.containers ?? [])
         setContainerExpireTime(curChallenge?.container_expiretime
             ? dayjs(curChallenge.container_expiretime)
             : null)
 
         if (curChallenge?.container_status == ContainerStatus.ContainerRunning) {
             setContainerRunningTrigger(true)
-            // 保持运行时的实时容器信息，不从 curChallenge 覆盖
         } else if (curChallenge?.container_status == ContainerStatus.ContainerQueueing) {
             setContainerLaunching(true)
             setRefreshContainerTrigger(true)
-            setContainerInfo(curChallenge?.containers ?? [])
         } else if (curChallenge?.container_status == ContainerStatus.ContainerStarting) {
             setContainerLaunching(true)
             setRefreshContainerTrigger(true)
-            setContainerInfo(curChallenge?.containers ?? [])
         } else {
             setContainerRunningTrigger(false)
-            setContainerInfo(curChallenge?.containers ?? [])
         }
     }, [curChallenge])
 
