@@ -286,6 +286,14 @@ export default function ScoreBoardPage(
                 }
                 row.push({ v: team.team_name || '', t: 's', s: nameStyle });
 
+                // 分组名称
+                let groupName = team.group_name;
+                if (!groupName && team.group_id) {
+                    const g = groupsList.find(g => g.group_id === team.group_id);
+                    if (g) groupName = g.group_name;
+                }
+                row.push({ v: groupName || 'Unassigned', t: 's', s: nameStyle });
+
                 let scoreStyle: any = {
                     alignment: { horizontal: "center", vertical: "center" },
                     border: {
@@ -328,7 +336,7 @@ export default function ScoreBoardPage(
             });
 
             const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-            const colWidths = [{ wch: 8 }, { wch: 20 }, { wch: 10 }];
+            const colWidths = [{ wch: 8 }, { wch: 20 }, { wch: 15 }, { wch: 10 }];
             allCategories.forEach(cat => {
                 (challengesByCategory[cat] || []).forEach(() => colWidths.push({ wch: 15 }));
             });
@@ -405,6 +413,14 @@ export default function ScoreBoardPage(
                 if (idx % 2 === 0 && rank > 3) nameStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
                 row.push({ v: team.team_name || '', t: 's', s: nameStyle });
 
+                // 分组名称
+                let groupNameVal = team.group_name;
+                if (!groupNameVal && team.group_id) {
+                    const g = groupsList.find(g => g.group_id === team.group_id);
+                    if (g) groupNameVal = g.group_name;
+                }
+                row.push({ v: groupNameVal || 'Unassigned', t: 's', s: nameStyle });
+
                 let scoreStyle: any = {
                     alignment: { horizontal: "center", vertical: "center" },
                     border: {
@@ -444,7 +460,7 @@ export default function ScoreBoardPage(
             });
 
             const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-            const colWidths = [{ wch: 8 }, { wch: 20 }, { wch: 10 }];
+            const colWidths = [{ wch: 8 }, { wch: 20 }, { wch: 15 }, { wch: 10 }];
             catChallenges.forEach(() => colWidths.push({ wch: 15 }));
             worksheet['!cols'] = colWidths;
 
