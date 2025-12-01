@@ -359,17 +359,18 @@ export default function ScoreBoardPage(
             // 当前方向分数
             const dirScoreByTeam: Record<number, number> = {};
             inputTeams.forEach(team => {
+                if (team.team_id === undefined) return;
                 let sum = 0;
                 (team.solved_challenges || []).forEach(sc => {
-                    if (challengeIdToCategory.get(sc.challenge_id) === cat) sum += sc.score || 0;
+                    if (sc.challenge_id !== undefined && challengeIdToCategory.get(sc.challenge_id) === cat) sum += sc.score || 0;
                 });
                 dirScoreByTeam[team.team_id] = sum;
             });
 
             // 排序生成排名
             const ordered = [...inputTeams].sort((a, b) => {
-                const sa = dirScoreByTeam[a.team_id] || 0;
-                const sb = dirScoreByTeam[b.team_id] || 0;
+                const sa = (a.team_id !== undefined ? dirScoreByTeam[a.team_id] : 0) || 0;
+                const sb = (b.team_id !== undefined ? dirScoreByTeam[b.team_id] : 0) || 0;
                 if (sb !== sa) return sb - sa;
                 if ((b.score || 0) !== (a.score || 0)) return (b.score || 0) - (a.score || 0);
                 return (a.rank || 0) - (b.rank || 0);
@@ -431,7 +432,7 @@ export default function ScoreBoardPage(
                     }
                 };
                 if (idx % 2 === 0 && rank > 3) scoreStyle.fill = { patternType: "solid", fgColor: { rgb: "F9FAFB" } };
-                row.push({ v: (dirScoreByTeam[team.team_id] || 0), t: 'n', s: scoreStyle });
+                row.push({ v: (team.team_id !== undefined ? dirScoreByTeam[team.team_id] : 0) || 0, t: 'n', s: scoreStyle });
 
                 // 题目分数（仅该方向）
                 catChallenges.forEach(ch => {
@@ -918,6 +919,7 @@ export default function ScoreBoardPage(
                                                                 scoreBoardModel={scoreBoardModel}
                                                                 setShowUserDetail={setShowUserDetail}
                                                                 challenges={selectedCategory ? { [selectedCategory]: challenges[selectedCategory] || [] } : challenges}
+                                                                showGroupTags={showGroupTags}
                                                                 pageSize={pageSize}
                                                                 pagination={pagination}
                                                                 curPage={currentPage}
